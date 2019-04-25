@@ -1,12 +1,15 @@
-package com.kmichali;
+package com.kmichali.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="date")
 public class Date {
-    private int idDate;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "idDate", updatable = false, nullable = false)
+    private int id;
     private String issueDate;
     private String sellDate;
     private String paymentDate;

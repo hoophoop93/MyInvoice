@@ -1,13 +1,15 @@
-package com.kmichali;
+package com.kmichali.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="company")
 public class Company {
 
-    private int idCompany;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "idCompany", updatable = false, nullable = false)
+    private int id;
     private String name;
     private String nip;
     private String regon;

@@ -1,13 +1,15 @@
-package com.kmichali;
+package com.kmichali.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="customer")
 public class Customer {
 
-    private int idCustomer;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "idCustomer", updatable = false, nullable = false)
+    private int id;
     private String name;
     private String surname;
     private String address;
@@ -15,12 +17,12 @@ public class Customer {
     private String city;
     private String street;
 
-    public int getIdCustomer() {
-        return idCustomer;
+    public int getId() {
+        return id;
     }
 
-    public void setIdCustomer(int idCustomer) {
-        this.idCustomer = idCustomer;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

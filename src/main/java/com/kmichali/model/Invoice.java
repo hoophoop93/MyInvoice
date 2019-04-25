@@ -1,13 +1,15 @@
-package com.kmichali;
+package com.kmichali.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "invoice")
 public class Invoice {
 
-    private int idInvoice;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "idInvoice", updatable = false, nullable = false)
+    private int id;
     private String invoiceNumber;
     private String invoiceType;
     private String paidType;

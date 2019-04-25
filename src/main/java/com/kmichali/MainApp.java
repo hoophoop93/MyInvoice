@@ -1,24 +1,51 @@
 package com.kmichali;
 
-
+import com.kmichali.config.StageManager;
+import com.kmichali.view.FxmlView;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 
+import java.io.UnsupportedEncodingException;
+
+@SpringBootApplication
+@EnableAutoConfiguration
 public class MainApp extends Application {
 
+    private ConfigurableApplicationContext springContext;
+    private StageManager stageManager;
+
+    @Override
+    public void init()throws Exception{
+
+        springContext = springBootApplicationContext();
+    }
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/view/scene.fxml"));
-        primaryStage.setTitle("RSDS - Projekt 1");
-        primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("Moja Faktura");
-        primaryStage.show();
-
+        stageManager = springContext.getBean(StageManager.class, primaryStage);
+        displayInitialScene();
+    }
+    @Override
+    public void stop() throws Exception {
+        springContext.close();
+    }
+    /**
+     * Useful to override this method by sub-classes wishing to change the first
+     * Scene to be displayed on startup. Example: Functional tests on main
+     * window.
+     */
+    protected void displayInitialScene() throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.PRIMARYSTAGE);
+    }
+    private ConfigurableApplicationContext springBootApplicationContext() {
+        SpringApplicationBuilder builder = new SpringApplicationBuilder(MainApp.class);
+        String[] args = getParameters().getRaw().stream().toArray(String[]::new);
+        return builder.run(args);
     }
     public static void main(String[] args) {
-        launch(args);
+        launch(MainApp.class,args);
     }
 }

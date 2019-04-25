@@ -1,12 +1,192 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="AnchorPane" prefHeight="200" prefWidth="320" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171">
-    <children>
-        <Button layoutX="126" layoutY="90" text="Click Me!" />
-        <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
-    </children>
-</AnchorPane>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="633.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.MainAppController">
+    <top>
+        <MenuBar prefHeight="0.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Close" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+    <center>
+        <VBox prefHeight="355.0" prefWidth="657.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox prefHeight="425.0" prefWidth="255.0">
+                    <children>
+                        <VBox prefHeight="129.0" prefWidth="114.0">
+                            <children>
+                                <Label text="Data wystawienia:">
+                                    <VBox.margin>
+                                        <Insets left="5.0" top="10.0" />
+                                    </VBox.margin>
+                                </Label>
+                                <Label text="Data sprzedaży:">
+                                    <VBox.margin>
+                                        <Insets left="5.0" top="15.0" />
+                                    </VBox.margin>
+                                </Label>
+                                <Label text="Termin zapłaty:">
+                                    <VBox.margin>
+                                        <Insets left="5.0" top="15.0" />
+                                    </VBox.margin>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <VBox prefHeight="158.0" prefWidth="184.0">
+                            <children>
+                                <DatePicker>
+                                    <VBox.margin>
+                                        <Insets top="5.0" />
+                                    </VBox.margin>
+                                </DatePicker>
+                                <DatePicker>
+                                    <VBox.margin>
+                                        <Insets top="5.0" />
+                                    </VBox.margin>
+                                </DatePicker>
+                                <DatePicker>
+                                    <VBox.margin>
+                                        <Insets top="6.0" />
+                                    </VBox.margin>
+                                </DatePicker>
+                            </children>
+                        </VBox>
+                        <VBox prefHeight="425.0" prefWidth="108.0">
+                            <children>
+                                <Label prefHeight="17.0" prefWidth="108.0" text="Sposób płatności:">
+                                    <VBox.margin>
+                                        <Insets left="5.0" top="10.0" />
+                                    </VBox.margin>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <HBox prefHeight="135.0" prefWidth="240.0">
+                            <children>
+                                <ComboBox prefHeight="25.0" prefWidth="213.0">
+                                    <HBox.margin>
+                                        <Insets top="5.0" />
+                                    </HBox.margin>
+                                </ComboBox>
+                            </children>
+                        </HBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </center>
+    <bottom>
+        <VBox prefHeight="376.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
+            <children>
+                <VBox prefHeight="189.0" prefWidth="1029.0">
+                    <children>
+                        <TableView fx:id="productTable" prefHeight="205.0" prefWidth="1029.0">
+                            <columns>
+                                <TableColumn fx:id="lpColumn" prefWidth="75.0" text="LP" />
+                                <TableColumn fx:id="productNameColumn" onEditCommit="#changeNameProductCellEvent" prefWidth="286.0" text="Nazwa towaru lub usługi" />
+                                <TableColumn fx:id="classProductColumn" onEditCommit="#changeProductClassCellEvent" prefWidth="68.0" text="Klasa" />
+                                <TableColumn fx:id="unitMeasureColumn" onEditCommit="#changeUnitMeasureCellEvent" prefWidth="55.0" text="J.m" />
+                                <TableColumn fx:id="amountColumn" onEditCommit="#changeAmountCellEvent" prefWidth="72.0" text="Ilość" />
+                                <TableColumn fx:id="unitPriceColumn" minWidth="-1.0" onEditCommit="#changeUnitPriceCellEvent" prefWidth="97.0" text="Cena netto" />
+                                <TableColumn fx:id="productValueColumn" onEditCommit="#changeProductValueCellEvent" prefWidth="104.0" text="Wartość netto" />
+                                <TableColumn fx:id="priceVatColumn" onEditCommit="#changePriceVatCellEvent" prefWidth="100.0" text="Kwota Vat" />
+                                <TableColumn fx:id="priceBruttoColumn" onEditCommit="#changePriceBruttoCellEvent" prefWidth="95.0" text="Wartość brutto" />
+                            </columns>
+                            <contextMenu>
+                                <ContextMenu>
+                                    <items>
+                                        <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                                    </items>
+                                </ContextMenu>
+                            </contextMenu>
+                        </TableView>
+                        <Button fx:id="addNewRow" mnemonicParsing="false" prefHeight="36.0" prefWidth="192.0" text="Dodaj nowe pole">
+                            <VBox.margin>
+                                <Insets left="5.0" />
+                            </VBox.margin>
+                        </Button>
+                    </children>
+                </VBox>
+                <TableView prefHeight="199.0" prefWidth="1029.0">
+                    <columns>
+                        <TableColumn prefWidth="75.0" text="Ilość" />
+                        <TableColumn prefWidth="75.0" text="C2" />
+                    </columns>
+                    <contextMenu>
+                        <ContextMenu>
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                            </items>
+                        </ContextMenu>
+                    </contextMenu>
+                </TableView>
+            </children>
+        </VBox>
+    </bottom>
+    <left>
+        <VBox prefHeight="368.0" prefWidth="372.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox prefHeight="46.0" prefWidth="372.0">
+                    <children>
+                        <Label text="Faktura">
+                            <HBox.margin>
+                                <Insets left="5.0" top="5.0" />
+                            </HBox.margin>
+                        </Label>
+                        <ComboBox prefHeight="25.0" prefWidth="236.0">
+                            <HBox.margin>
+                                <Insets left="5.0" top="5.0" />
+                            </HBox.margin>
+                        </ComboBox>
+                    </children>
+                </HBox>
+                <VBox prefHeight="40.0" prefWidth="372.0">
+                    <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                            <children>
+                                <Label prefHeight="17.0" prefWidth="40.0" text="Klient:">
+                                    <HBox.margin>
+                                        <Insets left="5.0" top="5.0" />
+                                    </HBox.margin>
+                                </Label>
+                                <ComboBox prefWidth="236.0">
+                                    <HBox.margin>
+                                        <Insets left="5.0" />
+                                    </HBox.margin>
+                                </ComboBox>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </left>
+</BorderPane>

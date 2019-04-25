@@ -1,4 +1,4 @@
-package com.kmichali;
+package com.kmichali.repository;
 
 import com.kmichali.model.Seller;
 import org.springframework.data.repository.CrudRepository;

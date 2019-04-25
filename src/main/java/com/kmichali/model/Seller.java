@@ -1,4 +1,4 @@
-package com.kmichali;
+package com.kmichali.model;
 
 import javax.persistence.*;
 

@@ -1,6 +1,12 @@
-package com.kmichali;
+package com.kmichali.service;
 
-public interface SellerService {
+import com.kmichali.model.Seller;
+import com.kmichali.generic.GenericService;
+import org.springframework.stereotype.Service;
 
-    Iterable<Seller> findAll();
+import javax.transaction.Transactional;
+
+public interface SellerService extends GenericService<Seller> {
+
+    Seller findByName(String name);
 }

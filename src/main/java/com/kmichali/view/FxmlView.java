@@ -1,21 +1,21 @@
-package com.kmichali.config.view;
+package com.kmichali.view;
 
 import java.util.ResourceBundle;
 
-public class FxmlView {
+public enum FxmlView {
 
-    PrimaryStage {
+    PRIMARYSTAGE {
         @Override
         public String getTitle() {
-            return getStringFromResourceBundle("user.title");
+            return getStringFromResourceBundle("primaryStage.title");
         }
 
         @Override
         public String getFxmlFile() {
-            return "/fxml/User.fxml";
+            return "/fxml/scene.fxml";
         }
-    }
-    
+    };
+
     public abstract String getTitle();
     public abstract String getFxmlFile();
 
