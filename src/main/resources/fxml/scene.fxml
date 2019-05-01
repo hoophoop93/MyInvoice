@@ -11,11 +11,12 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="633.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.MainAppController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="633.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.MainAppController">
     <top>
         <MenuBar prefHeight="0.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
             <menus>
@@ -106,17 +107,18 @@
     <bottom>
         <VBox prefHeight="376.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
             <children>
-                <VBox prefHeight="189.0" prefWidth="1029.0">
+                <VBox prefHeight="382.0" prefWidth="1029.0">
                     <children>
-                        <TableView fx:id="productTable" prefHeight="205.0" prefWidth="1029.0">
+                        <TableView fx:id="productTable" prefHeight="252.0" prefWidth="1029.0">
                             <columns>
-                                <TableColumn fx:id="lpColumn" prefWidth="75.0" text="LP" />
-                                <TableColumn fx:id="productNameColumn" onEditCommit="#changeNameProductCellEvent" prefWidth="286.0" text="Nazwa towaru lub usługi" />
-                                <TableColumn fx:id="classProductColumn" onEditCommit="#changeProductClassCellEvent" prefWidth="68.0" text="Klasa" />
+                                <TableColumn fx:id="lpColumn" prefWidth="38.0" text="LP" />
+                                <TableColumn fx:id="productNameColumn" onEditCommit="#changeNameProductCellEvent" prefWidth="350.0" text="Nazwa towaru lub usługi" />
+                                <TableColumn fx:id="classProductColumn" onEditCommit="#changeProductClassCellEvent" prefWidth="41.0" text="Klasa" />
                                 <TableColumn fx:id="unitMeasureColumn" onEditCommit="#changeUnitMeasureCellEvent" prefWidth="55.0" text="J.m" />
                                 <TableColumn fx:id="amountColumn" onEditCommit="#changeAmountCellEvent" prefWidth="72.0" text="Ilość" />
-                                <TableColumn fx:id="unitPriceColumn" minWidth="-1.0" onEditCommit="#changeUnitPriceCellEvent" prefWidth="97.0" text="Cena netto" />
+                                <TableColumn fx:id="priceNettoColumn" minWidth="-1.0" onEditCommit="#changePriceNettoCellEvent" prefWidth="97.0" text="Cena netto" />
                                 <TableColumn fx:id="productValueColumn" onEditCommit="#changeProductValueCellEvent" prefWidth="104.0" text="Wartość netto" />
+                                <TableColumn fx:id="taxColumn" prefWidth="76.0" text="Stawka Vat" />
                                 <TableColumn fx:id="priceVatColumn" onEditCommit="#changePriceVatCellEvent" prefWidth="100.0" text="Kwota Vat" />
                                 <TableColumn fx:id="priceBruttoColumn" onEditCommit="#changePriceBruttoCellEvent" prefWidth="95.0" text="Wartość brutto" />
                             </columns>
@@ -128,26 +130,63 @@
                                 </ContextMenu>
                             </contextMenu>
                         </TableView>
-                        <Button fx:id="addNewRow" mnemonicParsing="false" prefHeight="36.0" prefWidth="192.0" text="Dodaj nowe pole">
-                            <VBox.margin>
-                                <Insets left="5.0" />
-                            </VBox.margin>
+                  <HBox prefHeight="0.0" prefWidth="1029.0">
+                     <children>
+                        <Button fx:id="addNewRow" mnemonicParsing="false" onAction="#addNewRowAction" prefHeight="25.0" prefWidth="74.0" text="Nowy">
+                           <HBox.margin>
+                              <Insets bottom="1.0" left="1.0" top="1.0" />
+                           </HBox.margin>
                         </Button>
+                        <Button fx:id="removeRow" mnemonicParsing="false" onAction="#removeRowAction" prefHeight="25.0" prefWidth="74.0" text="Usuń">
+                           <HBox.margin>
+                              <Insets bottom="1.0" left="10.0" top="1.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="83.0" text="Faktura">
+                           <HBox.margin>
+                              <Insets bottom="1.0" left="10.0" top="1.0" />
+                           </HBox.margin>
+                        </Button>
+                        <HBox fillHeight="false" maxWidth="-Infinity" prefHeight="27.0" prefWidth="244.0" />
+                        <HBox prefHeight="27.0" prefWidth="601.0">
+                           <children>
+                              <Label prefHeight="17.0" prefWidth="117.0" text="Razem do zapłaty:" textAlignment="CENTER">
+                                 <HBox.margin>
+                                    <Insets left="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="forPrice" prefHeight="25.0" prefWidth="140.0" />
+                              <Label prefHeight="17.0" prefWidth="53.0" text="Netto:">
+                                 <HBox.margin>
+                                    <Insets left="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="sumNetto" prefHeight="25.0" prefWidth="140.0" />
+                              <Label prefHeight="17.0" prefWidth="45.0" text="VAT:">
+                                 <HBox.margin>
+                                    <Insets left="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <TextField fx:id="sumVat" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="140.0" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </HBox>
+                      <TableView prefHeight="104.0" prefWidth="1029.0">
+                          <columns>
+                              <TableColumn prefWidth="75.0" text="Ilość" />
+                              <TableColumn prefWidth="75.0" text="C2" />
+                          </columns>
+                          <contextMenu>
+                              <ContextMenu>
+                                  <items>
+                                      <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                                  </items>
+                              </ContextMenu>
+                          </contextMenu>
+                      </TableView>
                     </children>
                 </VBox>
-                <TableView prefHeight="199.0" prefWidth="1029.0">
-                    <columns>
-                        <TableColumn prefWidth="75.0" text="Ilość" />
-                        <TableColumn prefWidth="75.0" text="C2" />
-                    </columns>
-                    <contextMenu>
-                        <ContextMenu>
-                            <items>
-                                <MenuItem mnemonicParsing="false" text="Unspecified Action" />
-                            </items>
-                        </ContextMenu>
-                    </contextMenu>
-                </TableView>
             </children>
         </VBox>
     </bottom>

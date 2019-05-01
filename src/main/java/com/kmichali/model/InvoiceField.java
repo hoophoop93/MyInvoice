@@ -9,12 +9,12 @@ public class InvoiceField {
     public SimpleStringProperty nameProduct;
     public SimpleStringProperty productClass;
     public SimpleStringProperty unitMeasure;
-    public SimpleStringProperty amount;
-    public SimpleStringProperty unitPrice;
-    public SimpleStringProperty productValue;
+    public double amount;
+    public double priceNetto;
+    public double productValue;
     public ComboBox<String> tax;
-    public SimpleStringProperty priceVat;
-    public SimpleStringProperty priceBrutto;
+    public double priceVat;
+    public double priceBrutto;
 
     public InvoiceField(){
     }
@@ -22,18 +22,18 @@ public class InvoiceField {
         this.lp = new SimpleStringProperty(lp);
     }
 
-    public InvoiceField(String lp, String nameProduct, String productClass, String unitMeasure, String amount, String unitPrice,
-                        String productValue, ComboBox<String> tax, String priceVat, String priceBrutto) {
+    public InvoiceField(String lp, String nameProduct, String productClass, String unitMeasure, double amount, double priceNetto,
+                        double productValue, ComboBox<String> tax, double priceVat, double priceBrutto) {
         this.lp = new SimpleStringProperty(lp);
         this.nameProduct = new SimpleStringProperty(nameProduct);
         this.productClass = new SimpleStringProperty(productClass);
         this.unitMeasure = new SimpleStringProperty(unitMeasure);
-        this.amount = new SimpleStringProperty(amount);
-        this.unitPrice = new SimpleStringProperty(unitPrice);
-        this.productValue = new SimpleStringProperty(productValue);
+        this.amount = amount;
+        this.priceNetto = priceNetto;
+        this.productValue = productValue;
         this.tax = tax;
-        this.priceVat = new SimpleStringProperty(priceVat);
-        this.priceBrutto = new SimpleStringProperty(priceBrutto);
+        this.priceVat = priceVat;
+        this.priceBrutto = priceBrutto;
     }
 
     public String getLp() {
@@ -52,6 +52,10 @@ public class InvoiceField {
         return nameProduct.get();
     }
 
+    public SimpleStringProperty nameProductProperty() {
+        return nameProduct;
+    }
+
     public void setNameProduct(String nameProduct) {
         this.nameProduct = new SimpleStringProperty(nameProduct);
     }
@@ -65,7 +69,7 @@ public class InvoiceField {
     }
 
     public void setProductClass(String productClass) {
-        this.productClass= new SimpleStringProperty(productClass);
+        this.productClass = new SimpleStringProperty(productClass);
     }
 
     public String getUnitMeasure() {
@@ -77,43 +81,31 @@ public class InvoiceField {
     }
 
     public void setUnitMeasure(String unitMeasure) {
-        this.unitMeasure= new SimpleStringProperty(unitMeasure);
+        this.unitMeasure = new SimpleStringProperty(unitMeasure);
     }
 
-    public String getAmount() {
-        return amount.get();
-    }
-
-    public SimpleStringProperty amountProperty() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmountColumn(String amountColumn) {
-        this.amount= new SimpleStringProperty(amountColumn);
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
-    public String getUnitPrice() {
-        return unitPrice.get();
+    public double getPriceNetto() {
+        return priceNetto;
     }
 
-    public SimpleStringProperty unitPriceProperty() {
-        return unitPrice;
+    public void setPriceNetto(double priceNetto) {
+        this.priceNetto = priceNetto;
     }
 
-    public void setUnitPriceColumn(String unitPriceColumn) {
-        this.unitPrice = new SimpleStringProperty(unitPriceColumn);
-    }
-
-    public String getProductValue() {
-        return productValue.get();
-    }
-
-    public SimpleStringProperty productValueProperty() {
+    public double getProductValue() {
         return productValue;
     }
 
-    public void setProductValueColumn(String productValueColumn) {
-        this.productValue= new SimpleStringProperty(productValueColumn);
+    public void setProductValue(double productValue) {
+        this.productValue = productValue;
     }
 
     public ComboBox<String> getTax() {
@@ -121,30 +113,22 @@ public class InvoiceField {
     }
 
     public void setTax(ComboBox<String> tax) {
-        tax = tax;
+        this.tax = tax;
     }
 
-    public String getPriceVat() {
-        return priceVat.get();
-    }
-
-    public SimpleStringProperty priceVatProperty() {
+    public double getPriceVat() {
         return priceVat;
     }
 
-    public void setPriceVatColumn(String priceVatColumn) {
-        this.priceVat= new SimpleStringProperty(priceVatColumn);
+    public void setPriceVat(double priceVat) {
+        this.priceVat = priceVat;
     }
 
-    public String getPriceBrutto() {
-        return priceBrutto.get();
-    }
-
-    public SimpleStringProperty priceBruttoProperty() {
+    public double getPriceBrutto() {
         return priceBrutto;
     }
 
-    public void setPriceBruttoColumn(String priceBruttoColumn) {
-        this.priceBrutto= new SimpleStringProperty(priceBruttoColumn);
+    public void setPriceBrutto(double priceBrutto) {
+        this.priceBrutto = priceBrutto;
     }
 }
