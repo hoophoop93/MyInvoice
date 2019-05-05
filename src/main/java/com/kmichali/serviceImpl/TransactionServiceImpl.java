@@ -16,6 +16,7 @@ public class TransactionServiceImpl implements TransactionService {
     public Transaction save(Transaction entity) {
         entity.setAmount(entity.getAmount());
         entity.setPriceBrutto(entity.getPriceBrutto());
+        entity.setTax(entity.getTax());
         entity.setPriceNetto(entity.getPriceNetto());
 
         return transactionRepository.save(entity);

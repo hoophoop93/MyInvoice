@@ -51,7 +51,6 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setAddress(customer.getAddress());
         customer.setCity(customer.getCity());
         customer.setPostalCode(customer.getPostalCode());
-        customer.setCompany(customer.getCompany());
         return customerRepostiory.save(customer);
     }
 

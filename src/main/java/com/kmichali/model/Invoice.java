@@ -13,7 +13,18 @@ public class Invoice {
     private String invoiceNumber;
     private String invoiceType;
     private String paidType;
-    private String tax;
+
+    @OneToOne
+    @JoinColumn(name = "idDate")
+    private Date date;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public int getId() {
         return id;
@@ -47,11 +58,4 @@ public class Invoice {
         this.paidType = paidType;
     }
 
-    public String getTax() {
-        return tax;
-    }
-
-    public void setTax(String tax) {
-        this.tax = tax;
-    }
 }

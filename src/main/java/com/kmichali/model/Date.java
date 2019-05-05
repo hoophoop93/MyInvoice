@@ -15,6 +15,17 @@ public class Date {
     private String paymentDate;
     private String paidDate;
 
+    @OneToOne(mappedBy = "date",cascade = CascadeType.ALL)
+    private Invoice invoice;
+
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
+    }
+
     public int getId() {
         return id;
     }

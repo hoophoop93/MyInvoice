@@ -18,8 +18,6 @@ public class CompanyServiceImpl implements CompanyService {
         entity.setNip(entity.getNip());
         entity.setPhoneNumber(entity.getPhoneNumber());
         entity.setRegon(entity.getRegon());
-        entity.setCustomer(entity.getCustomer());
-        entity.setSeller(entity.getSeller());
         return companyRepository.save(entity);
     }
 

@@ -16,6 +16,7 @@ import javafx.util.converter.DoubleStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import javax.transaction.Transactional;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -116,6 +117,8 @@ public class MainAppController implements Initializable {
     StoreServiceImpl storeService;
     @Autowired
     TransactionServiceImpl transactionService;
+    @Autowired
+    SellerServiceImpl sellerService;
 
     /**
      *
@@ -262,11 +265,19 @@ public class MainAppController implements Initializable {
         int clickedOption = selectCustomerCB.getSelectionModel().getSelectedIndex();
         String getComboBoxItem = fillCustomerComboBox().get(clickedOption);
         String[] splitedItem = getComboBoxItem.split("\\s+");
-        customer = customerService.findCustomer(splitedItem[0],splitedItem[1],splitedItem[2]+" "+splitedItem[3]);
+        if(splitedItem.length == 3) {
+            customer = customerService.findCustomer(splitedItem[0], splitedItem[1], splitedItem[2]);
+        }else{
+            customer = customerService.findCustomer(splitedItem[0], splitedItem[1], splitedItem[2]+" "+splitedItem[3]);
+        }
+
         fillCustomerFiled(customer);
     }
+
     @FXML
+    @Transactional
     void createInvoiceAction(ActionEvent event) {
+        Seller seller = sellerService.find(1);
         //date
         String issueDateToString = String.valueOf(issueDate.getValue());
         String sellDateToString = String.valueOf(sellDate.getValue());
@@ -276,6 +287,7 @@ public class MainAppController implements Initializable {
         date.setSellDate(sellDateToString);
         date.setPaymentDate(paymentDateToString);
         dateService.save(date);
+
         //custommer
         customer = new Customer();
         String nameCustomer = customerNameTF.getText();
@@ -286,6 +298,7 @@ public class MainAppController implements Initializable {
         customer.setCity(addressTF.getText());
         customer.setPostalCode(postalCodeTF.getText());
         customerService.save(customer);
+
         //company
         company = new Company();
         company.setName(companyNameTA.getText());
@@ -296,6 +309,34 @@ public class MainAppController implements Initializable {
         customer.setCompany(company);
         customerService.save(customer);
 
+       // invoice
+        invoice = new Invoice();
+        invoice.setInvoiceNumber(invoiceNumberTF.getText());
+        invoice.setPaidType(paidType.getSelectionModel().getSelectedItem());
+        invoice.setInvoiceType(invoiceTypeCB.getSelectionModel().getSelectedItem());
+        invoice.setDate(date);
+        invoiceService.save(invoice);
+        //product
+        product = new Product();
+        if(productTable.getItems().size() ==1)
+            product.setName(productNameColumn.getCellObservableValue(productTable.getSelectionModel().getSelectedIndex()).getValue());
+        productService.save(product);
+        //transaction
+        transaction = new Transaction();
+        for (InvoiceField row: productTable.getItems()) {
+            transaction.setTax(row.getTax().getSelectionModel().getSelectedItem());
+            transaction.setPriceNetto(row.getPriceNetto());
+            transaction.setPriceBrutto(row.getPriceBrutto());
+            transaction.setAmount(row.getAmount());
+            transaction.setInvoice(invoice);
+            transaction.setCustomer(customer);
+            transaction.setSeller(seller);
+            transaction.setProduct(product);
+            transactionService.save(transaction);
+        }
+
+
+        selectCustomerCB.setItems(fillCustomerComboBox());
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

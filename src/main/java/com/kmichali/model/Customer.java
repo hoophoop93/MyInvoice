@@ -1,5 +1,7 @@
 package com.kmichali.model;
 
+import com.sun.scenario.effect.Identity;
+
 import javax.persistence.*;
 
 @Entity
@@ -16,8 +18,23 @@ public class Customer {
     private String postalCode;
     private String city;
     private String street;
+
     @OneToOne(cascade=CascadeType.ALL)
     private Company company;
+    @OneToOne(cascade=CascadeType.ALL)
+    private IdentityCard identityCard;
+
+    @OneToOne(mappedBy = "customer",cascade=CascadeType.ALL)
+    @JoinColumn(name = "idTransaction")
+    private Transaction transaction;
+
+    public IdentityCard getIdentityCard() {
+        return identityCard;
+    }
+
+    public void setIdentityCard(IdentityCard identityCard) {
+        this.identityCard = identityCard;
+    }
 
     public Company getCompany() {
         return company;

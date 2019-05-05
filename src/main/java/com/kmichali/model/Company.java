@@ -14,9 +14,11 @@ public class Company {
     private String nip;
     private String regon;
     private String phoneNumber;
+
     @OneToOne
     @JoinColumn(name = "idCustomer")
     private Customer customer;
+
     @OneToOne
     @JoinColumn(name = "idSeller")
     private Seller seller;

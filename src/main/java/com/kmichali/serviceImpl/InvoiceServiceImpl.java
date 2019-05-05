@@ -12,12 +12,12 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Autowired
     InvoiceRepository invoiceRepository;
 
+
     @Override
     public Invoice save(Invoice entity) {
         entity.setInvoiceNumber(entity.getInvoiceNumber());
         entity.setInvoiceType(entity.getInvoiceType());
-        entity.setTax(entity.getTax());
-        entity.setPaidType(entity.getTax());
+        entity.setPaidType(entity.getPaidType());
 
         return invoiceRepository.save(entity);
     }
