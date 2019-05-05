@@ -1,23 +1,24 @@
 package com.kmichali.controller;
 
 
-import com.kmichali.model.Invoice;
-import com.kmichali.model.InvoiceField;
-import javafx.beans.value.ChangeListener;
+import com.kmichali.model.*;
+import com.kmichali.serviceImpl.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.input.MouseEvent;
+import javafx.util.StringConverter;
 import javafx.util.converter.DoubleStringConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -28,6 +29,8 @@ public class MainAppController implements Initializable {
     @FXML
     private ComboBox<String> taxComboBox;
     @FXML
+    private ComboBox<String> selectCustomerCB;
+    @FXML
     private Button addNewRow;
     @FXML
     private TableView<InvoiceField> productTable;
@@ -35,40 +38,54 @@ public class MainAppController implements Initializable {
     private TableColumn<InvoiceField,String>  lpColumn;
     @FXML
     private TableColumn<InvoiceField, String> productNameColumn;
-
     @FXML
     private TableColumn<InvoiceField, String> classProductColumn;
-
     @FXML
     private TableColumn<InvoiceField, String> unitMeasureColumn;
-
     @FXML
     private TableColumn<InvoiceField, Double> amountColumn;
-
     @FXML
     private TableColumn<InvoiceField, Double> priceNettoColumn;
-
     @FXML
     private TableColumn<InvoiceField, Double> productValueColumn;
-
     @FXML
     private TableColumn<InvoiceField, ComboBox> taxColumn;
-
     @FXML
     private TableColumn<InvoiceField, Double> priceVatColumn;
-
     @FXML
     private TableColumn<InvoiceField, Double> priceBruttoColumn;
     @FXML
     private TextField forPrice;
-
+    @FXML
+    private TextField invoiceNumberTF;
     @FXML
     private TextField sumNetto;
-
     @FXML
     private TextField sumVat;
     @FXML
     private Button removeRow;
+    @FXML
+    private ComboBox<String> invoiceTypeCB;
+    @FXML
+    private ComboBox<String> paidType;
+    @FXML
+    private DatePicker issueDate;
+    @FXML
+    private DatePicker sellDate;
+    @FXML
+    private DatePicker paymentDate;
+    @FXML
+    private TextArea companyNameTA;
+    @FXML
+    private TextField customerNameTF;
+    @FXML
+    private TextField streetTF;
+    @FXML
+    private TextField postalCodeTF;
+    @FXML
+    private TextField addressTF;
+    @FXML
+    private TextField nipTF;
 
     private InvoiceField invoiceField;
     private double priceNetto;
@@ -77,6 +94,28 @@ public class MainAppController implements Initializable {
     private String selectedValueComboBox;
     private List<ComboBox> comboBoxObjectList = new ArrayList<>();
 
+    private Customer customer;
+    private Company company;
+    private Date date;
+    private Invoice invoice;
+    private Product product;
+    private Store store;
+    private Transaction transaction;
+
+    @Autowired
+    CustomerServiceImpl customerService;
+    @Autowired
+    CompanyServiceImpl companyService;
+    @Autowired
+    DateServiceImpl dateService;
+    @Autowired
+    InvoiceServiceImpl invoiceService;
+    @Autowired
+    ProductServiceImpl productService;
+    @Autowired
+    StoreServiceImpl storeService;
+    @Autowired
+    TransactionServiceImpl transactionService;
 
     /**
      *
@@ -91,6 +130,7 @@ public class MainAppController implements Initializable {
     }
     @FXML
     public void changeProductClassCellEvent(TableColumn.CellEditEvent editedCell){
+        
         invoiceField = productTable.getSelectionModel().getSelectedItem();
         invoiceField.setProductClass(editedCell.getNewValue().toString());
     }
@@ -108,7 +148,7 @@ public class MainAppController implements Initializable {
         priceNetto = invoiceField.getPriceNetto()* invoiceField.getAmount();
         onlyVat = invoiceField.getPriceVat() * invoiceField.getAmount();
         priceBrutto = invoiceField.getPriceBrutto() * invoiceField.getAmount();
-        fillPriceFields(priceNetto,onlyVat,priceBrutto);
+        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
         totalPrice();
     }
     @FXML
@@ -120,7 +160,7 @@ public class MainAppController implements Initializable {
         priceNetto = invoiceField.getPriceNetto();
         onlyVat = priceNetto * StringToDoubleConverter(selectedValueComboBox);
         priceBrutto = priceNetto + onlyVat;
-        fillPriceFields(priceNetto,onlyVat,priceBrutto);
+        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
 
         totalPrice();
     }
@@ -134,7 +174,7 @@ public class MainAppController implements Initializable {
         priceNetto = invoiceField.getProductValue();
         onlyVat = priceNetto * StringToDoubleConverter(selectedValueComboBox);
         priceBrutto = priceNetto + onlyVat;
-        fillPriceFields(priceNetto,onlyVat,priceBrutto);
+        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
         totalPrice();
     }
     @FXML
@@ -147,7 +187,7 @@ public class MainAppController implements Initializable {
         onlyVat = invoiceField.getPriceVat();
         priceNetto = onlyVat * 100/ (tax*100);
         priceBrutto = priceNetto + onlyVat;
-        fillPriceFields(priceNetto,onlyVat,priceBrutto);
+        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
         totalPrice();
     }
     @FXML
@@ -156,11 +196,11 @@ public class MainAppController implements Initializable {
         invoiceField.setPriceBrutto(Double.parseDouble(editedCell.getNewValue().toString()));
         selectedValueComboBox = taxComboBox.getSelectionModel().getSelectedItem();
 
-        priceBrutto = invoiceField.getPriceBrutto();
+        priceBrutto = round(invoiceField.getPriceBrutto(),2);
         priceNetto = priceBrutto *100 /(StringToDoubleConverter(selectedValueComboBox)*100 +100);
         onlyVat = priceBrutto - priceNetto;
 
-        fillPriceFields(priceNetto,onlyVat,priceBrutto);
+        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
         totalPrice();
     }
     @FXML
@@ -182,12 +222,16 @@ public class MainAppController implements Initializable {
     private void clickComboBox(ActionEvent event)  {
         taxComboBox = comboBoxObjectList.get(productTable.getSelectionModel().getFocusedIndex());
 
-        selectedValueComboBox = taxComboBox.getSelectionModel().getSelectedItem();
-        priceNetto = invoiceField.getPriceNetto() * invoiceField.getAmount();
-        onlyVat = priceNetto * StringToDoubleConverter(selectedValueComboBox) * invoiceField.getAmount();
-        priceBrutto = priceNetto + onlyVat * invoiceField.getAmount();
-        fillPriceFields(priceNetto,onlyVat,priceBrutto);
-        totalPrice();
+        try {
+            selectedValueComboBox = taxComboBox.getSelectionModel().getSelectedItem();
+            priceNetto = invoiceField.getPriceNetto() * invoiceField.getAmount();
+            onlyVat = priceNetto * StringToDoubleConverter(selectedValueComboBox) * invoiceField.getAmount();
+            priceBrutto = priceNetto + onlyVat * invoiceField.getAmount();
+            fillPriceFields(round(priceNetto,2), round(onlyVat,2), round(priceBrutto,2));
+            totalPrice();
+        }catch(NullPointerException ex){
+
+        }
     }
     @FXML
     void removeRowAction(ActionEvent event) {
@@ -196,9 +240,72 @@ public class MainAppController implements Initializable {
         productTable.getItems().remove(selectedRow);
         totalPrice();
     }
+    @FXML
+    void addNewCustomerAction(ActionEvent event) {
+        //validateCustomerField();
+        customer = new Customer();
+        String nameCustomer = customerNameTF.getText();
+        String [] splited = nameCustomer.split("\\s+");
+
+        customer.setName(splited[0]);
+        customer.setSurname(splited[1]);
+        customer.setAddress(streetTF.getText());
+        customer.setCity(addressTF.getText());
+        customer.setPostalCode(postalCodeTF.getText());
+        customerService.save(customer);
+        Alert alert = new Alert(Alert.AlertType.NONE, "Klient został dodany do listy klientów. ", ButtonType.OK);
+        alert.showAndWait();
+        selectCustomerCB.setItems(fillCustomerComboBox());
+    }
+    @FXML
+    private void selectCustomerAction(ActionEvent event) {
+        int clickedOption = selectCustomerCB.getSelectionModel().getSelectedIndex();
+        String getComboBoxItem = fillCustomerComboBox().get(clickedOption);
+        String[] splitedItem = getComboBoxItem.split("\\s+");
+        customer = customerService.findCustomer(splitedItem[0],splitedItem[1],splitedItem[2]+" "+splitedItem[3]);
+        fillCustomerFiled(customer);
+    }
+    @FXML
+    void createInvoiceAction(ActionEvent event) {
+        //date
+        String issueDateToString = String.valueOf(issueDate.getValue());
+        String sellDateToString = String.valueOf(sellDate.getValue());
+        String paymentDateToString = String.valueOf(paymentDate.getValue());
+        date = new Date();
+        date.setIssueDate(issueDateToString);
+        date.setSellDate(sellDateToString);
+        date.setPaymentDate(paymentDateToString);
+        dateService.save(date);
+        //custommer
+        customer = new Customer();
+        String nameCustomer = customerNameTF.getText();
+        String [] splited = nameCustomer.split("\\s+");
+        customer.setName(splited[0]);
+        customer.setSurname(splited[1]);
+        customer.setAddress(streetTF.getText());
+        customer.setCity(addressTF.getText());
+        customer.setPostalCode(postalCodeTF.getText());
+        customerService.save(customer);
+        //company
+        company = new Company();
+        company.setName(companyNameTA.getText());
+        company.setNip(nipTF.getText());
+        company.setCustomer(customer);
+        companyService.save(company);
+        //customer update
+        customer.setCompany(company);
+        customerService.save(customer);
+
+    }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //customer = customerService.findCustomer("Marek","Uram","Wrocanka 44");
+        //System.out.println(customer.getAddress());
 
+        selectCustomerCB.setItems(fillCustomerComboBox());
+
+        setLocalDateForDataPicker();
+        setValueForCombobox();
         productTable.setItems(getFirstRow());
         taxComboBox.setValue(fillTaxComboBox().get(0));
         comboBoxObjectList.add(taxComboBox);
@@ -260,6 +367,20 @@ public class MainAppController implements Initializable {
         taxComboboxList.add("o.o");
         return taxComboboxList;
     }
+    private ObservableList<String> fillInvoiceTypeComboBox(){
+        ObservableList<String> invoiceTypeList = FXCollections.observableArrayList();
+        invoiceTypeList.add("VAT RR");
+        invoiceTypeList.add("VAT");
+
+        return invoiceTypeList;
+    }
+    private ObservableList<String> fillPaidTypeComboBox(){
+        ObservableList<String> paidTypeList = FXCollections.observableArrayList();
+        paidTypeList.add("Gotówka");
+        paidTypeList.add("Przelew");
+
+        return paidTypeList;
+    }
 
     public void fillPriceFields(double priceNetto, double onlyVat,double priceBrutto){
         if(invoiceField.getAmount()<2){
@@ -286,9 +407,82 @@ public class MainAppController implements Initializable {
             totalVat = totalVat + row.getPriceVat();
             totalPrice = totalPrice + row.getPriceNetto();
         }
-        sumNetto.setText(Double.toString(totalNetto));
-        sumVat.setText(Double.toString(totalVat));
-        forPrice.setText(Double.toString(totalPrice + totalVat));
+        double allForPrice = totalPrice + totalVat;
+        sumNetto.setText(Double.toString(round(totalNetto,2)));
+        sumVat.setText(Double.toString(round(totalVat,2)));
+        forPrice.setText(Double.toString(round(allForPrice,2)));
+    }
+    private void setLocalDateForDataPicker(){
+        setDatePattern(issueDate);
+        setDatePattern(sellDate);
+        setDatePattern(paymentDate);
+        issueDate.setValue(LocalDate.now());
+        sellDate.setValue(LocalDate.now());
+        paymentDate.setValue(LocalDate.now().plusDays(10));
+    }
+    private void setValueForCombobox(){
+        invoiceTypeCB.getItems().setAll(fillInvoiceTypeComboBox());
+        paidType.getItems().setAll(fillPaidTypeComboBox());
+        invoiceTypeCB.setValue(fillInvoiceTypeComboBox().get(0));
+        paidType.setValue(fillPaidTypeComboBox().get(0));
+    }
+
+    private void setDatePattern(DatePicker datePicker){
+        String pattern = "dd-MM-yyyy";
+        datePicker.setConverter(new StringConverter<LocalDate>() {
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+            @Override
+            public String toString(LocalDate localDate) {
+                if (localDate != null) {
+                    return dateFormatter.format(localDate);
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                if (string != null && !string.isEmpty()) {
+                    return LocalDate.parse(string, dateFormatter);
+                } else {
+                    return null;
+                }
+            }
+        });
+    }
+    private double replaceCommaToDot(String stringText){
+        stringText = stringText.replaceAll(",",".");
+        double doubleValue = StringToDoubleConverter(stringText);
+        return doubleValue;
+    }
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
+    public void validateCustomerField(){
+        if(customerNameTF.getText().equals("") || companyNameTA.getText().equals("") || addressTF.getText().equals("") ||
+                streetTF.getText().equals("") || nipTF.getText().equals("")|| postalCodeTF.getText().equals("")){
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Jedno z wymaganych pól klineta jest puste.", ButtonType.OK);
+            alert.setTitle("Ostrzeżenie!");
+            alert.showAndWait();
+        }
+    }
+    private ObservableList<String> fillCustomerComboBox(){
+        ObservableList<String> customerList = FXCollections.observableArrayList();
+        for (Customer customer: customerService.findAll()) {
+            customerList.add(customer.getName()+" "+customer.getSurname()+"    "+customer.getAddress());
+        }
+        return customerList;
+    }
+    private void fillCustomerFiled(Customer customer){
+        customerNameTF.setText(customer.getName()+" "+customer.getSurname());
+        streetTF.setText(customer.getAddress());
+        postalCodeTF.setText(customer.getPostalCode());
+        addressTF.setText(customer.getCity());
     }
 
 }

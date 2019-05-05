@@ -16,6 +16,16 @@ public class Customer {
     private String postalCode;
     private String city;
     private String street;
+    @OneToOne(cascade=CascadeType.ALL)
+    private Company company;
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
 
     public int getId() {
         return id;
