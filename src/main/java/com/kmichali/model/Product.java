@@ -10,19 +10,20 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "idProduct", updatable = false, nullable = false)
+    @Column(name = "id_product", updatable = false, nullable = false)
     private int id;
+    @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "product",fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Transaction> items;
+    @OneToMany(mappedBy ="product",cascade=CascadeType.ALL)
+    private List<ProductTransaction> productTransactionList;
 
-    public List<Transaction> getItems() {
-        return items;
+    public List<ProductTransaction> getProductTransactionList() {
+        return productTransactionList;
     }
 
-    public void setItems(List<Transaction> items) {
-        this.items = items;
+    public void setProductTransactionList(List<ProductTransaction> productTransactionList) {
+        this.productTransactionList = productTransactionList;
     }
 
     public int getId() {

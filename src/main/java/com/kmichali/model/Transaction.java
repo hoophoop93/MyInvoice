@@ -1,6 +1,7 @@
 package com.kmichali.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "transaction")
@@ -8,28 +9,30 @@ public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "idTransaction", updatable = false, nullable = false)
+    @Column(name = "id_transaction", updatable = false, nullable = false)
     private int id;
+    @Column(name = "price_netto")
     private double priceNetto;
+    @Column(name = "price_brutto")
     private double priceBrutto;
+    @Column(name = "amount")
     private double amount;
+    @Column(name = "tax")
     private String tax;
 
     @OneToOne
-    @JoinColumn(name = "idCustomer")
     private Customer customer;
 
     @OneToOne
-    @JoinColumn(name = "idSeller")
+    @JoinColumn(name = "id_seller")
     private Seller seller;
 
     @OneToOne
-    @JoinColumn(name = "idInvoice")
+    @JoinColumn(name = "id_invoice")
     private Invoice invoice;
 
-    @ManyToOne
-    @JoinColumn(name = "idProduct")
-    private Product product;
+    @OneToMany(mappedBy ="transaction",cascade=CascadeType.ALL)
+    private List<ProductTransaction> productTransactionList;
 
     public Customer getCustomer() {
         return customer;
@@ -55,12 +58,12 @@ public class Transaction {
         this.invoice = invoice;
     }
 
-    public Product getProduct() {
-        return product;
+    public List<ProductTransaction> getProductTransactionList() {
+        return productTransactionList;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductTransactionList(List<ProductTransaction> productTransactionList) {
+        this.productTransactionList = productTransactionList;
     }
 
     public int getId() {

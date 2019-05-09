@@ -8,28 +8,23 @@ public class Seller {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "idSeller", updatable = false, nullable = false)
+    @Column(name = "id_seller", updatable = false, nullable = false)
     public long id;
-
+    @Column(name = "name")
     public String name;
-
+    @Column(name = "surname")
     public String surname;
-
+    @Column(name = "address")
     public String address;
-
+    @Column(name = "postal_code")
     public String postalCode;
-
+    @Column(name = "city")
     public String city;
-
+    @Column(name = "street")
     public String street;
 
-    public long getIdSeller(int i) {
-        return id;
-    }
-
-    public void setIdSeller(long idSeller) {
-        this.id = idSeller;
-    }
+    @OneToOne(mappedBy = "seller",cascade=CascadeType.ALL)
+    private Company company;
 
     public String getName() {
         return name;

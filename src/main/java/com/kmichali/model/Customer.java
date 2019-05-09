@@ -10,26 +10,42 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "idCustomer", updatable = false, nullable = false)
+    @Column(name = "id_customer", updatable = false, nullable = false)
     private int id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "surname")
     private String surname;
+    @Column(name = "address")
     private String address;
+    @Column(name = "postal_code")
     private String postalCode;
+    @Column(name = "city")
     private String city;
+    @Column(name = "street")
     private String street;
 
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private Company company;
-    @OneToOne(cascade=CascadeType.ALL)
+
+    @OneToOne
+    @JoinColumn(name = "id_card")
     private IdentityCard identityCard;
 
     @OneToOne(mappedBy = "customer",cascade=CascadeType.ALL)
-    @JoinColumn(name = "idTransaction")
+    @JoinColumn(name = "id_transaction")
     private Transaction transaction;
 
     public IdentityCard getIdentityCard() {
         return identityCard;
+    }
+
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
     }
 
     public void setIdentityCard(IdentityCard identityCard) {

@@ -2,6 +2,7 @@ package com.kmichali.controller;
 
 
 import com.kmichali.model.*;
+import com.kmichali.repository.ProductRepository;
 import com.kmichali.serviceImpl.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -102,7 +103,10 @@ public class MainAppController implements Initializable {
     private Product product;
     private Store store;
     private Transaction transaction;
+    private ProductTransaction productTransaction;
 
+    @Autowired
+    ProductRepository productRepository;
     @Autowired
     CustomerServiceImpl customerService;
     @Autowired
@@ -119,6 +123,8 @@ public class MainAppController implements Initializable {
     TransactionServiceImpl transactionService;
     @Autowired
     SellerServiceImpl sellerService;
+    @Autowired
+    ProductTransactionImpl productTransactionService;
 
     /**
      *
@@ -304,10 +310,8 @@ public class MainAppController implements Initializable {
         company.setName(companyNameTA.getText());
         company.setNip(nipTF.getText());
         company.setCustomer(customer);
+
         companyService.save(company);
-        //customer update
-        customer.setCompany(company);
-        customerService.save(customer);
 
        // invoice
         invoice = new Invoice();
@@ -316,14 +320,12 @@ public class MainAppController implements Initializable {
         invoice.setInvoiceType(invoiceTypeCB.getSelectionModel().getSelectedItem());
         invoice.setDate(date);
         invoiceService.save(invoice);
-        //product
-        product = new Product();
-        if(productTable.getItems().size() ==1)
-            product.setName(productNameColumn.getCellObservableValue(productTable.getSelectionModel().getSelectedIndex()).getValue());
-        productService.save(product);
+
+
         //transaction
-        transaction = new Transaction();
+        List<Transaction> transactionList = new ArrayList<>();
         for (InvoiceField row: productTable.getItems()) {
+            transaction = new Transaction();
             transaction.setTax(row.getTax().getSelectionModel().getSelectedItem());
             transaction.setPriceNetto(row.getPriceNetto());
             transaction.setPriceBrutto(row.getPriceBrutto());
@@ -331,17 +333,28 @@ public class MainAppController implements Initializable {
             transaction.setInvoice(invoice);
             transaction.setCustomer(customer);
             transaction.setSeller(seller);
-            transaction.setProduct(product);
             transactionService.save(transaction);
+
+        //product
+            product = new Product();
+            product.setName(row.getNameProduct());
+            //if(!productService.checkIfExist(row.getNameProduct())) {
+                productService.save(product);
+
+
+            //join product and transaction
+            productTransaction = new ProductTransaction();
+            productTransaction.setProduct(product);
+            productTransaction.setTransaction(transaction);
+            productTransactionService.save(productTransaction);
         }
+
 
 
         selectCustomerCB.setItems(fillCustomerComboBox());
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        //customer = customerService.findCustomer("Marek","Uram","Wrocanka 44");
-        //System.out.println(customer.getAddress());
 
         selectCustomerCB.setItems(fillCustomerComboBox());
 

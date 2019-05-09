@@ -3,20 +3,23 @@ package com.kmichali.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name ="identitycard")
+@Table(name ="identity_card")
 public class IdentityCard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "idCard", updatable = false, nullable = false)
     private long id;
+    @Column(name = "seria")
     private String seria;
+    @Column(name = "number")
     private String number;
+    @Column(name = "release_date")
     private String releaseDate;
+    @Column(name = "organization")
     private String organization;
 
-    @OneToOne
-    @JoinColumn(name = "idCustomer")
+    @OneToOne(mappedBy = "identityCard",cascade=CascadeType.ALL)
     private Customer customer;
 
     public Customer getCustomer() {

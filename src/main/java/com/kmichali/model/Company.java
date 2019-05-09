@@ -8,19 +8,22 @@ public class Company {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "idCompany", updatable = false, nullable = false)
+    @Column(name = "id_company", updatable = false, nullable = false)
     private int id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "nip")
     private String nip;
+    @Column(name = "regon")
     private String regon;
+    @Column(name = "phone_umber")
     private String phoneNumber;
 
-    @OneToOne
-    @JoinColumn(name = "idCustomer")
+    @OneToOne(orphanRemoval = true,fetch = FetchType.LAZY)
     private Customer customer;
 
     @OneToOne
-    @JoinColumn(name = "idSeller")
+    @JoinColumn(name = "id_seller")
     private Seller seller;
 
     public Customer getCustomer() {

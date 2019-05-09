@@ -8,11 +8,15 @@ public class Date {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "idDate", updatable = false, nullable = false)
+    @Column(name = "id_date", updatable = false, nullable = false)
     private int id;
+    @Column(name = "issue_date")
     private String issueDate;
+    @Column(name = "sell_date")
     private String sellDate;
+    @Column(name = "payment_date")
     private String paymentDate;
+    @Column(name = "paid_date")
     private String paidDate;
 
     @OneToOne(mappedBy = "date",cascade = CascadeType.ALL)

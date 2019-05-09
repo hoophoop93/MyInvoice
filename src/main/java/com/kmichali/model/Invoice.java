@@ -8,14 +8,17 @@ public class Invoice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "idInvoice", updatable = false, nullable = false)
+    @Column(name = "id_invoice", updatable = false, nullable = false)
     private int id;
+    @Column(name = "invoice_number")
     private String invoiceNumber;
+    @Column(name = "invoice_type")
     private String invoiceType;
+    @Column(name = "paid_type")
     private String paidType;
 
     @OneToOne
-    @JoinColumn(name = "idDate")
+    @JoinColumn(name = "id_date")
     private Date date;
 
     public Date getDate() {

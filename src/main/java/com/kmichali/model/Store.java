@@ -8,9 +8,11 @@ public class Store {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "idStore", updatable = false, nullable = false)
+    @Column(name = "id_store", updatable = false, nullable = false)
     private int id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "amount")
     private double amount;
 
     public int getId() {
