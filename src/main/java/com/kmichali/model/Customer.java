@@ -11,7 +11,7 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_customer", updatable = false, nullable = false)
-    private int id;
+    private long id;
     @Column(name = "name")
     private String name;
     @Column(name = "surname")
@@ -25,7 +25,7 @@ public class Customer {
     @Column(name = "street")
     private String street;
 
-    @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
     private Company company;
 
     @OneToOne
@@ -60,7 +60,7 @@ public class Customer {
         this.company = company;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -114,5 +114,9 @@ public class Customer {
 
     public void setStreet(String street) {
         this.street = street;
+    }
+    @Override
+    public String toString(){
+        return "Customer: Name "+name+" Surname "+surname;
     }
 }

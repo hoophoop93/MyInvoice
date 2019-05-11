@@ -19,11 +19,10 @@ public class Company {
     @Column(name = "phone_umber")
     private String phoneNumber;
 
-    @OneToOne(orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToOne
     private Customer customer;
 
     @OneToOne
-    @JoinColumn(name = "id_seller")
     private Seller seller;
 
     public Customer getCustomer() {

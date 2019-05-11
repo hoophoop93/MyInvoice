@@ -39,7 +39,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public Invoice find(long id) {
-        return null;
+        return invoiceRepository.findById(id);
     }
 
     @Override

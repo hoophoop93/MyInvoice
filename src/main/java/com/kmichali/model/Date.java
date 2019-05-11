@@ -9,7 +9,7 @@ public class Date {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_date", updatable = false, nullable = false)
-    private int id;
+    private long id;
     @Column(name = "issue_date")
     private String issueDate;
     @Column(name = "sell_date")
@@ -30,7 +30,7 @@ public class Date {
         this.invoice = invoice;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

@@ -41,7 +41,7 @@ public class DateServiceImpl implements DateService {
 
     @Override
     public Date find(long id) {
-        return null;
+        return dateRepository.findOne(id);
     }
 
     @Override

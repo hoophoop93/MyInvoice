@@ -1,9 +1,11 @@
 package com.kmichali.controller;
 
 
+import com.itextpdf.text.DocumentException;
 import com.kmichali.model.*;
 import com.kmichali.repository.ProductRepository;
 import com.kmichali.serviceImpl.*;
+import com.kmichali.utility.VatInvoicePDF;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -282,76 +285,82 @@ public class MainAppController implements Initializable {
 
     @FXML
     @Transactional
-    void createInvoiceAction(ActionEvent event) {
+    void createInvoiceAction(ActionEvent event) throws DocumentException, IOException {
         Seller seller = sellerService.find(1);
         //date
-        String issueDateToString = String.valueOf(issueDate.getValue());
-        String sellDateToString = String.valueOf(sellDate.getValue());
-        String paymentDateToString = String.valueOf(paymentDate.getValue());
-        date = new Date();
-        date.setIssueDate(issueDateToString);
-        date.setSellDate(sellDateToString);
-        date.setPaymentDate(paymentDateToString);
-        dateService.save(date);
-
-        //custommer
-        customer = new Customer();
-        String nameCustomer = customerNameTF.getText();
-        String [] splited = nameCustomer.split("\\s+");
-        customer.setName(splited[0]);
-        customer.setSurname(splited[1]);
-        customer.setAddress(streetTF.getText());
-        customer.setCity(addressTF.getText());
-        customer.setPostalCode(postalCodeTF.getText());
-        customerService.save(customer);
-
-        //company
-        company = new Company();
-        company.setName(companyNameTA.getText());
-        company.setNip(nipTF.getText());
-        company.setCustomer(customer);
-
-        companyService.save(company);
-
-       // invoice
-        invoice = new Invoice();
-        invoice.setInvoiceNumber(invoiceNumberTF.getText());
-        invoice.setPaidType(paidType.getSelectionModel().getSelectedItem());
-        invoice.setInvoiceType(invoiceTypeCB.getSelectionModel().getSelectedItem());
-        invoice.setDate(date);
-        invoiceService.save(invoice);
-
-
-        //transaction
-        List<Transaction> transactionList = new ArrayList<>();
-        for (InvoiceField row: productTable.getItems()) {
-            transaction = new Transaction();
-            transaction.setTax(row.getTax().getSelectionModel().getSelectedItem());
-            transaction.setPriceNetto(row.getPriceNetto());
-            transaction.setPriceBrutto(row.getPriceBrutto());
-            transaction.setAmount(row.getAmount());
-            transaction.setInvoice(invoice);
-            transaction.setCustomer(customer);
-            transaction.setSeller(seller);
-            transactionService.save(transaction);
-
-        //product
-            product = new Product();
-            product.setName(row.getNameProduct());
-            //if(!productService.checkIfExist(row.getNameProduct())) {
-                productService.save(product);
-
-
-            //join product and transaction
-            productTransaction = new ProductTransaction();
-            productTransaction.setProduct(product);
-            productTransaction.setTransaction(transaction);
-            productTransactionService.save(productTransaction);
-        }
-
-
-
-        selectCustomerCB.setItems(fillCustomerComboBox());
+//        String issueDateToString = String.valueOf(issueDate.getValue());
+//        String sellDateToString = String.valueOf(sellDate.getValue());
+//        String paymentDateToString = String.valueOf(paymentDate.getValue());
+//        date = new Date();
+//        date.setIssueDate(issueDateToString);
+//        date.setSellDate(sellDateToString);
+//        date.setPaymentDate(paymentDateToString);
+//        dateService.save(date);
+//
+//        //custommer
+//        customer = new Customer();
+//        String nameCustomer = customerNameTF.getText();
+//        String [] splited = nameCustomer.split("\\s+");
+//        customer.setName(splited[0]);
+//        customer.setSurname(splited[1]);
+//        customer.setAddress(streetTF.getText());
+//        customer.setCity(addressTF.getText());
+//        customer.setPostalCode(postalCodeTF.getText());
+//        customerService.save(customer);
+//
+//        //company
+//        company = new Company();
+//        company.setName(companyNameTA.getText());
+//        company.setNip(nipTF.getText());
+//        company.setCustomer(customer);
+//        companyService.save(company);
+//
+//        company = new Company();
+//        company.setSeller(seller);
+//        companyService.save(company);
+//
+//       // invoice
+//        invoice = new Invoice();
+//        invoice.setInvoiceNumber(invoiceNumberTF.getText());
+//        invoice.setPaidType(paidType.getSelectionModel().getSelectedItem());
+//        invoice.setInvoiceType(invoiceTypeCB.getSelectionModel().getSelectedItem());
+//        invoice.setDate(date);
+//        invoiceService.save(invoice);
+//
+//
+//        //transaction
+//        List<Transaction> transactionList = new ArrayList<>();
+//        for (InvoiceField row: productTable.getItems()) {
+//            transaction = new Transaction();
+//            transaction.setTax(row.getTax().getSelectionModel().getSelectedItem());
+//            transaction.setPriceNetto(row.getPriceNetto());
+//            transaction.setPriceBrutto(row.getPriceBrutto());
+//            transaction.setAmount(row.getAmount());
+//            transaction.setInvoice(invoice);
+//            transaction.setCustomer(customer);
+//            transaction.setSeller(seller);
+//            transactionService.save(transaction);
+//
+//        //product
+//            product = new Product();
+//            product.setName(row.getNameProduct());
+//            //if(!productService.checkIfExist(row.getNameProduct())) {
+//                productService.save(product);
+//
+//
+//            //join product and transaction
+//            productTransaction = new ProductTransaction();
+//            productTransaction.setProduct(product);
+//            productTransaction.setTransaction(transaction);
+//            productTransactionService.save(productTransaction);
+//        }
+//        selectCustomerCB.setItems(fillCustomerComboBox());
+        invoice= invoiceService.find(1);
+        date = dateService.find(1);
+        customer = customerService.find(1);
+        Company companyCustomer=companyService.findByCustomer(customer);
+        Company companySeller=companyService.findBySeller(seller);
+        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,seller,companySeller,companyCustomer,customer);
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
