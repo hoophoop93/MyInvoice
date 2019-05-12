@@ -9,6 +9,7 @@ import com.kmichali.utility.VatInvoicePDF;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -218,7 +219,7 @@ public class MainAppController implements Initializable {
     @FXML
     private void addNewRowAction(ActionEvent event) {
         invoiceField = new InvoiceField();
-        productTable.getItems().add(new InvoiceField("","","","",1,0,
+        productTable.getItems().add(new InvoiceField(Integer.toString((productTable.getItems().size()+1)),"","","",1,0,
                 0,taxComboBox = new ComboBox<>(fillTaxComboBox()),0,0));
         productTable.requestFocus();
         productTable.getSelectionModel().select(productTable.getItems().size()-1);
@@ -227,7 +228,7 @@ public class MainAppController implements Initializable {
         comboBoxObjectList.add(taxComboBox);
         taxComboBox.setValue(fillTaxComboBox().get(0));
         invoiceField.setLp(Integer.toString((productTable.getItems().size())));
-        lpColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+
         taxComboBox.setOnAction(this::clickComboBox);
     }
     @FXML
@@ -248,8 +249,20 @@ public class MainAppController implements Initializable {
     @FXML
     void removeRowAction(ActionEvent event) {
         InvoiceField selectedRow = productTable.getSelectionModel().getSelectedItem();
-        if(productTable.getItems().size() >1)
-        productTable.getItems().remove(selectedRow);
+        if(productTable.getItems().size() >1) {
+            productTable.getItems().remove(selectedRow);
+
+            int counter=1;
+            for (InvoiceField row : productTable.getItems()) {
+                invoiceField.setLp(String.valueOf(counter));
+                lpColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+                lpColumn.setCellValueFactory(  new PropertyValueFactory<>("lp"));
+
+                counter++;
+            }
+        }
+
+        productTable.refresh();
         totalPrice();
     }
     @FXML
@@ -360,7 +373,7 @@ public class MainAppController implements Initializable {
         customer = customerService.find(1);
         Company companyCustomer=companyService.findByCustomer(customer);
         Company companySeller=companyService.findBySeller(seller);
-        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,seller,companySeller,companyCustomer,customer);
+        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,seller,companySeller,companyCustomer,customer,productTable);
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -375,6 +388,7 @@ public class MainAppController implements Initializable {
         productTable.setEditable(true);
         lpColumn.setEditable(false);
 
+        lpColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         productNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         classProductColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         unitMeasureColumn.setCellFactory(TextFieldTableCell.forTableColumn());
