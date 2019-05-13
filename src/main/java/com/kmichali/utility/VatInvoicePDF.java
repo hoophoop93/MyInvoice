@@ -70,7 +70,7 @@ public class VatInvoicePDF {
         PdfPTable table = new PdfPTable(3); //3 columns
         table.setWidthPercentage(98);   //Width 100%;
         //Set column widths
-        float[] columnWidths = {30,40,30};
+        float[] columnWidths = {30,50,20};
         table.setWidths(columnWidths);
 
         PdfPCell companyLogoCell = new PdfPCell(new Paragraph("UNIWERS",new Font(bf, 16)));
@@ -89,31 +89,78 @@ public class VatInvoicePDF {
         invoiceNameCell.setVerticalAlignment(Element.ALIGN_TOP);
         invoiceNameCell.setBorder(0);
 
-        Paragraph paragraph3 = new Paragraph();
-        paragraph3.setFont(new Font(bf,11));
-        paragraph3.setLeading(2f);
-        paragraph3.add("Data wystawienia: "+ date.getIssueDate());
-        paragraph3.add(Chunk.NEWLINE);
-        paragraph3.add("Data sprzedaży: "+ date.getSellDate());
-        paragraph3.add(Chunk.NEWLINE);
-        paragraph3.add("Tarmin płatności :"+date.getPaymentDate());
-        PdfPCell dateCell = new PdfPCell(paragraph3);
-        dateCell.setLeading(15,0);
+        PdfPTable dateTable = new PdfPTable(1); //3 columns
+        dateTable.setWidthPercentage(100);   //Width 100%;
+
+        PdfPCell cellDate;
+        cellDate = new PdfPCell(new Paragraph("Data wystawienia",new Font(bf, 11, Font.BOLD)));
+        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        cellDate = new PdfPCell(new Paragraph(date.getIssueDate(),new Font(bf, 11)));
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        cellDate = new PdfPCell(new Paragraph("Data sprzedaży",new Font(bf, 11, Font.BOLD)));
+        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        cellDate = new PdfPCell(new Paragraph(date.getSellDate(),new Font(bf, 11)));
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        cellDate = new PdfPCell(new Paragraph("Tarmin płatności",new Font(bf, 11, Font.BOLD)));
+        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        cellDate = new PdfPCell(new Paragraph(date.getPaymentDate(),new Font(bf, 11)));
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        PdfPCell dateCell = new PdfPCell(dateTable);
         dateCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        dateCell.setVerticalAlignment(Element.ALIGN_TOP);
+        dateCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         dateCell.setBorder(0);
 
         table.addCell(companyLogoCell);
         table.addCell(invoiceNameCell);
         table.addCell(dateCell);
 
-        PdfPTable customerTable = new PdfPTable(2); //2 columns
-        customerTable.setWidthPercentage(90);   //Width 100%;
+        PdfPTable customerTable = new PdfPTable(3); //2 columns
+        customerTable.setWidthPercentage(98);   //Width 100%;
+        float[] columnWidths2 = {45,10,45};
+        customerTable.setWidths(columnWidths2);
 
-        Paragraph paragraph4 = new Paragraph("SPRZEDAWCA:",new Font(bf, 14, Font.BOLD));
-        paragraph3.setLeading(2f);
-        paragraph4.setFont(new Font(bf,12));
-        paragraph4.add(Chunk.NEWLINE);
+        PdfPTable nameSellerTable = new PdfPTable(1); //3 columns
+        nameSellerTable.setWidthPercentage(98);   //Width 100%;
+        PdfPCell cellNameSeller;
+        cellNameSeller = new PdfPCell(new Paragraph("Sprzedawca",new Font(bf, 13, Font.BOLD)));
+        cellNameSeller.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cellNameSeller.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cellNameSeller.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellNameSeller.setUseVariableBorders(true);
+        cellNameSeller.setBorderColorTop(BaseColor.BLACK);
+        cellNameSeller.setBorderColor(BaseColor.WHITE);
+        nameSellerTable.addCell(cellNameSeller);
+
+        Paragraph paragraph4 = new Paragraph();
+        paragraph4.setLeading(2f);
+        paragraph4.setFont(new Font(bf,11));
         if(companySeller != null) {
             paragraph4.add(companySeller.getName());
             paragraph4.add(Chunk.NEWLINE);
@@ -123,23 +170,41 @@ public class VatInvoicePDF {
             paragraph4.add(Chunk.NEWLINE);
             paragraph4.add(companySeller.getSeller().getCity()+" "+companySeller.getSeller().getPostalCode());
             paragraph4.add(Chunk.NEWLINE);
-            paragraph4.add("NIP: " + companySeller.getNip());
-//        }else if(company == null){
-//            paragraph4.add(seller.getName() + " " + seller.getSurname());
-//            paragraph4.add(seller.getAddress());
-//            paragraph4.add(seller.getCity()+" "+seller.getPostalCode());
+            paragraph4.add("NIP: " + companySeller.getNip() +"   "+ "REGON " +companySeller.getRegon());
         }
 
-        PdfPCell sellerCell = new PdfPCell(paragraph4);
-        sellerCell.setLeading(15,0);
+        cellNameSeller = new PdfPCell(paragraph4);
+        cellNameSeller.setNoWrap(true);
+        cellNameSeller.setBorderColor(BaseColor.WHITE);
+        cellNameSeller.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cellNameSeller.setLeading(15,0);
+        nameSellerTable.addCell(cellNameSeller);
+
+        PdfPCell sellerCell = new PdfPCell(nameSellerTable);
         sellerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
         sellerCell.setVerticalAlignment(Element.ALIGN_TOP);
         sellerCell.setBorder(0);
 
-        Paragraph paragraph5 = new Paragraph("NABYWCA:",new Font(bf, 14, Font.BOLD));
-        paragraph3.setLeading(2f);
-        paragraph5.setFont(new Font(bf,12));
-        paragraph5.add(Chunk.NEWLINE);
+        PdfPCell emptyMiddleCell = new PdfPCell();
+        emptyMiddleCell.setBorder(0);
+
+        PdfPTable nameCustomerTable = new PdfPTable(1); //3 columns
+        nameCustomerTable.setWidthPercentage(98);   //Width 100%;
+
+        PdfPCell nameCustomerCell;
+        nameCustomerCell = new PdfPCell(new Paragraph("Nabywca",new Font(bf, 13, Font.BOLD)));
+        nameCustomerCell.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        nameCustomerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        nameCustomerCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        nameCustomerCell.setUseVariableBorders(true);
+        nameCustomerCell.setBorderColorTop(BaseColor.BLACK);
+        nameCustomerCell.setBorderColor(BaseColor.WHITE);
+        nameCustomerTable.addCell(nameCustomerCell);
+
+
+        Paragraph paragraph5 = new Paragraph();
+        paragraph5.setLeading(2f);
+        paragraph5.setFont(new Font(bf,11));
         if(companyCustomer != null) {
             paragraph5.add(companyCustomer.getName());
             paragraph5.add(Chunk.NEWLINE);
@@ -151,22 +216,28 @@ public class VatInvoicePDF {
             paragraph5.add(Chunk.NEWLINE);
             paragraph5.add("NIP: " + companyCustomer.getNip());
 
-            for(int i=0; i<4; i++) {
+            for(int i=0; i<2; i++) {
                 paragraph5.add(Chunk.NEWLINE);
             }
-//        }else if(company == null){
-//            paragraph5.add(customer.getName() + " " + seller.getSurname());
-//            paragraph5.add(customer.getAddress());
-//            paragraph5.add(customer.getCity()+" "+seller.getPostalCode());
+
+            nameCustomerCell = new PdfPCell(paragraph5);
+            nameCustomerCell.setNoWrap(true);
+            nameCustomerCell.setBorderColor(BaseColor.WHITE);
+            nameCustomerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            nameCustomerCell.setLeading(15,0);
+            nameCustomerTable.addCell(nameCustomerCell);
+
         }
-        PdfPCell customerCell = new PdfPCell(paragraph5);
-        customerCell.setLeading(15,0);
+
+        PdfPCell customerCell = new PdfPCell(nameCustomerTable);
         customerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
         customerCell.setVerticalAlignment(Element.ALIGN_TOP);
         customerCell.setBorder(0);
 
         customerTable.addCell(sellerCell);
+        customerTable.addCell(emptyMiddleCell);
         customerTable.addCell(customerCell);
+
 
         //Invoice table
         PdfPTable invoiceTable = new PdfPTable(10); //10 columns
@@ -302,6 +373,8 @@ public class VatInvoicePDF {
             totalBrutto = totalBrutto+row.getPriceBrutto();
         }
         cell = new PdfPCell(new Paragraph("Razem:", new Font(bf, 10, Font.BOLD)));
+        cell.setBorderColorBottom(BaseColor.WHITE);
+        cell.setBorderColorRight(BaseColor.WHITE);
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
@@ -326,6 +399,20 @@ public class VatInvoicePDF {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
+        //add empty row
+
+        PdfPTable emptyTable = new PdfPTable(10); //10 columns
+        emptyTable.setWidthPercentage(98);   //Width 100%;
+        //Set column widths};
+        emptyTable.setWidths(invoiceTableColumnWidth);
+        PdfPCell emptyCell;
+        for(int i=0; i<10; i++){
+            emptyCell = new PdfPCell(new Paragraph(" "));
+            emptyCell.setBorder(0);
+            emptyTable.addCell(emptyCell);
+        }
+
+
         //summary with broken down to tax
         long distinctValueInTaxList = taxList.stream().distinct().count();
         double totalProductValueSameTax=0;
@@ -336,7 +423,6 @@ public class VatInvoicePDF {
         List<Double> totalVatSameTaxList = new ArrayList<>();
         List<Double> totalBruttoSameTaxList = new ArrayList<>();
         List<String> taxValueList = new ArrayList<>();
-        if(productTable.getItems().size() >1) {
             List<String> stringsList = new ArrayList<>(taxListWithoutDuplicated);
             for (int r = 0; r < taxListWithoutDuplicated.size(); r++) {
                  if(r != 0){
@@ -358,97 +444,127 @@ public class VatInvoicePDF {
                     }
                 }
             }
-        }
+
             totalProductValueSameTaxList.add(totalProductValueSameTax);
             totalVatSameTaxList.add(totalVatSameTax);
             totalBruttoSameTaxList.add(totalVatSameTax + totalProductValueSameTax);
             taxValueList.add(tax);
 
+        PdfPTable summaryTable = new PdfPTable(10); //10 columns
+
+        summaryTable.setWidthPercentage(98);   //Width 100%;
+        summaryTable.setWidths(invoiceTableColumnWidth);
+
+        PdfPCell cell2;
+
+        for (int i = 0; i < 6; i++) {
+            cell2 = new PdfPCell();
+            cell2.setUseVariableBorders(true);
+            cell2.setBorderColor(BaseColor.WHITE);
+            summaryTable.addCell(cell2);
+            if(i == 5){
+                cell2 = new PdfPCell(new Paragraph("Zestawienie sprzedaży w/g stawek podatku:", new Font(bf, 10)));
+                cell2.setColspan(4);
+                cell2.setHorizontalAlignment(Element.ALIGN_LEFT);
+                cell2.setVerticalAlignment(Element.ALIGN_CENTER);
+                cell2.setBorder(0);
+                summaryTable.addCell(cell2);
+            }
+        }
+        for (int i = 0; i < 6; i++) {
+            cell2 = new PdfPCell();
+            cell2.setUseVariableBorders(true);
+            cell2.setBorderColor(BaseColor.WHITE);
+            summaryTable.addCell(cell2);
+        }
+        cell2= new PdfPCell(new Paragraph("Netto",new Font(bf, 10, Font.BOLD)));
+        cell2.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        summaryTable.addCell(cell2);
+
+        cell2= new PdfPCell(new Paragraph("Stawka",new Font(bf, 10, Font.BOLD)));
+        cell2.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        summaryTable.addCell(cell2);
+
+        cell2= new PdfPCell( new Paragraph("Kwota Vat",new Font(bf, 10, Font.BOLD)));
+        cell2.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        summaryTable.addCell(cell2);
+
+        cell2= new PdfPCell(new Paragraph("Brutto",new Font(bf, 10, Font.BOLD)));
+        cell2.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        summaryTable.addCell(cell2);
+
+
         for(int k=0; k<distinctValueInTaxList; k++) {
 
-            for (int i = 0; i < 5; i++) {
-                cell = new PdfPCell();
-                cell.setUseVariableBorders(true);
-                cell.setBorderColor(BaseColor.WHITE);
-                invoiceTable.addCell(cell);
+            for (int i = 0; i < 6; i++) {
+                cell2 = new PdfPCell();
+                cell2.setUseVariableBorders(true);
+                cell2.setBorderColor(BaseColor.WHITE);
+                summaryTable.addCell(cell2);
 
             }
-            if(k==0){
-                cell = new PdfPCell(new Paragraph("W tym:", new Font(bf, 10, Font.BOLD)));
-                cell.setUseVariableBorders(true);
-                cell.setBorderColor(BaseColor.BLACK);
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                invoiceTable.addCell(cell);
 
-            }else {
-                cell = new PdfPCell();
-                if(k==1){
-                    cell.setUseVariableBorders(true);
-                    cell.setBorderColorTop(BaseColor.BLACK);
-                }
-                cell.setBorderColor(BaseColor.WHITE);
-                invoiceTable.addCell(cell);
-            }
-            cell = new PdfPCell(new Paragraph(totalProductValueSameTaxList.get(k) + " zł", new Font(bf, 10)));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            invoiceTable.addCell(cell);
+            cell2 = new PdfPCell(new Paragraph(totalProductValueSameTaxList.get(k) + " zł", new Font(bf, 10)));
+            cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            summaryTable.addCell(cell2);
 
-            cell = new PdfPCell(new Paragraph(taxValueList.get(k)));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            invoiceTable.addCell(cell);
+            cell2 = new PdfPCell(new Paragraph(taxValueList.get(k)));
+            cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            summaryTable.addCell(cell2);
 
-            cell = new PdfPCell(new Paragraph(totalVatSameTaxList.get(k) + " zł", new Font(bf, 10)));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            invoiceTable.addCell(cell);
+            cell2 = new PdfPCell(new Paragraph(totalVatSameTaxList.get(k) + " zł", new Font(bf, 10)));
+            cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            summaryTable.addCell(cell2);
 
-            cell = new PdfPCell(new Paragraph(totalBruttoSameTaxList.get(k) + " zł", new Font(bf, 10)));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            invoiceTable.addCell(cell);
+            cell2 = new PdfPCell(new Paragraph(totalBruttoSameTaxList.get(k) + " zł", new Font(bf, 10)));
+            cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
+            summaryTable.addCell(cell2);
         }
 
         //add nextRow and hiddern first 8 cell through set border color
         for(int i=0; i<7;i++){
-            cell= new PdfPCell();
-            cell.setUseVariableBorders(true);
-            cell.setBorderColor(BaseColor.WHITE);
+            cell2= new PdfPCell();
+            cell2.setUseVariableBorders(true);
+            cell2.setBorderColor(BaseColor.WHITE);
             if(i>5){
-                cell.setUseVariableBorders(true);
-                cell.setBorderColorTop(BaseColor.BLACK);
+                cell2.setUseVariableBorders(true);
+                cell2.setBorderColorTop(BaseColor.BLACK);
             }
-            invoiceTable.addCell(cell);
+            summaryTable.addCell(cell2);
             if(i == 6){
-                cell = new PdfPCell(new Paragraph("Razem do zapłaty:", new Font(bf, 10, Font.BOLD)));
-                cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
-                cell.setColspan(2);
-                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                invoiceTable.addCell(cell);
+                cell2 = new PdfPCell(new Paragraph("Razem do zapłaty:", new Font(bf, 10, Font.BOLD)));
+                cell2.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                cell2.setColspan(2);
+                cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                summaryTable.addCell(cell2);
             }
         }
 
-        cell = new PdfPCell(new Paragraph(String.valueOf(totalBrutto)+" zł", new Font(bf, 10)));
-        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        invoiceTable.addCell(cell);
+        cell2 = new PdfPCell(new Paragraph(String.valueOf(totalBrutto)+" zł", new Font(bf, 10)));
+        cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        summaryTable.addCell(cell2);
 
-        PdfPTable emptyTable = new PdfPTable(1); //empty table
-        Paragraph emptyParagraph = new Paragraph();
-        emptyParagraph.add(Chunk.NEWLINE);
-        emptyParagraph.add(Chunk.NEWLINE);
-        emptyParagraph.add(Chunk.NEWLINE);
-        PdfPCell emptyCell = new PdfPCell(emptyParagraph);
-        emptyCell.setBorder(0);
-        emptyTable.addCell(emptyCell);
 
         document.add(table);
         document.add(customerTable);
         document.add(invoiceTable);
         document.add(emptyTable);
+        document.add(summaryTable);
+
 
     }
 
