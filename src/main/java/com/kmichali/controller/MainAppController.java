@@ -373,7 +373,7 @@ public class MainAppController implements Initializable {
         customer = customerService.find(1);
         Company companyCustomer=companyService.findByCustomer(customer);
         Company companySeller=companyService.findBySeller(seller);
-        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,seller,companySeller,companyCustomer,customer,productTable);
+        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,seller,companySeller,companyCustomer,customer,productTable, paidType);
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
