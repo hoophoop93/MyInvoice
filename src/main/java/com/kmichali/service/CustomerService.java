@@ -7,4 +7,7 @@ import java.util.List;
 
 public interface CustomerService extends GenericService<Customer> {
 
+     boolean countCustomerByAddress(String address);
+     boolean countCustomerBySurname(String surname);
+
 }

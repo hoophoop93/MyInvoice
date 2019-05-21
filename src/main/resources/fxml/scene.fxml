@@ -17,9 +17,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="633.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.MainAppController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatInvoiceController">
     <top>
-        <MenuBar prefHeight="0.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
+        <MenuBar prefHeight="31.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
@@ -153,17 +153,17 @@
         </VBox>
     </center>
     <bottom>
-        <VBox prefHeight="376.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
+        <VBox prefHeight="344.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
             <children>
-                <VBox prefHeight="382.0" prefWidth="1029.0">
+                <VBox prefHeight="342.0" prefWidth="1029.0">
                     <children>
-                        <TableView fx:id="productTable" prefHeight="252.0" prefWidth="1029.0">
+                        <TableView fx:id="productTable" onMouseClicked="#invoiceTableAction" prefHeight="290.0" prefWidth="1029.0">
                             <columns>
                                 <TableColumn fx:id="lpColumn" prefWidth="38.0" text="LP" />
                                 <TableColumn fx:id="productNameColumn" onEditCommit="#changeNameProductCellEvent" prefWidth="350.0" text="Nazwa towaru lub usługi" />
                                 <TableColumn fx:id="classProductColumn" onEditCommit="#changeProductClassCellEvent" prefWidth="41.0" text="Klasa" />
-                                <TableColumn fx:id="unitMeasureColumn" onEditCommit="#changeUnitMeasureCellEvent" prefWidth="55.0" text="J.m" />
-                                <TableColumn fx:id="amountColumn" onEditCommit="#changeAmountCellEvent" prefWidth="72.0" text="Ilość" />
+                                <TableColumn fx:id="unitMeasureColumn" prefWidth="72.0" text="J.m" />
+                                <TableColumn fx:id="amountColumn" onEditCommit="#changeAmountCellEvent" prefWidth="55.0" text="Ilość" />
                                 <TableColumn fx:id="priceNettoColumn" minWidth="-1.0" onEditCommit="#changePriceNettoCellEvent" prefWidth="97.0" text="Cena netto" />
                                 <TableColumn fx:id="productValueColumn" onEditCommit="#changeProductValueCellEvent" prefWidth="104.0" text="Wartość netto" />
                                 <TableColumn fx:id="taxColumn" prefWidth="76.0" text="Stawka Vat" />
@@ -220,19 +220,6 @@
                         </HBox>
                      </children>
                   </HBox>
-                      <TableView prefHeight="104.0" prefWidth="1029.0">
-                          <columns>
-                              <TableColumn prefWidth="75.0" text="Ilość" />
-                              <TableColumn prefWidth="75.0" text="C2" />
-                          </columns>
-                          <contextMenu>
-                              <ContextMenu>
-                                  <items>
-                                      <MenuItem mnemonicParsing="false" text="Unspecified Action" />
-                                  </items>
-                              </ContextMenu>
-                          </contextMenu>
-                      </TableView>
                     </children>
                 </VBox>
             </children>
@@ -241,20 +228,6 @@
     <left>
         <VBox prefHeight="368.0" prefWidth="372.0" BorderPane.alignment="CENTER">
             <children>
-                <HBox prefHeight="46.0" prefWidth="372.0">
-                    <children>
-                        <Label prefHeight="17.0" prefWidth="85.0" text="Faktura">
-                            <HBox.margin>
-                                <Insets left="5.0" top="5.0" />
-                            </HBox.margin>
-                        </Label>
-                        <ComboBox fx:id="invoiceTypeCB" prefHeight="25.0" prefWidth="255.0">
-                            <HBox.margin>
-                                <Insets left="5.0" top="5.0" />
-                            </HBox.margin>
-                        </ComboBox>
-                    </children>
-                </HBox>
                 <VBox prefHeight="40.0" prefWidth="372.0">
                     <children>
                         <HBox prefHeight="100.0" prefWidth="200.0">
@@ -317,7 +290,7 @@
                         </TextField>
                      </children>
                   </HBox>
-                  <HBox prefHeight="52.0" prefWidth="372.0">
+                  <HBox prefHeight="36.0" prefWidth="372.0">
                      <children>
                         <Label prefHeight="17.0" prefWidth="85.0" text="Kod pocztowy:">
                            <HBox.margin>

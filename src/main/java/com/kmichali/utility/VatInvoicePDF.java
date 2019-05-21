@@ -150,6 +150,7 @@ public class VatInvoicePDF {
         cellNameSeller.setVerticalAlignment(Element.ALIGN_MIDDLE);
         cellNameSeller.setUseVariableBorders(true);
         cellNameSeller.setBorderColorTop(BaseColor.BLACK);
+        cellNameSeller.setBorderColorLeft(BaseColor.LIGHT_GRAY);
         cellNameSeller.setBorderColor(BaseColor.WHITE);
         nameSellerTable.addCell(cellNameSeller);
 
@@ -193,6 +194,7 @@ public class VatInvoicePDF {
         nameCustomerCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         nameCustomerCell.setUseVariableBorders(true);
         nameCustomerCell.setBorderColorTop(BaseColor.BLACK);
+        cellNameSeller.setBorderColorRight(BaseColor.LIGHT_GRAY);
         nameCustomerCell.setBorderColor(BaseColor.WHITE);
         nameCustomerTable.addCell(nameCustomerCell);
 
@@ -318,7 +320,7 @@ public class VatInvoicePDF {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(row.getUnitMeasure(),new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(row.getUnitMeasure().getSelectionModel().getSelectedItem()),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
@@ -367,6 +369,9 @@ public class VatInvoicePDF {
             totalVat = totalVat + row.getPriceVat();
             totalBrutto = totalBrutto+row.getPriceBrutto();
         }
+        totalBrutto = round(totalBrutto,2);
+        totalVat = round(totalVat,2);
+        totalProductValue = round(totalProductValue,2);
         cell = new PdfPCell(new Paragraph("Razem:", new Font(bf, 10, Font.BOLD)));
         cell.setUseVariableBorders(true);
         cell.setBorderColorBottom(BaseColor.WHITE);
@@ -419,9 +424,9 @@ public class VatInvoicePDF {
             List<String> stringsList = new ArrayList<>(taxListWithoutDuplicated);
             for (int r = 0; r < taxListWithoutDuplicated.size(); r++) {
                  if(r != 0){
-                     totalProductValueSameTaxList.add(totalProductValueSameTax);
-                     totalVatSameTaxList.add(totalVatSameTax);
-                     totalBruttoSameTaxList.add(totalVatSameTax+totalProductValueSameTax);
+                     totalProductValueSameTaxList.add(round(totalProductValueSameTax,2));
+                     totalVatSameTaxList.add(round(totalVatSameTax,2));
+                     totalBruttoSameTaxList.add(round(totalVatSameTax+totalProductValueSameTax,2));
                      taxValueList.add(tax);
                      totalProductValueSameTax=0;
                      totalVatSameTax =0;
@@ -438,10 +443,10 @@ public class VatInvoicePDF {
                 }
             }
 
-            totalProductValueSameTaxList.add(totalProductValueSameTax);
-            totalVatSameTaxList.add(totalVatSameTax);
-            totalBruttoSameTaxList.add(totalVatSameTax + totalProductValueSameTax);
-            taxValueList.add(tax);
+        totalProductValueSameTaxList.add(round(totalProductValueSameTax,2));
+        totalVatSameTaxList.add(round(totalVatSameTax,2));
+        totalBruttoSameTaxList.add(round((totalVatSameTax+totalProductValueSameTax),2));
+        taxValueList.add(tax);
 
         PdfPTable summaryTable = new PdfPTable(10); //10 columns
 

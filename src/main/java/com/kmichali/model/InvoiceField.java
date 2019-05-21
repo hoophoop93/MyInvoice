@@ -8,7 +8,7 @@ public class InvoiceField {
     public SimpleStringProperty lp;
     public SimpleStringProperty nameProduct;
     public SimpleStringProperty productClass;
-    public SimpleStringProperty unitMeasure;
+    public ComboBox<String> unitMeasure;
     public double amount;
     public double priceNetto;
     public double productValue;
@@ -22,12 +22,12 @@ public class InvoiceField {
         this.lp = new SimpleStringProperty(lp);
     }
 
-    public InvoiceField(String lp, String nameProduct, String productClass, String unitMeasure, double amount, double priceNetto,
+    public InvoiceField(String lp, String nameProduct, String productClass, ComboBox<String> unitMeasure, double amount, double priceNetto,
                         double productValue, ComboBox<String> tax, double priceVat, double priceBrutto) {
         this.lp = new SimpleStringProperty(lp);
         this.nameProduct = new SimpleStringProperty(nameProduct);
         this.productClass = new SimpleStringProperty(productClass);
-        this.unitMeasure = new SimpleStringProperty(unitMeasure);
+        this.unitMeasure = unitMeasure;
         this.amount = amount;
         this.priceNetto = priceNetto;
         this.productValue = productValue;
@@ -72,16 +72,12 @@ public class InvoiceField {
         this.productClass = new SimpleStringProperty(productClass);
     }
 
-    public String getUnitMeasure() {
-        return unitMeasure.get();
-    }
-
-    public SimpleStringProperty unitMeasureProperty() {
+    public ComboBox<String> getUnitMeasure() {
         return unitMeasure;
     }
 
-    public void setUnitMeasure(String unitMeasure) {
-        this.unitMeasure = new SimpleStringProperty(unitMeasure);
+    public void setUnitMeasure(ComboBox<String> unitMeasure) {
+        this.unitMeasure = unitMeasure;
     }
 
     public double getAmount() {

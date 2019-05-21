@@ -43,6 +43,22 @@ public class CustomerServiceImpl implements CustomerService {
         }
         return customer;
     }
+    @Override
+    public boolean countCustomerBySurname(String surname){
+       String queryString="Select count(c.surname) from Customer c where LOWER(c.surname) = :surname";
+       Query query = getEntityManager().createQuery(queryString);
+       query.setParameter("surname",surname.toLowerCase());
+        long result = (long) query.getSingleResult();
+        return result > 0;
+    }
+    @Override
+    public boolean countCustomerByAddress(String address){
+        String queryString="Select count(c.address) from Customer c where LOWER(c.address) = :address";
+        Query query = getEntityManager().createQuery(queryString);
+        query.setParameter("address",address.toLowerCase());
+        long result = (long) query.getSingleResult();
+        return result > 0;
+    }
 
     @Override
     public Customer save(Customer customer) {
