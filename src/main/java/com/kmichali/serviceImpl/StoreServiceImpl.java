@@ -42,6 +42,6 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public Iterable<Store> findAll() {
-        return null;
+        return storeRepository.findAll();
     }
 }

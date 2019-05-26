@@ -9,122 +9,156 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatInvoiceController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatRRInvoiceController">
     <center>
-        <VBox prefHeight="355.0" prefWidth="657.0" BorderPane.alignment="CENTER">
+        <VBox prefHeight="229.0" prefWidth="657.0" BorderPane.alignment="CENTER">
             <children>
                 <HBox prefHeight="232.0" prefWidth="323.0">
                     <children>
-                  <HBox prefHeight="232.0" prefWidth="342.0">
+                  <HBox prefHeight="32.0" prefWidth="342.0">
                      <children>
-                        <VBox prefHeight="232.0" prefWidth="85.0">
+                        <VBox prefHeight="232.0" prefWidth="106.0">
                            <children>
                               <Label text="Numer faktury: ">
                                  <VBox.margin>
-                                    <Insets top="5.0" />
+                                    <Insets bottom="18.0" top="5.0" />
                                  </VBox.margin>
                               </Label>
-                              <Label prefHeight="17.0" prefWidth="70.0" text="Miejscowość:">
+                              <Line endX="5.0" startX="-100.0" strokeWidth="2.0" />
+                              <RadioButton fx:id="nipRadioButton" mnemonicParsing="false" onAction="#nipRadioButtonAction" text="NIP">
                                  <VBox.margin>
-                                    <Insets top="45.0" />
+                                    <Insets top="18.0" />
+                                 </VBox.margin>
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="radioButtonGroup" />
+                                 </toggleGroup></RadioButton>
+                              <Label fx:id="radioButtonLabel" nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="161.0" text="Pesel:">
+                                 <VBox.margin>
+                                    <Insets right="5.0" top="10.0" />
                                  </VBox.margin>
                               </Label>
-                              <Label text="NIP:">
+                              <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="102.0" text="Seria i numer:">
                                  <VBox.margin>
                                     <Insets top="15.0" />
                                  </VBox.margin>
                               </Label>
+                              <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="101.0" text="Wydany dnia:">
+                                 <VBox.margin>
+                                    <Insets top="15.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="115.0" text="Przez:">
+                                 <VBox.margin>
+                                    <Insets right="5.0" top="18.0" />
+                                 </VBox.margin>
+                              </Label>
                            </children>
                         </VBox>
-                        <VBox prefHeight="232.0" prefWidth="147.0">
+                        <VBox prefHeight="232.0" prefWidth="184.0">
                            <children>
                               <TextField fx:id="invoiceNumberTF" text="1/05/2019">
                                  <VBox.margin>
                                     <Insets top="5.0" />
                                  </VBox.margin>
                               </TextField>
-                              <TextField fx:id="addressTF">
-                                 <VBox.margin>
-                                    <Insets top="35.0" />
-                                 </VBox.margin>
-                              </TextField>
-                              <TextField fx:id="nipTF">
-                                 <VBox.margin>
-                                    <Insets top="5.0" />
-                                 </VBox.margin>
-                              </TextField>
-                              <Button mnemonicParsing="false" onAction="#addNewCustomerAction" text="Dodaj klienta">
+                              <Line endX="100.0" startX="-100.0" strokeLineCap="ROUND" strokeWidth="2.0">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin>
-                              </Button>
+                              </Line>
+                              <RadioButton fx:id="peselRadioButton" mnemonicParsing="false" onAction="#peselRadioButtonAction" prefHeight="17.0" prefWidth="68.0" selected="true" text="PESEL" toggleGroup="$radioButtonGroup">
+                                 <VBox.margin>
+                                    <Insets top="17.0" />
+                                 </VBox.margin>
+                              </RadioButton>
+                              <TextField fx:id="peselOrNipTF">
+                                 <VBox.margin>
+                                    <Insets top="7.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <TextField fx:id="seriaAndNumberIdCard">
+                                 <VBox.margin>
+                                    <Insets top="9.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <DatePicker fx:id="releaseDateTF" prefHeight="25.0" prefWidth="210.0">
+                                 <VBox.margin>
+                                    <Insets top="9.0" />
+                                 </VBox.margin>
+                              </DatePicker>
+                              <TextArea fx:id="releaseByTF" prefHeight="41.0" prefWidth="202.0" wrapText="true">
+                                 <VBox.margin>
+                                    <Insets top="9.0" />
+                                 </VBox.margin>
+                              </TextArea>
                            </children>
                         </VBox>
                      </children>
                   </HBox>
-                        <VBox prefHeight="425.0" prefWidth="108.0">
-                            <children>
-                                <Label prefHeight="17.0" prefWidth="108.0" text="Sposób płatności:">
-                                    <VBox.margin>
-                                        <Insets left="5.0" top="10.0" />
-                                    </VBox.margin>
-                                </Label>
-                              <VBox prefHeight="129.0" prefWidth="114.0">
-                                  <children>
-                                      <Label text="Data wystawienia:">
-                                          <VBox.margin>
-                                              <Insets left="5.0" top="30.0" />
-                                          </VBox.margin>
-                                      </Label>
-                                      <Label text="Data sprzedaży:">
-                                          <VBox.margin>
-                                              <Insets left="5.0" top="15.0" />
-                                          </VBox.margin>
-                                      </Label>
-                                      <Label text="Termin zapłaty:">
-                                          <VBox.margin>
-                                              <Insets left="5.0" top="15.0" />
-                                          </VBox.margin>
-                                      </Label>
-                                  </children>
-                              </VBox>
-                            </children>
+                        <HBox prefHeight="232.0" prefWidth="351.0">
+                     <children>
+                        <VBox prefHeight="232.0" prefWidth="378.0">
+                           <children>
+                              <HBox prefHeight="39.0" prefWidth="333.0">
+                                 <children>
+                                    <Label prefWidth="100.0" text="Sposób płatności:">
+                                       <HBox.margin>
+                                          <Insets right="5.0" top="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <ComboBox fx:id="paidType" prefHeight="25.0" prefWidth="200.0">
+                                       <HBox.margin>
+                                          <Insets top="5.0" />
+                                       </HBox.margin>
+                                    </ComboBox>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="42.0" prefWidth="333.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="100.0" text="Data wystawienia:">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <DatePicker fx:id="issueDate" prefHeight="25.0" prefWidth="200.0" />
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="42.0" prefWidth="333.0">
+                                 <children>
+                                    <Label prefWidth="100.0" text="Data sprzedaży:">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <DatePicker fx:id="sellDate" prefWidth="200.0" />
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="42.0" prefWidth="333.0">
+                                 <children>
+                                    <Label prefWidth="100.0" text="Tarmin zapłaty:">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <DatePicker fx:id="paymentDate" prefWidth="200.0" />
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="17.0" prefWidth="333.0" />
+                              <HBox prefHeight="36.0" prefWidth="333.0" />
+                           </children>
                         </VBox>
-                        <HBox prefHeight="232.0" prefWidth="197.0">
-                            <children>
-                              <VBox prefHeight="158.0" prefWidth="184.0">
-                                  <children>
-                                      <ComboBox fx:id="paidType" prefHeight="25.0" prefWidth="210.0">
-                                 <VBox.margin>
-                                    <Insets top="5.0" />
-                                 </VBox.margin>
-                                      </ComboBox>
-                                      <DatePicker fx:id="issueDate" prefHeight="25.0" prefWidth="210.0">
-                                          <VBox.margin>
-                                              <Insets top="25.0" />
-                                          </VBox.margin>
-                                      </DatePicker>
-                                      <DatePicker fx:id="sellDate" prefHeight="25.0" prefWidth="210.0">
-                                          <VBox.margin>
-                                              <Insets top="5.0" />
-                                          </VBox.margin>
-                                      </DatePicker>
-                                      <DatePicker fx:id="paymentDate" prefHeight="25.0" prefWidth="210.0">
-                                          <VBox.margin>
-                                              <Insets top="6.0" />
-                                          </VBox.margin>
-                                      </DatePicker>
-                                  </children>
-                              </VBox>
-                            </children>
+                     </children>
                         </HBox>
                     </children>
                 </HBox>
@@ -132,11 +166,11 @@
         </VBox>
     </center>
     <bottom>
-        <VBox prefHeight="344.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
+        <VBox prefHeight="301.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
             <children>
-                <VBox prefHeight="342.0" prefWidth="1029.0">
+                <VBox prefHeight="270.0" prefWidth="1029.0">
                     <children>
-                        <TableView fx:id="productTable" onMouseClicked="#invoiceTableAction" prefHeight="290.0" prefWidth="1029.0">
+                        <TableView fx:id="productTable" onMouseClicked="#invoiceTableAction" prefHeight="230.0" prefWidth="1029.0">
                             <columns>
                                 <TableColumn fx:id="lpColumn" prefWidth="38.0" text="LP" />
                                 <TableColumn fx:id="productNameColumn" onEditCommit="#changeNameProductCellEvent" prefWidth="350.0" text="Nazwa towaru lub usługi" />
@@ -201,6 +235,22 @@
                   </HBox>
                     </children>
                 </VBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="51.0" prefWidth="1029.0">
+               <children>
+                  <Label alignment="TOP_RIGHT" nodeOrientation="LEFT_TO_RIGHT" text="Fundusz promocji:">
+                     <HBox.margin>
+                        <Insets left="5.0" right="10.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="promotionFoundCB" prefHeight="25.0" prefWidth="240.0" />
+                  <Label text="Inspektorat Weterynarii:">
+                     <HBox.margin>
+                        <Insets left="30.0" right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ComboBox fx:id="veterinaryInspectorateCB" editable="true" prefHeight="25.0" prefWidth="240.0" />
+               </children>
+            </HBox>
             </children>
         </VBox>
     </bottom>
@@ -225,25 +275,11 @@
                         </HBox>
                     </children>
                 </VBox>
-            <VBox prefHeight="200.0" prefWidth="100.0">
+            <VBox prefHeight="180.0" prefWidth="372.0">
                <children>
-                  <HBox prefHeight="34.0" prefWidth="372.0">
+                  <HBox prefHeight="35.0" prefWidth="372.0">
                      <children>
-                        <Label prefHeight="17.0" prefWidth="85.0" text="Nazwa firmy:">
-                           <HBox.margin>
-                              <Insets left="5.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </Label>
-                        <TextArea fx:id="companyNameTA" prefHeight="37.0" prefWidth="255.0" wrapText="true">
-                           <HBox.margin>
-                              <Insets top="8.0" />
-                           </HBox.margin>
-                        </TextArea>
-                     </children>
-                  </HBox>
-                  <HBox prefHeight="34.0" prefWidth="372.0">
-                     <children>
-                        <Label prefHeight="17.0" prefWidth="85.0" text="Imie i nazwisko:">
+                        <Label fx:id="label2" prefHeight="17.0" prefWidth="85.0" text="Imie i nazwisko:">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" top="10.0" />
                            </HBox.margin>
@@ -255,28 +291,51 @@
                         </TextField>
                      </children>
                   </HBox>
-                  <HBox prefHeight="42.0" prefWidth="372.0">
+                  <HBox prefHeight="35.0" prefWidth="372.0">
                      <children>
-                        <Label prefHeight="17.0" prefWidth="85.0" text="Ulica:">
+                        <Label fx:id="label3" prefHeight="17.0" prefWidth="85.0" text="Ulica:">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" top="7.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField fx:id="streetTF" prefHeight="25.0" prefWidth="255.0">
+                        <TextField fx:id="streetTF" prefHeight="16.0" prefWidth="255.0">
                            <HBox.margin>
                               <Insets top="5.0" />
                            </HBox.margin>
                         </TextField>
                      </children>
                   </HBox>
-                  <HBox prefHeight="36.0" prefWidth="372.0">
+                  <HBox prefHeight="35.0" prefWidth="372.0">
                      <children>
-                        <Label prefHeight="17.0" prefWidth="85.0" text="Kod pocztowy:">
+                        <Label fx:id="label4" prefHeight="17.0" prefWidth="85.0" text="Kod pocztowy:">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin>
                         </Label>
                         <TextField fx:id="postalCodeTF" prefHeight="25.0" prefWidth="255.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="68.0" prefWidth="372.0">
+                     <children>
+                        <VBox prefHeight="47.0" prefWidth="372.0">
+                           <children>
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <Label fx:id="label5" prefHeight="17.0" prefWidth="85.0" text="Miejscowość:">
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField fx:id="addressTF" prefHeight="25.0" prefWidth="255.0" />
+                                 </children>
+                              </HBox>
+                              <Button mnemonicParsing="false" onAction="#addNewCustomerAction" text="Dodaj klienta">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" left="10.0" />
+                                 </VBox.margin>
+                              </Button>
+                           </children>
+                        </VBox>
                      </children>
                   </HBox>
                </children>
@@ -285,9 +344,9 @@
         </VBox>
     </left>
    <top>
-      <HBox prefHeight="32.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="19.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
          <children>
-            <MenuBar prefHeight="25.0" prefWidth="969.0">
+            <MenuBar prefHeight="25.0" prefWidth="996.0">
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
@@ -306,7 +365,7 @@
                 </Menu>
               </menus>
             </MenuBar>
-            <Button mnemonicParsing="false" onAction="#backButtonAction" prefHeight="25.0" prefWidth="66.0" text="Powrót" />
+            <Button mnemonicParsing="false" onAction="#backButtonAction" prefHeight="25.0" prefWidth="92.0" text="Powrót" />
          </children>
       </HBox>
    </top>

@@ -29,4 +29,10 @@ public class MainAppController {
 
     }
 
+    @FXML
+    void storeAction(ActionEvent event) throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.STORESTAGE);
+
+    }
+
 }

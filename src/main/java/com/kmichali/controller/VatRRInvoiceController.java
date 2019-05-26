@@ -5,10 +5,7 @@ import com.kmichali.config.StageManager;
 import com.kmichali.model.*;
 import com.kmichali.repository.ProductRepository;
 import com.kmichali.serviceImpl.*;
-import com.kmichali.utility.AcceptOnExitTableCell;
-import com.kmichali.utility.ComboBoxAutoComplete;
-import com.kmichali.utility.VatInvoicePDF;
-import com.kmichali.utility.VatRRInvoicePDF;
+import com.kmichali.utility.*;
 import com.kmichali.view.FxmlView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,6 +39,9 @@ public class VatRRInvoiceController implements Initializable {
     @Lazy
     @Autowired
     private StageManager stageManager;
+
+    @FXML
+    private ComboBox<String> veterinaryInspectorateCB;
     @FXML
     private TextField invoiceNumberTF;
     @FXML
@@ -283,7 +283,8 @@ public class VatRRInvoiceController implements Initializable {
         Company companyCustomer=companyService.findByCustomer(customer);
         Company companySeller=companyService.findBySeller(seller);
         identityCard = identityCardService.findByCustomer(customer);
-        VatRRInvoicePDF pdfCreator = new VatRRInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType,identityCard,promotionFoundCB);
+        //VatRRInvoicePDF pdfCreator = new VatRRInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType,identityCard,promotionFoundCB);
+        StatementPDF statementPDF = new StatementPDF(customer,veterinaryInspectorateCB,issueDate,productTable);
     }
 
     @FXML
@@ -353,7 +354,10 @@ public class VatRRInvoiceController implements Initializable {
         setValueForCombobox();
         productTable.setItems(getFirstRow());
         taxComboBox.setValue(fillTaxComboBox().get(3));
-        unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
+
+        veterinaryInspectorateCB.setItems(fillVeterinaryInspectorateComboBox());
+        veterinaryInspectorateCB.setValue(fillVeterinaryInspectorateComboBox().get(0));
+
         taxComboBoxObjectList.add(taxComboBox);
         productTable.setEditable(true);
         lpColumn.setEditable(false);
@@ -455,6 +459,13 @@ public class VatRRInvoiceController implements Initializable {
         fillPromotionFoundList.add("-");
         fillPromotionFoundList.add("-");
         return fillPromotionFoundList;
+    }
+    private  ObservableList<String> fillVeterinaryInspectorateComboBox(){
+        ObservableList<String> fillVeterinaryInspectorateList = FXCollections.observableArrayList();
+        fillVeterinaryInspectorateList.add("Jasło");
+        fillVeterinaryInspectorateList.add("Krosno");
+        fillVeterinaryInspectorateList.add("Strzyżów");
+        return fillVeterinaryInspectorateList;
     }
     private ObservableList<InvoiceField> getFirstRow(){
         ObservableList<InvoiceField> selectComboBox = FXCollections.observableArrayList();
