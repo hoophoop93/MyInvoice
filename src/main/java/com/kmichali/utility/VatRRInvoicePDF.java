@@ -262,10 +262,10 @@ public class VatRRInvoicePDF {
 
 
         //Invoice table
-        PdfPTable invoiceTable = new PdfPTable(10); //10 columns
+        PdfPTable invoiceTable = new PdfPTable(9); //10 columns
         invoiceTable.setWidthPercentage(98);   //Width 100%;
         //Set column widths
-        float[] invoiceTableColumnWidth = {4,22,8,8,8,10,10,10,10,10};
+        float[] invoiceTableColumnWidth = {4,23,9,9,11,11,11,11,11};
         invoiceTable.setWidths(invoiceTableColumnWidth);
 
         PdfPCell cell;
@@ -281,11 +281,6 @@ public class VatRRInvoicePDF {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-        cell= new PdfPCell( new Paragraph("Klasa",new Font(bf, 10, Font.BOLD)));
-        cell.setBackgroundColor(BaseColor.LIGHT_GRAY );
-        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        invoiceTable.addCell(cell);
 
         cell= new PdfPCell(new Paragraph(new Paragraph("Ilość",new Font(bf, 10, Font.BOLD))));
         cell.setBackgroundColor(BaseColor.LIGHT_GRAY );
@@ -341,10 +336,6 @@ public class VatRRInvoicePDF {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(row.getProductClass(),new Font(bf, 10)));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            invoiceTable.addCell(cell);
             cell= new PdfPCell(new Paragraph(String.valueOf(row.getUnitMeasure().getSelectionModel().getSelectedItem()),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -376,7 +367,7 @@ public class VatRRInvoicePDF {
         }
 
         //add nextRow and hiddern first 6 cell through set border color
-        for(int i=0; i<5;i++){
+        for(int i=0; i<4;i++){
             cell= new PdfPCell();
             cell.setUseVariableBorders(true);
             cell.setBorderColorTop(BaseColor.BLACK);
@@ -473,19 +464,19 @@ public class VatRRInvoicePDF {
         totalBruttoSameTaxList.add(round((totalVatSameTax+totalProductValueSameTax),2));
         taxValueList.add(tax);
 
-        PdfPTable summaryTable = new PdfPTable(10); //10 columns
+        PdfPTable summaryTable = new PdfPTable(9); //10 columns
 
         summaryTable.setWidthPercentage(98);   //Width 100%;
         summaryTable.setWidths(invoiceTableColumnWidth);
 
         PdfPCell cell2;
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 5; i++) {
             cell2 = new PdfPCell();
             cell2.setUseVariableBorders(true);
             cell2.setBorderColor(BaseColor.WHITE);
             summaryTable.addCell(cell2);
-            if(i == 5){
+            if(i == 4){
                 cell2 = new PdfPCell(new Paragraph("Zestawienie sprzedaży w/g stawek podatku:", new Font(bf, 11)));
                 cell2.setColspan(4);
                 cell2.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -494,7 +485,7 @@ public class VatRRInvoicePDF {
                 summaryTable.addCell(cell2);
             }
         }
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 5; i++) {
             cell2 = new PdfPCell();
             cell2.setUseVariableBorders(true);
             cell2.setBorderColor(BaseColor.WHITE);
@@ -527,7 +518,7 @@ public class VatRRInvoicePDF {
 
         for(int k=0; k<distinctValueInTaxList; k++) {
 
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 5; i++) {
                 cell2 = new PdfPCell();
                 cell2.setUseVariableBorders(true);
                 cell2.setBorderColor(BaseColor.WHITE);
@@ -557,16 +548,16 @@ public class VatRRInvoicePDF {
         }
 
         //add nextRow and hiddern first 8 cell through set border color
-        for(int i=0; i<7;i++){
+        for(int i=0; i<6;i++){
             cell2= new PdfPCell();
             cell2.setUseVariableBorders(true);
             cell2.setBorderColor(BaseColor.WHITE);
-            if(i>5){
+            if(i>4){
                 cell2.setUseVariableBorders(true);
                 cell2.setBorderColorTop(BaseColor.BLACK);
             }
             summaryTable.addCell(cell2);
-            if(i == 6){
+            if(i == 5){
                 cell2 = new PdfPCell(new Paragraph("Razem:", new Font(bf, 11)));
                 cell2.setColspan(2);
                 cell2.setHorizontalAlignment(Element.ALIGN_CENTER);

@@ -28,14 +28,13 @@ public class Customer {
     private String pesel;
 
 
-    @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Company company;
 
     @OneToOne(mappedBy = "customer",cascade=CascadeType.ALL)
     private IdentityCard identityCard;
 
-    @OneToOne(mappedBy = "customer",cascade=CascadeType.ALL)
-    @JoinColumn(name = "id_transaction")
+    @ManyToOne(cascade=CascadeType.ALL)
     private Transaction transaction;
 
     public IdentityCard getIdentityCard() {

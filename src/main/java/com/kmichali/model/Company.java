@@ -20,9 +20,11 @@ public class Company {
     private String phoneNumber;
 
     @OneToOne
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @OneToOne
+    @JoinColumn(name = "seller_id")
     private Seller seller;
 
     public Customer getCustomer() {

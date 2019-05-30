@@ -19,20 +19,36 @@ public class Transaction {
     private double amount;
     @Column(name = "tax")
     private String tax;
+    @Column(name = "store_amount")
+    private double storeAmount;
+    @Column
+    private String type;
 
     @OneToOne
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @OneToOne
-    @JoinColumn(name = "id_seller")
+    @JoinColumn(name = "seller_id")
     private Seller seller;
 
     @OneToOne
-    @JoinColumn(name = "id_invoice")
+    @JoinColumn(name = "invoice_id")
     private Invoice invoice;
 
     @OneToMany(mappedBy ="transaction",cascade=CascadeType.ALL)
     private List<ProductTransaction> productTransactionList;
+
+    @ManyToOne
+    private Store store;
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
+    }
 
     public Customer getCustomer() {
         return customer;
@@ -104,5 +120,21 @@ public class Transaction {
 
     public void setTax(String tax) {
         this.tax = tax;
+    }
+
+    public double getStoreAmount() {
+        return storeAmount;
+    }
+
+    public void setStoreAmount(double storeAmount) {
+        this.storeAmount = storeAmount;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

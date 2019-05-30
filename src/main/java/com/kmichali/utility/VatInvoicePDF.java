@@ -32,15 +32,13 @@ public class VatInvoicePDF {
 
 
     public VatInvoicePDF(Invoice invoice, Date date, Company companySeller,Company companyCustomer,
-                         TableView<InvoiceField> productTable, ComboBox paidType
-    ) throws DocumentException, IOException {
-        CreateDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType);
+                         TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType) throws DocumentException, IOException {
+        CreateDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,invoiceType);
         OpenPDF("C:/Users/Kamil/Desktop/pdf/t.pdf");
     }
 
     private void CreateDocument(Invoice invoice, Date date, Company companySeller,Company companyCustomer,
-                                TableView<InvoiceField> productTable, ComboBox paidType
-    ) throws DocumentException, IOException {
+                                TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType) throws DocumentException, IOException {
         document = new Document(PageSize.A4,5,5,20,20);
         try {
             PdfWriter.getInstance(document, new FileOutputStream(PDFPATH+"t.pdf"));
@@ -52,7 +50,7 @@ public class VatInvoicePDF {
 
         document.open();
 
-        fillPdfDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType);
+        fillPdfDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,invoiceType);
 
         document.close();
     }
@@ -67,7 +65,7 @@ public class VatInvoicePDF {
     }
 
     private void fillPdfDocument(Invoice invoice, Date date, Company companySeller, Company companyCustomer,
-                                 TableView<InvoiceField> productTable, ComboBox paidType) throws DocumentException, IOException {
+                                 TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType) throws DocumentException, IOException {
 
         List<String> taxList = new ArrayList<>();
         HashSet<String> taxListWithoutDuplicated = new HashSet(); //list no duplicated
@@ -144,7 +142,8 @@ public class VatInvoicePDF {
         PdfPTable nameSellerTable = new PdfPTable(1); //3 columns
         nameSellerTable.setWidthPercentage(98);   //Width 100%;
         PdfPCell cellNameSeller;
-        cellNameSeller = new PdfPCell(new Paragraph("Sprzedawca",new Font(bf, 13, Font.BOLD)));
+        if(invoiceType==1) cellNameSeller = new PdfPCell(new Paragraph("Nabywca",new Font(bf, 13, Font.BOLD)));
+            else cellNameSeller = new PdfPCell(new Paragraph("Sprzedawca",new Font(bf, 13, Font.BOLD)));
         cellNameSeller.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cellNameSeller.setHorizontalAlignment(Element.ALIGN_LEFT);
         cellNameSeller.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -188,7 +187,8 @@ public class VatInvoicePDF {
         nameCustomerTable.setWidthPercentage(98);   //Width 100%;
 
         PdfPCell nameCustomerCell;
-        nameCustomerCell = new PdfPCell(new Paragraph("Nabywca",new Font(bf, 13, Font.BOLD)));
+        if(invoiceType==1) nameCustomerCell = new PdfPCell(new Paragraph("Sprzedawca",new Font(bf, 13, Font.BOLD)));
+        else nameCustomerCell = new PdfPCell(new Paragraph("Nabywca",new Font(bf, 13, Font.BOLD)));
         nameCustomerCell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         nameCustomerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
         nameCustomerCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -237,10 +237,10 @@ public class VatInvoicePDF {
 
 
         //Invoice table
-        PdfPTable invoiceTable = new PdfPTable(10); //10 columns
+        PdfPTable invoiceTable = new PdfPTable(9); //10 columns
         invoiceTable.setWidthPercentage(98);   //Width 100%;
         //Set column widths
-        float[] invoiceTableColumnWidth = {4,22,8,8,8,10,10,10,10,10};
+        float[] invoiceTableColumnWidth = {4,23,9,9,11,11,11,11,11};
         invoiceTable.setWidths(invoiceTableColumnWidth);
 
         PdfPCell cell;
@@ -251,12 +251,6 @@ public class VatInvoicePDF {
         invoiceTable.addCell(cell);
 
         cell= new PdfPCell(new Paragraph("Nazwa produktu",new Font(bf, 10, Font.BOLD)));
-        cell.setBackgroundColor(BaseColor.LIGHT_GRAY );
-        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        invoiceTable.addCell(cell);
-
-        cell= new PdfPCell( new Paragraph("Klasa",new Font(bf, 10, Font.BOLD)));
         cell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -316,10 +310,6 @@ public class VatInvoicePDF {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(row.getProductClass(),new Font(bf, 10)));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-            invoiceTable.addCell(cell);
             cell= new PdfPCell(new Paragraph(String.valueOf(row.getUnitMeasure().getSelectionModel().getSelectedItem()),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -351,7 +341,7 @@ public class VatInvoicePDF {
         }
 
         //add nextRow and hiddern first 6 cell through set border color
-        for(int i=0; i<5;i++){
+        for(int i=0; i<4;i++){
             cell= new PdfPCell();
             cell.setUseVariableBorders(true);
             cell.setBorderColorTop(BaseColor.BLACK);
@@ -448,19 +438,19 @@ public class VatInvoicePDF {
         totalBruttoSameTaxList.add(round((totalVatSameTax+totalProductValueSameTax),2));
         taxValueList.add(tax);
 
-        PdfPTable summaryTable = new PdfPTable(10); //10 columns
+        PdfPTable summaryTable = new PdfPTable(9); //10 columns
 
         summaryTable.setWidthPercentage(98);   //Width 100%;
         summaryTable.setWidths(invoiceTableColumnWidth);
 
         PdfPCell cell2;
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 5; i++) {
             cell2 = new PdfPCell();
             cell2.setUseVariableBorders(true);
             cell2.setBorderColor(BaseColor.WHITE);
             summaryTable.addCell(cell2);
-            if(i == 5){
+            if(i == 4){
                 cell2 = new PdfPCell(new Paragraph("Zestawienie sprzedaży w/g stawek podatku:", new Font(bf, 11)));
                 cell2.setColspan(4);
                 cell2.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -469,7 +459,7 @@ public class VatInvoicePDF {
                 summaryTable.addCell(cell2);
             }
         }
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 5; i++) {
             cell2 = new PdfPCell();
             cell2.setUseVariableBorders(true);
             cell2.setBorderColor(BaseColor.WHITE);
@@ -502,7 +492,7 @@ public class VatInvoicePDF {
 
         for(int k=0; k<distinctValueInTaxList; k++) {
 
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 5; i++) {
                 cell2 = new PdfPCell();
                 cell2.setUseVariableBorders(true);
                 cell2.setBorderColor(BaseColor.WHITE);
@@ -532,16 +522,16 @@ public class VatInvoicePDF {
         }
 
         //add nextRow and hiddern first 8 cell through set border color
-        for(int i=0; i<7;i++){
+        for(int i=0; i<6;i++){
             cell2= new PdfPCell();
             cell2.setUseVariableBorders(true);
             cell2.setBorderColor(BaseColor.WHITE);
-            if(i>5){
+            if(i>4){
                 cell2.setUseVariableBorders(true);
                 cell2.setBorderColorTop(BaseColor.BLACK);
             }
             summaryTable.addCell(cell2);
-            if(i == 6){
+            if(i == 5){
                 cell2 = new PdfPCell(new Paragraph("Razem:", new Font(bf, 11)));
                 cell2.setColspan(2);
                 cell2.setHorizontalAlignment(Element.ALIGN_CENTER);

@@ -75,8 +75,6 @@ public class VatRRInvoiceController implements Initializable {
     @FXML
     private TableColumn<InvoiceField, String> productNameColumn;
     @FXML
-    private TableColumn<InvoiceField, String> classProductColumn;
-    @FXML
     private TableColumn<InvoiceField, ComboBox> unitMeasureColumn;
     @FXML
     private TableColumn<InvoiceField, Double> amountColumn;
@@ -178,7 +176,7 @@ public class VatRRInvoiceController implements Initializable {
     @FXML
     private void addNewRowAction(ActionEvent event) {
         invoiceField = new InvoiceField();
-        productTable.getItems().add(new InvoiceField(Integer.toString((productTable.getItems().size()+1)),"","1",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox())
+        productTable.getItems().add(new InvoiceField(Integer.toString((productTable.getItems().size()+1)),"",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox())
                 ,1,0, 0,taxComboBox = new ComboBox<>(fillTaxComboBox()),0,0));
         productTable.requestFocus();
         productTable.getSelectionModel().select(productTable.getItems().size()-1);
@@ -202,12 +200,6 @@ public class VatRRInvoiceController implements Initializable {
         invoiceField = productTable.getSelectionModel().getSelectedItem();
         invoiceField.setNameProduct(editedCell.getNewValue().toString());
 
-    }
-    @FXML
-    public void changeProductClassCellEvent(TableColumn.CellEditEvent editedCell){
-
-        invoiceField = productTable.getSelectionModel().getSelectedItem();
-        invoiceField.setProductClass(editedCell.getNewValue().toString());
     }
     @FXML
     public void changeAmountCellEvent(TableColumn.CellEditEvent editedCell){
@@ -283,8 +275,8 @@ public class VatRRInvoiceController implements Initializable {
         Company companyCustomer=companyService.findByCustomer(customer);
         Company companySeller=companyService.findBySeller(seller);
         identityCard = identityCardService.findByCustomer(customer);
-        //VatRRInvoicePDF pdfCreator = new VatRRInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType,identityCard,promotionFoundCB);
-        StatementPDF statementPDF = new StatementPDF(customer,veterinaryInspectorateCB,issueDate,productTable);
+        VatRRInvoicePDF pdfCreator = new VatRRInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType,identityCard,promotionFoundCB);
+        //StatementPDF statementPDF = new StatementPDF(customer,veterinaryInspectorateCB,issueDate,productTable);
     }
 
     @FXML
@@ -354,7 +346,7 @@ public class VatRRInvoiceController implements Initializable {
         setValueForCombobox();
         productTable.setItems(getFirstRow());
         taxComboBox.setValue(fillTaxComboBox().get(3));
-
+        unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
         veterinaryInspectorateCB.setItems(fillVeterinaryInspectorateComboBox());
         veterinaryInspectorateCB.setValue(fillVeterinaryInspectorateComboBox().get(0));
 
@@ -364,7 +356,6 @@ public class VatRRInvoiceController implements Initializable {
 
         lpColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
         productNameColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
-        classProductColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
         amountColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn(new DoubleStringConverter()));
         productValueColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn((new DoubleStringConverter())));
         priceNettoColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn((new DoubleStringConverter())));
@@ -374,7 +365,6 @@ public class VatRRInvoiceController implements Initializable {
 
         lpColumn.setCellValueFactory(  new PropertyValueFactory<>("lp"));
         productNameColumn.setCellValueFactory(  new PropertyValueFactory<>("nameProduct"));
-        classProductColumn.setCellValueFactory(  new PropertyValueFactory<>("productClass"));
         unitMeasureColumn.setCellValueFactory(  new PropertyValueFactory<>("unitMeasure"));
         amountColumn.setCellValueFactory(  new PropertyValueFactory<>("amount"));
         priceNettoColumn.setCellValueFactory(  new PropertyValueFactory<>("priceNetto"));
@@ -469,9 +459,9 @@ public class VatRRInvoiceController implements Initializable {
     }
     private ObservableList<InvoiceField> getFirstRow(){
         ObservableList<InvoiceField> selectComboBox = FXCollections.observableArrayList();
-        selectComboBox.add(new InvoiceField("1","","1",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),1,0,0 ,
+        selectComboBox.add(new InvoiceField("1","",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),1,0,0 ,
                 taxComboBox = new ComboBox<>(fillTaxComboBox()),0,0));
-
+        unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
         return selectComboBox;
     }
     private double StringToDoubleConverter(String value){

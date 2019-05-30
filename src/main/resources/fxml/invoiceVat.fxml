@@ -126,7 +126,7 @@
                                       </DatePicker>
                               <HBox prefHeight="100.0" prefWidth="200.0">
                                  <children>
-                                    <RadioButton mnemonicParsing="false" text="kupno">
+                                    <RadioButton fx:id="invoiceTypeBuyRB" mnemonicParsing="false" selected="true" text="kupno">
                                        <HBox.margin>
                                           <Insets top="10.0" />
                                        </HBox.margin>
@@ -134,7 +134,7 @@
                                           <ToggleGroup fx:id="invoiceType" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton mnemonicParsing="false" text="Sprzedaż" toggleGroup="$invoiceType">
+                                    <RadioButton fx:id="invoiceTypeSellRB" mnemonicParsing="false" text="Sprzedaż" toggleGroup="$invoiceType">
                                        <HBox.margin>
                                           <Insets left="10.0" top="10.0" />
                                        </HBox.margin>
@@ -158,15 +158,14 @@
                         <TableView fx:id="productTable" onMouseClicked="#invoiceTableAction" prefHeight="290.0" prefWidth="1029.0">
                             <columns>
                                 <TableColumn fx:id="lpColumn" prefWidth="38.0" text="LP" />
-                                <TableColumn fx:id="productNameColumn" onEditCommit="#changeNameProductCellEvent" prefWidth="350.0" text="Nazwa towaru lub usługi" />
-                                <TableColumn fx:id="classProductColumn" onEditCommit="#changeProductClassCellEvent" prefWidth="41.0" text="Klasa" />
-                                <TableColumn fx:id="unitMeasureColumn" prefWidth="72.0" text="J.m" />
-                                <TableColumn fx:id="amountColumn" onEditCommit="#changeAmountCellEvent" prefWidth="55.0" text="Ilość" />
-                                <TableColumn fx:id="priceNettoColumn" minWidth="-1.0" onEditCommit="#changePriceNettoCellEvent" prefWidth="97.0" text="Cena netto" />
-                                <TableColumn fx:id="productValueColumn" onEditCommit="#changeProductValueCellEvent" prefWidth="104.0" text="Wartość netto" />
+                                <TableColumn fx:id="productNameColumn" onEditCommit="#changeNameProductCellEvent" prefWidth="351.0" text="Nazwa towaru lub usługi" />
+                                <TableColumn fx:id="unitMeasureColumn" prefWidth="75.0" text="J.m" />
+                                <TableColumn fx:id="amountColumn" onEditCommit="#changeAmountCellEvent" prefWidth="70.0" text="Ilość" />
+                                <TableColumn fx:id="priceNettoColumn" minWidth="-1.0" onEditCommit="#changePriceNettoCellEvent" prefWidth="105.0" text="Cena netto" />
+                                <TableColumn fx:id="productValueColumn" onEditCommit="#changeProductValueCellEvent" prefWidth="105.0" text="Wartość netto" />
                                 <TableColumn fx:id="taxColumn" prefWidth="76.0" text="Stawka Vat" />
-                                <TableColumn fx:id="priceVatColumn" onEditCommit="#changePriceVatCellEvent" prefWidth="100.0" text="Kwota Vat" />
-                                <TableColumn fx:id="priceBruttoColumn" onEditCommit="#changePriceBruttoCellEvent" prefWidth="95.0" text="Wartość brutto" />
+                                <TableColumn fx:id="priceVatColumn" onEditCommit="#changePriceVatCellEvent" prefWidth="105.0" text="Kwota Vat" />
+                                <TableColumn fx:id="priceBruttoColumn" onEditCommit="#changePriceBruttoCellEvent" prefWidth="103.0" text="Wartość brutto" />
                             </columns>
                             <contextMenu>
                                 <ContextMenu>

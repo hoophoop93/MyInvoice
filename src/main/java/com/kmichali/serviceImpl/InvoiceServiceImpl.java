@@ -75,8 +75,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
             Query query = getEntityManager().createQuery(queryString);
             query.setParameter("invoiceType", invoiceType.toLowerCase());
-            long result = (Long) query.getSingleResult();
+            long result=0;
+            try {
+                 result = (Long) query.getSingleResult();
+            }catch(NullPointerException e){
 
+            }
             return result;
     }
 }

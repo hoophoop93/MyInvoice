@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatRRInvoiceController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatRRInvoiceController">
     <center>
         <VBox prefHeight="229.0" prefWidth="657.0" BorderPane.alignment="CENTER">
             <children>
@@ -174,14 +174,13 @@
                             <columns>
                                 <TableColumn fx:id="lpColumn" prefWidth="38.0" text="LP" />
                                 <TableColumn fx:id="productNameColumn" onEditCommit="#changeNameProductCellEvent" prefWidth="350.0" text="Nazwa towaru lub usługi" />
-                                <TableColumn fx:id="classProductColumn" onEditCommit="#changeProductClassCellEvent" prefWidth="41.0" text="Klasa" />
-                                <TableColumn fx:id="unitMeasureColumn" prefWidth="72.0" text="J.m" />
-                                <TableColumn fx:id="amountColumn" onEditCommit="#changeAmountCellEvent" prefWidth="55.0" text="Ilość" />
-                                <TableColumn fx:id="priceNettoColumn" minWidth="-1.0" onEditCommit="#changePriceNettoCellEvent" prefWidth="97.0" text="Cena netto" />
-                                <TableColumn fx:id="productValueColumn" onEditCommit="#changeProductValueCellEvent" prefWidth="104.0" text="Wartość netto" />
+                                <TableColumn fx:id="unitMeasureColumn" prefWidth="75.0" text="J.m" />
+                                <TableColumn fx:id="amountColumn" onEditCommit="#changeAmountCellEvent" prefWidth="70.0" text="Ilość" />
+                                <TableColumn fx:id="priceNettoColumn" minWidth="-1.0" onEditCommit="#changePriceNettoCellEvent" prefWidth="105.0" text="Cena netto" />
+                                <TableColumn fx:id="productValueColumn" onEditCommit="#changeProductValueCellEvent" prefWidth="105.0" text="Wartość netto" />
                                 <TableColumn fx:id="taxColumn" prefWidth="76.0" text="Stawka Vat" />
-                                <TableColumn fx:id="priceVatColumn" onEditCommit="#changePriceVatCellEvent" prefWidth="100.0" text="Kwota Vat" />
-                                <TableColumn fx:id="priceBruttoColumn" onEditCommit="#changePriceBruttoCellEvent" prefWidth="95.0" text="Wartość brutto" />
+                                <TableColumn fx:id="priceVatColumn" onEditCommit="#changePriceVatCellEvent" prefWidth="105.0" text="Kwota Vat" />
+                                <TableColumn fx:id="priceBruttoColumn" onEditCommit="#changePriceBruttoCellEvent" prefWidth="105.0" text="Wartość brutto" />
                             </columns>
                             <contextMenu>
                                 <ContextMenu>

@@ -18,6 +18,7 @@ public class IdentityCard {
     private String organization;
 
     @OneToOne
+    @JoinColumn(name = "customer_id_foreign")
     private Customer customer;
 
     public Customer getCustomer() {

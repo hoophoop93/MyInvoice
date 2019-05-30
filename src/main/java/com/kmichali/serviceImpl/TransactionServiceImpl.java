@@ -1,16 +1,33 @@
 package com.kmichali.serviceImpl;
 
+import com.kmichali.model.ProductRaport;
 import com.kmichali.model.Transaction;
 import com.kmichali.repository.TransactionRepository;
 import com.kmichali.service.TransactionService;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     TransactionRepository transactionRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
+
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Transaction save(Transaction entity) {
@@ -45,5 +62,16 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public Iterable<Transaction> findAll() {
         return null;
+    }
+
+    public List<ProductRaport> findTransactionByProduct(String name) {
+        List<ProductRaport> transactionList = entityManager.createQuery("Select t.storeAmount as storeAmount,t.customer.name || ' ' ||  t.customer.surname as name " +
+                ",d.issueDate as date, s.amount as wholeAmount, t.type as type " +
+                "from Transaction t, Store s,Invoice i, Date d where t.store.id = s.id and " +
+                "t.invoice.id = i.id and d.id = i.date.id and  s.name= :name ").setParameter("name",name).
+                unwrap( org.hibernate.query.Query.class )
+                .setResultTransformer( Transformers.aliasToBean( ProductRaport.class ) )
+                .getResultList();
+        return transactionList;
     }
 }

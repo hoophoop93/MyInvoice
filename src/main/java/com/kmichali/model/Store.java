@@ -1,6 +1,7 @@
 package com.kmichali.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="store")
@@ -14,6 +15,17 @@ public class Store {
     private String name;
     @Column(name = "amount")
     private double amount;
+
+    @OneToMany(mappedBy ="store",cascade=CascadeType.ALL)
+    private List<Transaction> transactionList;
+
+    public List<Transaction> getTransactionList() {
+        return transactionList;
+    }
+
+    public void setTransactionList(List<Transaction> transactionList) {
+        this.transactionList = transactionList;
+    }
 
     public int getId() {
         return id;

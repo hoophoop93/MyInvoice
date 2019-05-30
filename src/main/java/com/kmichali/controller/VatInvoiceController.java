@@ -4,6 +4,7 @@ package com.kmichali.controller;
 import com.itextpdf.text.DocumentException;
 import com.kmichali.config.StageManager;
 import com.kmichali.model.*;
+import com.kmichali.model.Date;
 import com.kmichali.repository.ProductRepository;
 import com.kmichali.serviceImpl.*;
 import com.kmichali.utility.AcceptOnExitTableCell;
@@ -32,16 +33,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 @Controller
 public class VatInvoiceController implements Initializable {
 
     @FXML
-    private Label label1,label2,label3,label4,label5;
+    private RadioButton invoiceTypeSellRB;
+    @FXML
+    private RadioButton invoiceTypeBuyRB;
     @FXML
     private ComboBox<String> taxComboBox;
     @FXML
@@ -56,8 +56,6 @@ public class VatInvoiceController implements Initializable {
     private TableColumn<InvoiceField,String>  lpColumn;
     @FXML
     private TableColumn<InvoiceField, String> productNameColumn;
-    @FXML
-    private TableColumn<InvoiceField, String> classProductColumn;
     @FXML
     private TableColumn<InvoiceField, ComboBox> unitMeasureColumn;
     @FXML
@@ -119,7 +117,7 @@ public class VatInvoiceController implements Initializable {
     private Transaction transaction;
     private ProductTransaction productTransaction;
     private ObservableList<String> customerList;
-    private static int counter=0;
+    int invoiceTypeIdentyfier;
 
     @Autowired
     ProductRepository productRepository;
@@ -155,12 +153,6 @@ public class VatInvoiceController implements Initializable {
         invoiceField = productTable.getSelectionModel().getSelectedItem();
         invoiceField.setNameProduct(editedCell.getNewValue().toString());
 
-    }
-    @FXML
-    public void changeProductClassCellEvent(TableColumn.CellEditEvent editedCell){
-        
-        invoiceField = productTable.getSelectionModel().getSelectedItem();
-        invoiceField.setProductClass(editedCell.getNewValue().toString());
     }
     @FXML
     public void changeAmountCellEvent(TableColumn.CellEditEvent editedCell){
@@ -229,7 +221,7 @@ public class VatInvoiceController implements Initializable {
     @FXML
     private void addNewRowAction(ActionEvent event) {
         invoiceField = new InvoiceField();
-        productTable.getItems().add(new InvoiceField(Integer.toString((productTable.getItems().size()+1)),"","1",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox())
+        productTable.getItems().add(new InvoiceField(Integer.toString((productTable.getItems().size()+1)),"",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox())
                 ,1,0, 0,taxComboBox = new ComboBox<>(fillTaxComboBox()),0,0));
         productTable.requestFocus();
         productTable.getSelectionModel().select(productTable.getItems().size()-1);
@@ -325,84 +317,126 @@ public class VatInvoiceController implements Initializable {
     @FXML
     @Transactional
     void createInvoiceAction(ActionEvent event) throws DocumentException, IOException {
+        Optional<ButtonType> result = null;
+        for (InvoiceField row: productTable.getItems()) {
+            store = storeService.findByName(row.getNameProduct());
+        }
+            if(store == null){
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Informacja");
+                alert.setHeaderText("Produkt/y nie istenieja w magazynie. Stan magazynoway nie zostanie obliczony. Kontynuować?");
+                alert.setContentText("Kontynuować?");
+                result = alert.showAndWait();
+
+                if (result.get() == ButtonType.CANCEL) return;
+            }
+
+
+
+        double getProductAmount=0;
+        double calculateAmount=0;
         Seller seller = sellerService.find(1);
-        //date
-//        String issueDateToString = String.valueOf(issueDate.getValue());
-//        String sellDateToString = String.valueOf(sellDate.getValue());
-//        String paymentDateToString = String.valueOf(paymentDate.getValue());
-//        date = new Date();
-//        date.setIssueDate(issueDateToString);
-//        date.setSellDate(sellDateToString);
-//        date.setPaymentDate(paymentDateToString);
-//        dateService.save(date);
-//
-//        //custommer
-        //String [] splited = nameCustomer.split("\\s+");
-       // if(!(customerService.countCustomerByAddress(streetTF.getText()) && customerService.countCustomerBySurname(splited[1]))) {
-//        customer = new Customer();
-//        String nameCustomer = customerNameTF.getText();
-//
-//        customer.setName(splited[0]);
-//        customer.setSurname(splited[1]);
-//        customer.setAddress(streetTF.getText());
-//        customer.setCity(addressTF.getText());
-//        customer.setPostalCode(postalCodeTF.getText());
-//        customerService.save(customer);
-       // }
-//
-//        //company
-//        company = new Company();
-//        company.setName(companyNameTA.getText());
-//        company.setNip(nipTF.getText());
-//        company.setCustomer(customer);
-//        companyService.save(company);
-//
-//        company = new Company();
-//        company.setSeller(seller);
-//        companyService.save(company);
-//
-//       // invoice
-//        invoice = new Invoice();
-//        invoice.setInvoiceNumber(invoiceNumberTF.getText());
-//        invoice.setPaidType(paidType.getSelectionModel().getSelectedItem());
-//        invoice.setInvoiceType(invoiceTypeCB.getSelectionModel().getSelectedItem());
-//        invoice.setDate(date);
-//        invoiceService.save(invoice);
-//
-//
-//        //transaction
-//        List<Transaction> transactionList = new ArrayList<>();
-//        for (InvoiceField row: productTable.getItems()) {
-//            transaction = new Transaction();
-//            transaction.setTax(row.getTax().getSelectionModel().getSelectedItem());
-//            transaction.setPriceNetto(row.getPriceNetto());
-//            transaction.setPriceBrutto(row.getPriceBrutto());
-//            transaction.setAmount(row.getAmount());
-//            transaction.setInvoice(invoice);
-//            transaction.setCustomer(customer);
-//            transaction.setSeller(seller);
-//            transactionService.save(transaction);
-//
-//        //product
-//            product = new Product();
-//            product.setName(row.getNameProduct());
-//            //if(!productService.checkIfExist(row.getNameProduct())) {
-//                productService.save(product);
-//
-//
-//            //join product and transaction
-//            productTransaction = new ProductTransaction();
-//            productTransaction.setProduct(product);
-//            productTransaction.setTransaction(transaction);
-//            productTransactionService.save(productTransaction);
-//        }
+
+        if(invoiceTypeBuyRB.isSelected())invoiceTypeIdentyfier=1;
+        else invoiceTypeIdentyfier=0;
+
+        String issueDateToString = String.valueOf(issueDate.getValue());
+        String sellDateToString = String.valueOf(sellDate.getValue());
+        String paymentDateToString = String.valueOf(paymentDate.getValue());
+        date = new Date();
+        date.setIssueDate(issueDateToString);
+        date.setSellDate(sellDateToString);
+        date.setPaymentDate(paymentDateToString);
+        dateService.save(date);
+
+        //custommer
+        String nameCustomer = customerNameTF.getText();
+        String [] splited = nameCustomer.split("\\s+");
+        if(!(customerService.countCustomerByAddress(streetTF.getText()) && customerService.countCustomerBySurname(splited[1]))) {
+        customer = new Customer();
+
+        customer.setName(splited[0]);
+        customer.setSurname(splited[1]);
+        customer.setAddress(streetTF.getText());
+        customer.setCity(addressTF.getText());
+        customer.setPostalCode(postalCodeTF.getText());
+        customerService.save(customer);
+        }
+
+        //company
+
+        company = new Company();
+        company.setName(companyNameTA.getText());
+        company.setNip(nipTF.getText());
+        company.setCustomer(customer);
+        if(!companyService.countByNip(company.getNip()))
+        companyService.save(company);
+
+        company = companyService.findBySeller(seller);
+        company.setSeller(seller);
+
+        if(!companyService.countByNip(company.getNip()))
+        companyService.save(company);
+
+       // invoice
+        invoice = new Invoice();
+        invoice.setInvoiceNumber(invoiceNumberTF.getText());
+        invoice.setPaidType(paidType.getSelectionModel().getSelectedItem());
+        invoice.setInvoiceType("Vat");
+        invoice.setDate(date);
+        invoiceService.save(invoice);
+
+
+        //transaction
+        List<Transaction> transactionList = new ArrayList<>();
+        for (InvoiceField row: productTable.getItems()) {
+            transaction = new Transaction();
+            transaction.setTax(row.getTax().getSelectionModel().getSelectedItem());
+            transaction.setPriceNetto(row.getPriceNetto());
+            transaction.setPriceBrutto(row.getPriceBrutto());
+            transaction.setAmount(row.getAmount());
+            transaction.setInvoice(invoice);
+            transaction.setCustomer(customer);
+            transaction.setSeller(seller);
+
+            store = storeService.findByName(row.getNameProduct());
+            if(store != null) {
+                getProductAmount = store.getAmount();
+                if (invoiceTypeIdentyfier == 1) {
+                    calculateAmount = getProductAmount + row.getAmount();
+                    transaction.setType("kupno");
+                }
+                else {
+                    calculateAmount = getProductAmount - row.getAmount();
+                    transaction.setType("sprzedaż");
+                }
+                store.setAmount(calculateAmount);
+                storeService.update(store);
+                transaction.setStoreAmount(calculateAmount);
+
+                transaction.setStore(store);
+            }
+            transactionService.save(transaction);
+
+        //product
+            product = new Product();
+            product.setName(row.getNameProduct());
+            //if(!productService.checkIfExist(row.getNameProduct())) {
+                productService.save(product);
+
+            //join product and transaction
+            productTransaction = new ProductTransaction();
+            productTransaction.setProduct(product);
+            productTransaction.setTransaction(transaction);
+            productTransactionService.save(productTransaction);
+        }
 //        selectCustomerCB.setItems(fillCustomerComboBox());
-        invoice= invoiceService.find(1);
-        date = dateService.find(1);
-        customer = customerService.find(1);
+//        invoice= invoiceService.find(1);
+//        date = dateService.find(1);
+//        customer = customerService.find(1);
         Company companyCustomer=companyService.findByCustomer(customer);
         Company companySeller=companyService.findBySeller(seller);
-        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType);
+        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType,invoiceTypeIdentyfier);
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -421,7 +455,6 @@ public class VatInvoiceController implements Initializable {
 
         lpColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
         productNameColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
-        classProductColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
         amountColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn(new DoubleStringConverter()));
         productValueColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn((new DoubleStringConverter())));
         priceNettoColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn((new DoubleStringConverter())));
@@ -431,7 +464,6 @@ public class VatInvoiceController implements Initializable {
 
         lpColumn.setCellValueFactory(  new PropertyValueFactory<>("lp"));
         productNameColumn.setCellValueFactory(  new PropertyValueFactory<>("nameProduct"));
-        classProductColumn.setCellValueFactory(  new PropertyValueFactory<>("productClass"));
         unitMeasureColumn.setCellValueFactory(  new PropertyValueFactory<>("unitMeasure"));
         amountColumn.setCellValueFactory(  new PropertyValueFactory<>("amount"));
         priceNettoColumn.setCellValueFactory(  new PropertyValueFactory<>("priceNetto"));
@@ -455,7 +487,7 @@ public class VatInvoiceController implements Initializable {
     }
     private ObservableList<InvoiceField> getFirstRow(){
         ObservableList<InvoiceField> selectComboBox = FXCollections.observableArrayList();
-        selectComboBox.add(new InvoiceField("1","","1",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),1,0,0 ,
+        selectComboBox.add(new InvoiceField("1","",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),1,0,0 ,
                 taxComboBox = new ComboBox<>(fillTaxComboBox()),0,0));
 
         return selectComboBox;
@@ -603,19 +635,24 @@ public class VatInvoiceController implements Initializable {
     }
     private void generateInvoiceNumber(){
         int invoiceCounter=1;
+        String invoiceNumberDB;
         String invoiceNumber = String.valueOf(issueDate.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         long maxId=invoiceService.getLastInvoiceNumeber("Vat");
-        Invoice invoice = invoiceService.find(maxId);
-        String invoiceNumberDB = invoice.getInvoiceNumber();
-        if(invoiceService.countInvoiceNumber(invoiceNumberDB) && !invoiceNumber.substring(0,2).equals("01")){
-            if(invoiceNumberDB.substring(2,3).equals("/")) invoiceNumberDB = invoiceNumberDB.substring(0,2);
-            else invoiceNumberDB = invoiceNumberDB.substring(0,1);
-            invoiceCounter = Integer.parseInt(invoiceNumberDB);
-            invoiceCounter++;
-            String counterToString =Integer.toString(invoiceCounter);
-            invoiceNumberDB = counterToString + invoiceNumber.substring(2);
-        }else{
-            invoiceNumberDB ="1"+ invoiceNumber.substring(2);
+        if(maxId ==0) invoiceNumberDB ="1"+ invoiceNumber.substring(2);
+        else {
+            Invoice invoice = invoiceService.find(maxId);
+            invoiceNumberDB = invoice.getInvoiceNumber();
+
+            if (invoiceService.countInvoiceNumber(invoiceNumberDB) && !invoiceNumber.substring(0, 2).equals("01")) {
+                if (invoiceNumberDB.substring(2, 3).equals("/")) invoiceNumberDB = invoiceNumberDB.substring(0, 2);
+                else invoiceNumberDB = invoiceNumberDB.substring(0, 1);
+                invoiceCounter = Integer.parseInt(invoiceNumberDB);
+                invoiceCounter++;
+                String counterToString = Integer.toString(invoiceCounter);
+                invoiceNumberDB = counterToString + invoiceNumber.substring(2);
+            } else {
+                invoiceNumberDB = "1" + invoiceNumber.substring(2);
+            }
         }
 
 
