@@ -6,12 +6,25 @@ import com.kmichali.service.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
 
     @Autowired
     InvoiceRepository invoiceRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
+
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Invoice save(Invoice entity) {
@@ -45,5 +58,25 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public Iterable<Invoice> findAll() {
         return null;
+    }
+
+    @Override
+    public boolean countInvoiceNumber(String invoiceNumber){
+        String queryString="Select count(c.invoiceNumber) from Invoice c where c.invoiceNumber = :invoiceNumber";
+        Query query = getEntityManager().createQuery(queryString);
+        query.setParameter("invoiceNumber",invoiceNumber);
+        long result = (long) query.getSingleResult();
+        return result > 0;
+    }
+
+    @Override
+    public long getLastInvoiceNumeber(String invoiceType) {
+            String queryString = "Select max(o.id) from Invoice o where LOWER(o.invoiceType) = :invoiceType ";
+
+            Query query = getEntityManager().createQuery(queryString);
+            query.setParameter("invoiceType", invoiceType.toLowerCase());
+            long result = (Long) query.getSingleResult();
+
+            return result;
     }
 }

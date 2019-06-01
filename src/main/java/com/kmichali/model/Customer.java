@@ -24,12 +24,14 @@ public class Customer {
     private String city;
     @Column(name = "street")
     private String street;
+    @Column(name = "pesel")
+    private String pesel;
+
 
     @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
     private Company company;
 
-    @OneToOne
-    @JoinColumn(name = "id_card")
+    @OneToOne(mappedBy = "customer",cascade=CascadeType.ALL)
     private IdentityCard identityCard;
 
     @OneToOne(mappedBy = "customer",cascade=CascadeType.ALL)
@@ -115,6 +117,15 @@ public class Customer {
     public void setStreet(String street) {
         this.street = street;
     }
+
+    public String getPesel() {
+        return pesel;
+    }
+
+    public void setPesel(String pesel) {
+        this.pesel = pesel;
+    }
+
     @Override
     public String toString(){
         return "Customer: Name "+name+" Surname "+surname;

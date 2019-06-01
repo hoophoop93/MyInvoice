@@ -2,12 +2,14 @@ package com.kmichali.controller;
 
 
 import com.itextpdf.text.DocumentException;
+import com.kmichali.config.StageManager;
 import com.kmichali.model.*;
 import com.kmichali.repository.ProductRepository;
 import com.kmichali.serviceImpl.*;
 import com.kmichali.utility.AcceptOnExitTableCell;
 import com.kmichali.utility.ComboBoxAutoComplete;
 import com.kmichali.utility.VatInvoicePDF;
+import com.kmichali.view.FxmlView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,10 +23,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.StringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -137,6 +141,9 @@ public class VatInvoiceController implements Initializable {
     SellerServiceImpl sellerService;
     @Autowired
     ProductTransactionImpl productTransactionService;
+    @Lazy
+    @Autowired
+    private StageManager stageManager;
 
     /**
      *
@@ -312,6 +319,10 @@ public class VatInvoiceController implements Initializable {
     AcceptOnExitTableCell acceptOnExitTableCell = new AcceptOnExitTableCell();
     }
     @FXML
+    void backButtonAction(ActionEvent event) throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.PRIMARYSTAGE);
+    }
+    @FXML
     @Transactional
     void createInvoiceAction(ActionEvent event) throws DocumentException, IOException {
         Seller seller = sellerService.find(1);
@@ -391,15 +402,15 @@ public class VatInvoiceController implements Initializable {
         customer = customerService.find(1);
         Company companyCustomer=companyService.findByCustomer(customer);
         Company companySeller=companyService.findBySeller(seller);
-        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,seller,companySeller,companyCustomer,customer,productTable, paidType);
+        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType);
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         selectCustomerCB.setItems(fillCustomerComboBox());
         new ComboBoxAutoComplete<String>(selectCustomerCB);
-
         setLocalDateForDataPicker();
+        generateInvoiceNumber();
         setValueForCombobox();
         productTable.setItems(getFirstRow());
         taxComboBox.setValue(fillTaxComboBox().get(0));
@@ -590,5 +601,24 @@ public class VatInvoiceController implements Initializable {
         alert.setTitle(typeMessage);
         alert.showAndWait();
     }
+    private void generateInvoiceNumber(){
+        int invoiceCounter=1;
+        String invoiceNumber = String.valueOf(issueDate.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        long maxId=invoiceService.getLastInvoiceNumeber("Vat");
+        Invoice invoice = invoiceService.find(maxId);
+        String invoiceNumberDB = invoice.getInvoiceNumber();
+        if(invoiceService.countInvoiceNumber(invoiceNumberDB) && !invoiceNumber.substring(0,2).equals("01")){
+            if(invoiceNumberDB.substring(2,3).equals("/")) invoiceNumberDB = invoiceNumberDB.substring(0,2);
+            else invoiceNumberDB = invoiceNumberDB.substring(0,1);
+            invoiceCounter = Integer.parseInt(invoiceNumberDB);
+            invoiceCounter++;
+            String counterToString =Integer.toString(invoiceCounter);
+            invoiceNumberDB = counterToString + invoiceNumber.substring(2);
+        }else{
+            invoiceNumberDB ="1"+ invoiceNumber.substring(2);
+        }
 
+
+        invoiceNumberTF.setText(invoiceNumberDB);
+    }
 }

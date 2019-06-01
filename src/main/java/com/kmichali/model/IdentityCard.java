@@ -10,16 +10,14 @@ public class IdentityCard {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "idCard", updatable = false, nullable = false)
     private long id;
-    @Column(name = "seria")
-    private String seria;
-    @Column(name = "number")
-    private String number;
+    @Column(name = "seriaAndNumber")
+    private String seriaAndNumber;
     @Column(name = "release_date")
     private String releaseDate;
     @Column(name = "organization")
     private String organization;
 
-    @OneToOne(mappedBy = "identityCard",cascade=CascadeType.ALL)
+    @OneToOne
     private Customer customer;
 
     public Customer getCustomer() {
@@ -38,20 +36,12 @@ public class IdentityCard {
         this.id = id;
     }
 
-    public String getSeria() {
-        return seria;
+    public String getSeriaAndNumber() {
+        return seriaAndNumber;
     }
 
-    public void setSeria(String seria) {
-        this.seria = seria;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
+    public void setSeriaAndNumber(String seriaAndNumber) {
+        this.seriaAndNumber = seriaAndNumber;
     }
 
     public String getReleaseDate() {

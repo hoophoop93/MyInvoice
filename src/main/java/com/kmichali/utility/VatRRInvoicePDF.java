@@ -1,9 +1,6 @@
 package com.kmichali.utility;
 
-
 import com.itextpdf.text.*;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -12,9 +9,7 @@ import com.kmichali.model.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import pl.allegro.finance.tradukisto.MoneyConverters;
-import pl.allegro.finance.tradukisto.ValueConverters;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -24,22 +19,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class VatInvoicePDF {
+public class VatRRInvoicePDF {
 
     private String PDFPATH="C:/Users/Kamil/Desktop/pdf/";
     public static final String IMG1 = "src/main//resources/images/grain.png";
     Document document;
 
-
-    public VatInvoicePDF(Invoice invoice, Date date, Company companySeller,Company companyCustomer,
-                         TableView<InvoiceField> productTable, ComboBox paidType
+    public VatRRInvoicePDF(Invoice invoice, Date date, Company companySeller, Company companyCustomer,
+                         TableView<InvoiceField> productTable, ComboBox paidType,IdentityCard identityCard,ComboBox promotionFoundComboBox
     ) throws DocumentException, IOException {
-        CreateDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType);
+        CreateDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,identityCard,promotionFoundComboBox);
         OpenPDF("C:/Users/Kamil/Desktop/pdf/t.pdf");
     }
 
     private void CreateDocument(Invoice invoice, Date date, Company companySeller,Company companyCustomer,
-                                TableView<InvoiceField> productTable, ComboBox paidType
+                                TableView<InvoiceField> productTable, ComboBox paidType, IdentityCard identityCard,ComboBox promotionFoundComboBox
     ) throws DocumentException, IOException {
         document = new Document(PageSize.A4,5,5,20,20);
         try {
@@ -52,7 +46,7 @@ public class VatInvoicePDF {
 
         document.open();
 
-        fillPdfDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType);
+        fillPdfDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,identityCard,promotionFoundComboBox);
 
         document.close();
     }
@@ -67,8 +61,8 @@ public class VatInvoicePDF {
     }
 
     private void fillPdfDocument(Invoice invoice, Date date, Company companySeller, Company companyCustomer,
-                                 TableView<InvoiceField> productTable, ComboBox paidType) throws DocumentException, IOException {
-
+                                 TableView<InvoiceField> productTable, ComboBox paidType, IdentityCard identityCard,ComboBox promotionFoundComboBox) throws DocumentException, IOException {
+        double promotionFoundAmount=0;
         List<String> taxList = new ArrayList<>();
         HashSet<String> taxListWithoutDuplicated = new HashSet(); //list no duplicated
         BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.EMBEDDED);
@@ -79,7 +73,7 @@ public class VatInvoicePDF {
         float[] columnWidths = {30,50,20};
         table.setWidths(columnWidths);
 
-        Paragraph paragraph2 = new Paragraph("FAKTURA VAT "+invoice.getInvoiceNumber(),new Font(bf, 16, Font.BOLD));
+        Paragraph paragraph2 = new Paragraph("FAKTURA VAT RR "+invoice.getInvoiceNumber(),new Font(bf, 15, Font.BOLD));
         paragraph2.add(Chunk.NEWLINE);
         paragraph2.setLeading(32);
         paragraph2.setFont(new Font(bf,12));
@@ -115,6 +109,33 @@ public class VatInvoicePDF {
         dateTable.addCell(cellDate);
 
         cellDate = new PdfPCell(new Paragraph(date.getSellDate(),new Font(bf, 11)));
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+
+
+
+        cellDate = new PdfPCell(new Paragraph("Sposób zapłaty:",new Font(bf, 11, Font.BOLD)));
+        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        cellDate = new PdfPCell(new Paragraph(paidType.getSelectionModel().getSelectedItem().toString(),new Font(bf, 11)));
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        cellDate = new PdfPCell(new Paragraph("Termin zapłaty:",new Font(bf, 11, Font.BOLD)));
+        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        cellDate = new PdfPCell(new Paragraph(date.getPaymentDate(),new Font(bf, 11)));
         cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
         cellDate.setBorder(0);
         dateTable.addCell(cellDate);
@@ -203,16 +224,20 @@ public class VatInvoicePDF {
         paragraph5.setLeading(2f);
         paragraph5.setFont(new Font(bf,11));
         if(companyCustomer != null) {
-            paragraph5.add(companyCustomer.getName());
-            paragraph5.add(Chunk.NEWLINE);
             paragraph5.add(companyCustomer.getCustomer().getName() + " " + companyCustomer.getCustomer().getSurname());
             paragraph5.add(Chunk.NEWLINE);
-            paragraph5.add(companyCustomer.getCustomer().getAddress());
+            paragraph5.add(companyCustomer.getCustomer().getAddress()+", "+companyCustomer.getCustomer().getCity()+" "+companyCustomer.getCustomer().getPostalCode());
             paragraph5.add(Chunk.NEWLINE);
-            paragraph5.add(companyCustomer.getCustomer().getCity()+" "+companyCustomer.getCustomer().getPostalCode());
+            paragraph5.add("Dowód osob. "+identityCard.getSeriaAndNumber()+" wydany dnia "+identityCard.getReleaseDate()+" r");
             paragraph5.add(Chunk.NEWLINE);
-            paragraph5.add("NIP: " + companyCustomer.getNip());
+            paragraph5.add("przez "+identityCard.getOrganization());
+            paragraph5.add(Chunk.NEWLINE);
+            if(companyCustomer.getCustomer().getPesel().length() >0) {
+                paragraph5.add("PESEL: " + companyCustomer.getCustomer().getPesel());
 
+            }else{
+                paragraph5.add("NIP: " + companyCustomer.getNip());
+            }
             for(int i=0; i<2; i++) {
                 paragraph5.add(Chunk.NEWLINE);
             }
@@ -421,27 +446,27 @@ public class VatInvoicePDF {
         List<Double> totalVatSameTaxList = new ArrayList<>();
         List<Double> totalBruttoSameTaxList = new ArrayList<>();
         List<String> taxValueList = new ArrayList<>();
-            List<String> stringsList = new ArrayList<>(taxListWithoutDuplicated);
-            for (int r = 0; r < taxListWithoutDuplicated.size(); r++) {
-                 if(r != 0){
-                     totalProductValueSameTaxList.add(round(totalProductValueSameTax,2));
-                     totalVatSameTaxList.add(round(totalVatSameTax,2));
-                     totalBruttoSameTaxList.add(round(totalVatSameTax+totalProductValueSameTax,2));
-                     taxValueList.add(tax);
-                     totalProductValueSameTax=0;
-                     totalVatSameTax =0;
-                     totalBruttoSameTax=0;
-                 }
-                String getElement = stringsList.get(r);
-                for (InvoiceField row: productTable.getItems()) {
-                    if(getElement.equals(row.getTax().getSelectionModel().getSelectedItem())) {
-                        totalProductValueSameTax=totalProductValueSameTax+row.getProductValue();
-                        totalVatSameTax = totalVatSameTax + row.getPriceVat();
-                        totalBruttoSameTax = totalBruttoSameTax+row.getPriceBrutto();
-                        tax=row.getTax().getSelectionModel().getSelectedItem();
-                    }
+        List<String> stringsList = new ArrayList<>(taxListWithoutDuplicated);
+        for (int r = 0; r < taxListWithoutDuplicated.size(); r++) {
+            if(r != 0){
+                totalProductValueSameTaxList.add(round(totalProductValueSameTax,2));
+                totalVatSameTaxList.add(round(totalVatSameTax,2));
+                totalBruttoSameTaxList.add(round(totalVatSameTax+totalProductValueSameTax,2));
+                taxValueList.add(tax);
+                totalProductValueSameTax=0;
+                totalVatSameTax =0;
+                totalBruttoSameTax=0;
+            }
+            String getElement = stringsList.get(r);
+            for (InvoiceField row: productTable.getItems()) {
+                if(getElement.equals(row.getTax().getSelectionModel().getSelectedItem())) {
+                    totalProductValueSameTax=totalProductValueSameTax+row.getProductValue();
+                    totalVatSameTax = totalVatSameTax + row.getPriceVat();
+                    totalBruttoSameTax = totalBruttoSameTax+row.getPriceBrutto();
+                    tax=row.getTax().getSelectionModel().getSelectedItem();
                 }
             }
+        }
 
         totalProductValueSameTaxList.add(round(totalProductValueSameTax,2));
         totalVatSameTaxList.add(round(totalVatSameTax,2));
@@ -558,16 +583,18 @@ public class VatInvoicePDF {
         PdfPTable mainSummaryTable = new PdfPTable(3); //3 columns
         mainSummaryTable.setWidthPercentage(98);   //Width 100%;
         //Set column widths
-        float[] columnWidths3 = {47,6,47};
+        float[] columnWidths3 = {49,2,49};
         mainSummaryTable.setWidths(columnWidths3);
 
         PdfPTable paymentTable = new PdfPTable(2); //3 columns
         paymentTable.setWidthPercentage(100);   //Width 100%;
         //Set column widths
-        float[] columnWidths4 = {50,50};
+        float[] columnWidths4 = {80,20};
         paymentTable.setWidths(columnWidths4);
         PdfPCell paymentCell;
-        paymentCell = new PdfPCell(new Paragraph("Sposób zapłaty:",new Font(bf, 12)));
+        promotionFoundAmount = totalProductValue * 0.01;
+        paymentCell = new PdfPCell(new Paragraph("Kwota potrącona na fundusz promocji "+
+                promotionFoundComboBox.getSelectionModel().getSelectedItem().toString(),new Font(bf, 10)));
         paymentCell.setUseVariableBorders(true);
         paymentCell.setBorderColorRight(BaseColor.WHITE);
         paymentCell.setBorderColorLeft(BaseColor.WHITE);
@@ -576,7 +603,7 @@ public class VatInvoicePDF {
         paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         paymentTable.addCell(paymentCell);
 
-        paymentCell = new PdfPCell(new Paragraph(paidType.getSelectionModel().getSelectedItem().toString(),new Font(bf, 12)));
+        paymentCell = new PdfPCell(new Paragraph(String.valueOf(promotionFoundAmount)+" zł",new Font(bf, 10)));
         paymentCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         paymentCell.setUseVariableBorders(true);
@@ -584,29 +611,10 @@ public class VatInvoicePDF {
         paymentCell.setBorderColorLeft(BaseColor.WHITE);
         paymentCell.setBorderColorBottom(BaseColor.WHITE);
         paymentTable.addCell(paymentCell);
-
-        paymentCell = new PdfPCell(new Paragraph("Termin zapłaty:",new Font(bf, 12)));
-        paymentCell.setHorizontalAlignment(Element.ALIGN_LEFT);
-        paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        paymentCell.setUseVariableBorders(true);
-        paymentCell.setBorderColorRight(BaseColor.WHITE);
-        paymentCell.setBorderColorLeft(BaseColor.WHITE);
-        paymentCell.setBorderColorBottom(BaseColor.WHITE);
-        paymentTable.addCell(paymentCell);
-
-        paymentCell = new PdfPCell(new Paragraph(date.getPaymentDate(),new Font(bf, 12)));
-        paymentCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        paymentCell.setUseVariableBorders(true);
-        paymentCell.setBorderColorRight(BaseColor.WHITE);
-        paymentCell.setBorderColorLeft(BaseColor.WHITE);
-        paymentCell.setBorderColorBottom(BaseColor.WHITE);
-        paymentTable.addCell(paymentCell);
-
 
         PdfPCell mainCell1 = new PdfPCell();
         mainCell1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        mainCell1.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        mainCell1.setVerticalAlignment(Element.ALIGN_TOP);
         mainCell1.setBorder(0);
         mainCell1.addElement(paymentTable);
         mainSummaryTable.addCell(mainCell1);
@@ -718,9 +726,12 @@ public class VatInvoicePDF {
         customerSignCell.setBorderColorBottom(BaseColor.WHITE);
         customerSignTable.addCell(customerSignCell);
 
-        customerSignCell = new PdfPCell(new Paragraph(" "));
+        customerSignCell = new PdfPCell(new Paragraph("Oświadczam, że jestem rolnikiem ryczałtowym zwolnionym od podatku od towaru i " +
+                "usług na podstawie art. 43 ust.1 pkt 3 ustawy o podatku od towaru i usług ",new Font(bf, 8)));
         customerSignCell.setUseVariableBorders(true);
         customerSignCell.setBorderColorTop(BaseColor.WHITE);
+        customerSignCell.setHorizontalAlignment(Element.ALIGN_JUSTIFIED);
+        customerSignCell.setVerticalAlignment(Element.ALIGN_BOTTOM);
         customerSignCell.setMinimumHeight(70);
         customerSignTable.addCell(customerSignCell);
 
@@ -760,5 +771,4 @@ public class VatInvoicePDF {
         cell.setBorder(0);
         return cell;
     }
-
 }

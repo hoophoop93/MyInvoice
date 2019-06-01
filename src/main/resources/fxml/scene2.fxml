@@ -12,13 +12,16 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatRRInvoiceController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatRRInvoiceController">
     <center>
         <VBox prefHeight="229.0" prefWidth="657.0" BorderPane.alignment="CENTER">
             <children>
@@ -30,26 +33,23 @@
                            <children>
                               <Label text="Numer faktury: ">
                                  <VBox.margin>
-                                    <Insets bottom="25.0" top="5.0" />
+                                    <Insets bottom="18.0" top="5.0" />
                                  </VBox.margin>
                               </Label>
-                              <RadioButton mnemonicParsing="false" text="NIP" />
-                              <Label>
+                              <Line endX="5.0" startX="-100.0" strokeWidth="2.0" />
+                              <RadioButton fx:id="nipRadioButton" mnemonicParsing="false" onAction="#nipRadioButtonAction" text="NIP">
                                  <VBox.margin>
-                                    <Insets left="5.0" top="5.0" />
+                                    <Insets top="18.0" />
                                  </VBox.margin>
-                              </Label>
-                              <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="101.0" text="Dowód osobisty:">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="radioButtonGroup" />
+                                 </toggleGroup></RadioButton>
+                              <Label fx:id="radioButtonLabel" nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="161.0" text="Pesel:">
                                  <VBox.margin>
-                                    <Insets top="15.0" />
+                                    <Insets right="5.0" top="10.0" />
                                  </VBox.margin>
                               </Label>
-                              <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="102.0" text="Seria:">
-                                 <VBox.margin>
-                                    <Insets top="15.0" />
-                                 </VBox.margin>
-                              </Label>
-                              <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="101.0" text="Numer:">
+                              <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="102.0" text="Seria i numer:">
                                  <VBox.margin>
                                     <Insets top="15.0" />
                                  </VBox.margin>
@@ -57,6 +57,11 @@
                               <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="101.0" text="Wydany dnia:">
                                  <VBox.margin>
                                     <Insets top="15.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="115.0" text="Przez:">
+                                 <VBox.margin>
+                                    <Insets right="5.0" top="18.0" />
                                  </VBox.margin>
                               </Label>
                            </children>
@@ -68,36 +73,36 @@
                                     <Insets top="5.0" />
                                  </VBox.margin>
                               </TextField>
-                              <RadioButton mnemonicParsing="false" prefHeight="17.0" prefWidth="68.0" text="PESEL">
+                              <Line endX="100.0" startX="-100.0" strokeLineCap="ROUND" strokeWidth="2.0">
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </Line>
+                              <RadioButton fx:id="peselRadioButton" mnemonicParsing="false" onAction="#peselRadioButtonAction" prefHeight="17.0" prefWidth="68.0" selected="true" text="PESEL" toggleGroup="$radioButtonGroup">
                                  <VBox.margin>
                                     <Insets top="17.0" />
                                  </VBox.margin>
                               </RadioButton>
                               <TextField fx:id="peselOrNipTF">
                                  <VBox.margin>
-                                    <Insets top="5.0" />
-                                 </VBox.margin>
-                              </TextField>
-                              <TextField fx:id="idCardTF">
-                                 <VBox.margin>
-                                    <Insets top="5.0" />
-                                 </VBox.margin>
-                              </TextField>
-                              <TextField fx:id="seriaIdCardTf">
-                                 <VBox.margin>
-                                    <Insets top="5.0" />
-                                 </VBox.margin>
-                              </TextField>
-                              <TextField fx:id="numberIdCardTF">
-                                 <VBox.margin>
-                                    <Insets top="5.0" />
-                                 </VBox.margin>
-                              </TextField>
-                              <DatePicker fx:id="releaseDateTF" prefHeight="25.0" prefWidth="192.0">
-                                 <VBox.margin>
                                     <Insets top="7.0" />
                                  </VBox.margin>
+                              </TextField>
+                              <TextField fx:id="seriaAndNumberIdCard">
+                                 <VBox.margin>
+                                    <Insets top="9.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <DatePicker fx:id="releaseDateTF" prefHeight="25.0" prefWidth="210.0">
+                                 <VBox.margin>
+                                    <Insets top="9.0" />
+                                 </VBox.margin>
                               </DatePicker>
+                              <TextArea fx:id="releaseByTF" prefHeight="41.0" prefWidth="202.0" wrapText="true">
+                                 <VBox.margin>
+                                    <Insets top="9.0" />
+                                 </VBox.margin>
+                              </TextArea>
                            </children>
                         </VBox>
                      </children>
@@ -150,21 +155,8 @@
                                     <DatePicker fx:id="paymentDate" prefWidth="200.0" />
                                  </children>
                               </HBox>
-                              <HBox prefHeight="22.0" prefWidth="333.0" />
-                              <HBox prefHeight="36.0" prefWidth="333.0">
-                                 <children>
-                                    <Label text="Przez:">
-                                       <HBox.margin>
-                                          <Insets right="5.0" top="10.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                    <TextField fx:id="releaseByTF" prefHeight="25.0" prefWidth="288.0">
-                                       <HBox.margin>
-                                          <Insets top="5.0" />
-                                       </HBox.margin>
-                                    </TextField>
-                                 </children>
-                              </HBox>
+                              <HBox prefHeight="17.0" prefWidth="333.0" />
+                              <HBox prefHeight="36.0" prefWidth="333.0" />
                            </children>
                         </VBox>
                      </children>
@@ -254,7 +246,7 @@
                         <Insets left="5.0" right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <ComboBox prefHeight="25.0" prefWidth="353.0" />
+                  <ComboBox fx:id="promotionFoundCB" prefHeight="25.0" prefWidth="353.0" />
                </children>
             </HBox>
             </children>
