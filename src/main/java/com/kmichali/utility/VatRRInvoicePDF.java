@@ -332,7 +332,7 @@ public class VatRRInvoicePDF {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(row.getNameProduct(),new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(row.getNameProduct().getSelectionModel().getSelectedItem(),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);

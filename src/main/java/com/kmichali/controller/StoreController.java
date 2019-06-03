@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Color;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
@@ -53,6 +54,7 @@ public class StoreController  implements Initializable {
 
     Store store;
     List<Store> allProductList;
+    ObservableList<String> allProductListObservable;
 
     @Autowired
     StoreServiceImpl storeService;
@@ -69,7 +71,7 @@ public class StoreController  implements Initializable {
         if(!storeService.countProductStore(store.getName())) {
             storeService.save(store);
             allProductList.add(store);
-            storeProductsTable.setItems(getNameAndAmount());
+            prepareTableColumn();
         }else{
             message("Taki produkt jest już w magazynie!", Alert.AlertType.NONE,"Informacja");
         }
@@ -79,24 +81,27 @@ public class StoreController  implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         productCB.setItems(fillProductCB());
 
+        productCB.setValue(allProductListObservable.get(0));
         prepareTableColumn();
 
-        nameColumn.setCellValueFactory(  new PropertyValueFactory<>("name"));
-        amountColumn.setCellValueFactory(  new PropertyValueFactory<>("amount"));
-
-
-        storeProductsTable.setItems(getNameAndAmount());
     }
 
     private void prepareTableColumn(){
+        storeProductsTable.getColumns().clear();
         nameColumn  = new TableColumn<Store, String>("Nazwa produktu");
         nameColumn.setMinWidth(200);
 
         // Create column Email (Data type of String).
-        amountColumn   = new TableColumn<Store, String>("Ilość");
+        amountColumn   = new TableColumn<Store, String>("Ilość w mgazynie");
         amountColumn.setMinWidth(150);
 
         storeProductsTable.getColumns().addAll(nameColumn,amountColumn);
+        nameColumn.setCellValueFactory(  new PropertyValueFactory<>("name"));
+        amountColumn.setCellValueFactory(  new PropertyValueFactory<>("amount"));
+
+        storeProductsTable.setItems(getNameAndAmount());
+
+
     }
     private ObservableList<Store> getNameAndAmount(){
         ObservableList<Store> allProductListObservable = FXCollections.observableArrayList();
@@ -107,7 +112,9 @@ public class StoreController  implements Initializable {
     }
     private ObservableList<String> fillProductCB(){
         allProductList = (List<Store>) storeService.findAll();
-        ObservableList<String> allProductListObservable = FXCollections.observableArrayList();
+        allProductListObservable = FXCollections.observableArrayList();
+        allProductListObservable.add("Wszystko");
+
         for (Store s: allProductList ) {
             allProductListObservable.add(s.getName());
         }
@@ -125,33 +132,65 @@ public class StoreController  implements Initializable {
 
     @FXML
     void productComboBoxAction(ActionEvent event) {
-        ObservableList<ProductRaport> allProductListObservable = FXCollections.observableArrayList();;
+        ObservableList<ProductRaport> allProductList = FXCollections.observableArrayList();;
         List<ProductRaport> testList = transactionService.findTransactionByProduct(productCB.getSelectionModel().getSelectedItem());
 
-        nameCustomer  = new TableColumn<ProductRaport, String>("Klient");
-        nameCustomer.setMinWidth(200);
-        amountTransaction  = new TableColumn<ProductRaport, String>("Ilość - transakcja");
-        amountTransaction.setMinWidth(200);
-        wholeAmount  = new TableColumn<ProductRaport, String>("Ilość całkowita");
-        wholeAmount.setMinWidth(200);
-        sellDate  = new TableColumn<ProductRaport, String>("Data sprzedaży");
-        sellDate.setMinWidth(200);
-        type  = new TableColumn<ProductRaport, String>("Typ transakcji");
-        type.setMinWidth(200);
+        if (productCB.getSelectionModel().getSelectedItem().equals("Wszystko")) {
+            prepareTableColumn();
+        }else {
+            nameCustomer = new TableColumn<ProductRaport, String>("Klient");
+            nameCustomer.setMinWidth(200);
+            amountTransaction = new TableColumn<ProductRaport, String>("Ilość - transakcja");
+            amountTransaction.setMinWidth(200);
+            wholeAmount = new TableColumn<ProductRaport, String>("Ilość w magazynie");
+            wholeAmount.setMinWidth(200);
+            sellDate = new TableColumn<ProductRaport, String>("Data sprzedaży");
+            sellDate.setMinWidth(200);
+            type = new TableColumn<ProductRaport, String>("Typ transakcji");
+            type.setMinWidth(200);
 
-        storeProductsTable.getColumns().clear();
-        storeProductsTable.getColumns().addAll(nameCustomer,amountTransaction,type,wholeAmount,sellDate);
-        nameCustomer.setCellValueFactory(  new PropertyValueFactory<>("name"));
-        amountTransaction.setCellValueFactory(  new PropertyValueFactory<>("storeAmount"));
-        type.setCellValueFactory(  new PropertyValueFactory<>("type"));
-        sellDate.setCellValueFactory(  new PropertyValueFactory<>("date"));
-        wholeAmount.setCellValueFactory(  new PropertyValueFactory<>("wholeAmount"));
+            storeProductsTable.getColumns().clear();
+            storeProductsTable.getColumns().addAll(nameCustomer, amountTransaction, type, wholeAmount, sellDate);
+            nameCustomer.setCellValueFactory(new PropertyValueFactory<>("name"));
+            amountTransaction.setCellValueFactory(new PropertyValueFactory<>("storeAmount"));
+            type.setCellValueFactory(new PropertyValueFactory<>("type"));
+            sellDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+            wholeAmount.setCellValueFactory(new PropertyValueFactory<>("wholeAmount"));
 
-        for (ProductRaport productRaport: testList) {
-            allProductListObservable.add(productRaport);
+            for (ProductRaport productRaport : testList) {
+                allProductList.add(productRaport);
+            }
+            storeProductsTable.setItems(allProductList);
         }
-        storeProductsTable.setItems(allProductListObservable);
+        type.setCellFactory(column -> {
+            return new TableCell<ProductRaport, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty); //This is mandatory
 
+                    if (item == null || empty) { //If the cell is empty
+                        setText(null);
+                        setStyle("");
+                    } else { //If the cell is not empty
+
+                        setText(item); //Put the String data in the cell
+
+                        //We get here all the info of the Person of this row
+                        ProductRaport productRaport = getTableView().getItems().get(getIndex());
+
+                        // Style all persons wich type is "sprzedaż"
+                        if (productRaport.getType().equals("sprzedaż")) {
+                            setTextFill(Color.RED); //The text in red
+                            setStyle("-fx-font-weight:bold");
+                        } else {
+                            setTextFill(Color.GREEN); //The text in green
+                            setStyle("-fx-font-weight:bold");
+                        }
+                    }
+                }
+            };
+        });
     }
+
 
 }

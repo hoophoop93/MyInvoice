@@ -12,9 +12,6 @@ import com.kmichali.model.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import pl.allegro.finance.tradukisto.MoneyConverters;
-import pl.allegro.finance.tradukisto.ValueConverters;
-
-import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -306,7 +303,7 @@ public class VatInvoicePDF {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(row.getNameProduct(),new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(row.getNameProduct().getSelectionModel().getSelectedItem(),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);

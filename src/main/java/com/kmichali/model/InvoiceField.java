@@ -6,7 +6,7 @@ import javafx.scene.control.ComboBox;
 public class InvoiceField {
 
     public SimpleStringProperty lp;
-    public SimpleStringProperty nameProduct;
+    public ComboBox<String> nameProduct;
     public ComboBox<String> unitMeasure;
     public double amount;
     public double priceNetto;
@@ -21,10 +21,10 @@ public class InvoiceField {
         this.lp = new SimpleStringProperty(lp);
     }
 
-    public InvoiceField(String lp, String nameProduct, ComboBox<String> unitMeasure, double amount, double priceNetto,
+    public InvoiceField(String lp, ComboBox<String> nameProduct, ComboBox<String> unitMeasure, double amount, double priceNetto,
                         double productValue, ComboBox<String> tax, double priceVat, double priceBrutto) {
         this.lp = new SimpleStringProperty(lp);
-        this.nameProduct = new SimpleStringProperty(nameProduct);
+        this.nameProduct = nameProduct;
         this.unitMeasure = unitMeasure;
         this.amount = amount;
         this.priceNetto = priceNetto;
@@ -46,16 +46,12 @@ public class InvoiceField {
         this.lp = new SimpleStringProperty(lp);
     }
 
-    public String getNameProduct() {
-        return nameProduct.get();
-    }
-
-    public SimpleStringProperty nameProductProperty() {
+    public ComboBox<String> getNameProduct() {
         return nameProduct;
     }
 
-    public void setNameProduct(String nameProduct) {
-        this.nameProduct = new SimpleStringProperty(nameProduct);
+    public void setNameProduct(ComboBox<String> nameProduct) {
+        this.nameProduct = nameProduct;
     }
 
     public ComboBox<String> getUnitMeasure() {

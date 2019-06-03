@@ -43,6 +43,8 @@ public class VatRRInvoiceController implements Initializable {
     @FXML
     private ComboBox<String> veterinaryInspectorateCB;
     @FXML
+    private ComboBox<String> productNameComboBox;
+    @FXML
     private TextField invoiceNumberTF;
     @FXML
     private TextField peselOrNipTF;
@@ -176,7 +178,8 @@ public class VatRRInvoiceController implements Initializable {
     @FXML
     private void addNewRowAction(ActionEvent event) {
         invoiceField = new InvoiceField();
-        productTable.getItems().add(new InvoiceField(Integer.toString((productTable.getItems().size()+1)),"",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox())
+        productTable.getItems().add(new InvoiceField(Integer.toString((productTable.getItems().size()+1)),productNameComboBox = new ComboBox<>(fillProductNameComboBox())
+                ,unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox())
                 ,1,0, 0,taxComboBox = new ComboBox<>(fillTaxComboBox()),0,0));
         productTable.requestFocus();
         productTable.getSelectionModel().select(productTable.getItems().size()-1);
@@ -195,12 +198,12 @@ public class VatRRInvoiceController implements Initializable {
         stageManager.switchScene(FxmlView.PRIMARYSTAGE);
     }
 
-    @FXML
-    public void changeNameProductCellEvent(TableColumn.CellEditEvent editedCell){
-        invoiceField = productTable.getSelectionModel().getSelectedItem();
-        invoiceField.setNameProduct(editedCell.getNewValue().toString());
-
-    }
+//    @FXML
+//    public void changeNameProductCellEvent(TableColumn.CellEditEvent editedCell){
+//        invoiceField = productTable.getSelectionModel().getSelectedItem();
+//        invoiceField.setNameProduct(editedCell.getNewValue().toString());
+//
+//    }
     @FXML
     public void changeAmountCellEvent(TableColumn.CellEditEvent editedCell){
         invoiceField = productTable.getSelectionModel().getSelectedItem();
@@ -459,7 +462,8 @@ public class VatRRInvoiceController implements Initializable {
     }
     private ObservableList<InvoiceField> getFirstRow(){
         ObservableList<InvoiceField> selectComboBox = FXCollections.observableArrayList();
-        selectComboBox.add(new InvoiceField("1","",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),1,0,0 ,
+        selectComboBox.add(new InvoiceField("1",productNameComboBox = new ComboBox<>(fillProductNameComboBox()),
+                unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),1,0,0 ,
                 taxComboBox = new ComboBox<>(fillTaxComboBox()),0,0));
         unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
         return selectComboBox;
@@ -526,5 +530,15 @@ public class VatRRInvoiceController implements Initializable {
 
         releaseDateTF.setValue(localDate);
         releaseByTF.setText(identityCard.getOrganization());
+    }
+    private  ObservableList<String> fillProductNameComboBox(){
+        List<Store> allProductList = (List<Store>) storeService.findAll();
+        ObservableList<String> allProductListObservable = FXCollections.observableArrayList();
+        allProductListObservable.add("Wszystko");
+
+        for (Store s: allProductList ) {
+            allProductListObservable.add(s.getName());
+        }
+        return allProductListObservable;
     }
 }

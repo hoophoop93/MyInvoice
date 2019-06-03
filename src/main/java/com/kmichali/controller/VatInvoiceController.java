@@ -47,6 +47,8 @@ public class VatInvoiceController implements Initializable {
     @FXML
     private ComboBox<String> unitMeasureComboBox;
     @FXML
+    private ComboBox<String> productNameComboBox;
+    @FXML
     private ComboBox<String> selectCustomerCB;
     @FXML
     private Button addNewRow;
@@ -55,7 +57,7 @@ public class VatInvoiceController implements Initializable {
     @FXML
     private TableColumn<InvoiceField,String>  lpColumn;
     @FXML
-    private TableColumn<InvoiceField, String> productNameColumn;
+    private TableColumn<InvoiceField, ComboBox> productNameColumn;
     @FXML
     private TableColumn<InvoiceField, ComboBox> unitMeasureColumn;
     @FXML
@@ -148,12 +150,12 @@ public class VatInvoiceController implements Initializable {
      * This method will allow the user to double click on a cell and update
      * the name of product
      */
-    @FXML
-    public void changeNameProductCellEvent(TableColumn.CellEditEvent editedCell){
-        invoiceField = productTable.getSelectionModel().getSelectedItem();
-        invoiceField.setNameProduct(editedCell.getNewValue().toString());
-
-    }
+//    @FXML
+//    public void changeNameProductCellEvent(TableColumn.CellEditEvent editedCell){
+//        invoiceField = productTable.getSelectionModel().getSelectedItem();
+//        invoiceField.setNameProduct(editedCell.getNewValue().toString());
+//
+//    }
     @FXML
     public void changeAmountCellEvent(TableColumn.CellEditEvent editedCell){
         invoiceField = productTable.getSelectionModel().getSelectedItem();
@@ -221,14 +223,17 @@ public class VatInvoiceController implements Initializable {
     @FXML
     private void addNewRowAction(ActionEvent event) {
         invoiceField = new InvoiceField();
-        productTable.getItems().add(new InvoiceField(Integer.toString((productTable.getItems().size()+1)),"",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox())
-                ,1,0, 0,taxComboBox = new ComboBox<>(fillTaxComboBox()),0,0));
+        productTable.getItems().add(new InvoiceField(Integer.toString((productTable.getItems().size()+1)),productNameComboBox = new ComboBox<>(fillProductNameComboBox())
+                ,unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),1,0, 0,
+                taxComboBox = new ComboBox<>(fillTaxComboBox()),0,0));
         productTable.requestFocus();
         productTable.getSelectionModel().select(productTable.getItems().size()-1);
         productTable.getSelectionModel().focus(productTable.getItems().size()-1);
 
         taxComboBoxObjectList.add(taxComboBox);
         taxComboBox.setValue(fillTaxComboBox().get(0));
+        productNameComboBox.setValue(fillProductNameComboBox().get(0));
+        productNameComboBox.setEditable(true);
         unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
         invoiceField.setLp(Integer.toString((productTable.getItems().size())));
 
@@ -319,7 +324,7 @@ public class VatInvoiceController implements Initializable {
     void createInvoiceAction(ActionEvent event) throws DocumentException, IOException {
         Optional<ButtonType> result = null;
         for (InvoiceField row: productTable.getItems()) {
-            store = storeService.findByName(row.getNameProduct());
+            store = storeService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
         }
             if(store == null){
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -399,7 +404,7 @@ public class VatInvoiceController implements Initializable {
             transaction.setCustomer(customer);
             transaction.setSeller(seller);
 
-            store = storeService.findByName(row.getNameProduct());
+            store = storeService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
             if(store != null) {
                 getProductAmount = store.getAmount();
                 if (invoiceTypeIdentyfier == 1) {
@@ -420,7 +425,7 @@ public class VatInvoiceController implements Initializable {
 
         //product
             product = new Product();
-            product.setName(row.getNameProduct());
+            product.setName(row.getNameProduct().getSelectionModel().getSelectedItem());
             //if(!productService.checkIfExist(row.getNameProduct())) {
                 productService.save(product);
 
@@ -449,12 +454,14 @@ public class VatInvoiceController implements Initializable {
         productTable.setItems(getFirstRow());
         taxComboBox.setValue(fillTaxComboBox().get(0));
         unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
+        productNameComboBox.setValue(fillProductNameComboBox().get(0));
+        productNameComboBox.setEditable(true);
+        productNameComboBox.setMinWidth(300);
         taxComboBoxObjectList.add(taxComboBox);
         productTable.setEditable(true);
         lpColumn.setEditable(false);
 
         lpColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
-        productNameColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
         amountColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn(new DoubleStringConverter()));
         productValueColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn((new DoubleStringConverter())));
         priceNettoColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn((new DoubleStringConverter())));
@@ -463,7 +470,7 @@ public class VatInvoiceController implements Initializable {
 
 
         lpColumn.setCellValueFactory(  new PropertyValueFactory<>("lp"));
-        productNameColumn.setCellValueFactory(  new PropertyValueFactory<>("nameProduct"));
+        productNameColumn.setCellValueFactory(   new PropertyValueFactory<InvoiceField, ComboBox>("nameProduct"));
         unitMeasureColumn.setCellValueFactory(  new PropertyValueFactory<>("unitMeasure"));
         amountColumn.setCellValueFactory(  new PropertyValueFactory<>("amount"));
         priceNettoColumn.setCellValueFactory(  new PropertyValueFactory<>("priceNetto"));
@@ -487,7 +494,8 @@ public class VatInvoiceController implements Initializable {
     }
     private ObservableList<InvoiceField> getFirstRow(){
         ObservableList<InvoiceField> selectComboBox = FXCollections.observableArrayList();
-        selectComboBox.add(new InvoiceField("1","",unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),1,0,0 ,
+        selectComboBox.add(new InvoiceField("1",productNameComboBox = new ComboBox<>(fillProductNameComboBox()),
+                unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),1,0,0 ,
                 taxComboBox = new ComboBox<>(fillTaxComboBox()),0,0));
 
         return selectComboBox;
@@ -503,6 +511,15 @@ public class VatInvoiceController implements Initializable {
         taxComboboxList.add("0%");
         taxComboboxList.add("zw.");
         return taxComboboxList;
+    }
+    private  ObservableList<String> fillProductNameComboBox(){
+        List<Store> allProductList = (List<Store>) storeService.findAll();
+        ObservableList<String> allProductListObservable = FXCollections.observableArrayList();
+
+        for (Store s: allProductList ) {
+            allProductListObservable.add(s.getName());
+        }
+        return allProductListObservable;
     }
     private  ObservableList<String> fillUnitMeasureComboBox(){
         ObservableList<String> fillUnitMeasureList = FXCollections.observableArrayList();
