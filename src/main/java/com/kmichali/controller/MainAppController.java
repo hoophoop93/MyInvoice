@@ -49,9 +49,13 @@ public class MainAppController {
     }
 
     @FXML
+    public void settingsAction(ActionEvent event) throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.SETTINGSSTAGE);
+    }
+
+    @FXML
     void storeAction(ActionEvent event) throws UnsupportedEncodingException {
         stageManager.switchScene(FxmlView.STORESTAGE);
-
     }
     private void message(String message, Alert.AlertType alertType, String typeMessage){
         Alert alert = new Alert(alertType, message, ButtonType.OK);

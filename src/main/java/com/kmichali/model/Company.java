@@ -18,6 +18,8 @@ public class Company {
     private String regon;
     @Column(name = "phone_umber")
     private String phoneNumber;
+    @Column(name ="account_number")
+    private String accountNumber;
 
     @OneToOne
     @JoinColumn(name = "customer_id")
@@ -81,5 +83,13 @@ public class Company {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 }

@@ -18,7 +18,7 @@ public enum FxmlView {
     INVOICERRSTAGE {
         @Override
         public String getTitle() {
-            return getStringFromResourceBundle("primaryStage.title");
+            return getStringFromResourceBundle("invoiceVatRR.title");
         }
 
         @Override
@@ -29,7 +29,7 @@ public enum FxmlView {
     INVOICEVATSTAGE {
         @Override
         public String getTitle() {
-            return getStringFromResourceBundle("primaryStage.title");
+            return getStringFromResourceBundle("invoiceVat.title");
         }
 
         @Override
@@ -40,11 +40,21 @@ public enum FxmlView {
     STORESTAGE {
         @Override
         public String getTitle() {
-            return getStringFromResourceBundle("primaryStage.title");
+            return getStringFromResourceBundle("store.title");
         }
         @Override
         public String getFxmlFile() {
             return "/fxml/store.fxml";
+        }
+    },
+    SETTINGSSTAGE {
+        @Override
+        public String getTitle() {
+            return getStringFromResourceBundle("settings.title");
+        }
+        @Override
+        public String getFxmlFile() {
+            return "/fxml/settings.fxml";
         }
     };
 
