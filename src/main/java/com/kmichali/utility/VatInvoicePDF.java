@@ -21,24 +21,59 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+
 public class VatInvoicePDF {
 
-    private String PDFPATH="C:/Users/Kamil/Desktop/pdf/";
+    private String PDFPATH;
     public static final String IMG1 = "src/main//resources/images/grain.png";
     Document document;
-
+    String invoiceNum;
 
     public VatInvoicePDF(Invoice invoice, Date date, Company companySeller,Company companyCustomer,
-                         TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType) throws DocumentException, IOException {
-        CreateDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,invoiceType);
-        OpenPDF("C:/Users/Kamil/Desktop/pdf/t.pdf");
+                         TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType,String invoiceNumber, String path) throws DocumentException, IOException {
+        PDFPATH = path.replaceAll("\\\\", "/")+"/";
+        CreateDirectory(PDFPATH,invoiceNumber);
+        CreateDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,invoiceType,invoiceNumber);
+        OpenPDF(PDFPATH+invoiceNum+".pdf");
     }
+    public void CreateDirectory(String path, String invoiceNumber){
+        String yearWithInvoiceNumber,month;
+        if(invoiceNumber.length() == 10)yearWithInvoiceNumber = invoiceNumber.substring(6,invoiceNumber.length());
+        else yearWithInvoiceNumber = invoiceNumber.substring(5,invoiceNumber.length());
+        File file = new File(path+yearWithInvoiceNumber);
+        if(!file.exists()){
+            if(file.mkdir()){
+                System.out.println("Directory was created");
+            }
+        }
+        if(invoiceNumber.length() == 10) invoiceNumber = invoiceNumber.substring(3,5);
+        else invoiceNumber = invoiceNumber.substring(2, 4);
+        String tmpInvoiceNumber = invoiceNumber.substring(0,1);
+        if(tmpInvoiceNumber.equals("0")){
+            invoiceNumber = invoiceNumber.substring(1,2);
+        }
+        else {
+            invoiceNumber = invoiceNumber.substring(0,2);
+        }
+        month = invoiceNumber;
+        int monthValue = Integer.parseInt(month);
+        Month monthEnum = Month.values()[monthValue-1];
 
+        File file2 = new File(PDFPATH+yearWithInvoiceNumber+"/"+monthEnum);
+        if(!file2.exists()){
+            if(file2.mkdir()){
+                System.out.println("Directory was created");
+            }
+        }
+        PDFPATH += yearWithInvoiceNumber+"/"+monthEnum+"/";
+    }
     private void CreateDocument(Invoice invoice, Date date, Company companySeller,Company companyCustomer,
-                                TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType) throws DocumentException, IOException {
+                                TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType,String invoiceNumber) throws DocumentException, IOException {
+
+        invoiceNum = invoiceNumber.replaceAll("/","-");
         document = new Document(PageSize.A4,5,5,20,20);
         try {
-            PdfWriter.getInstance(document, new FileOutputStream(PDFPATH+"t.pdf"));
+            PdfWriter.getInstance(document, new FileOutputStream(PDFPATH+ invoiceNum+".pdf"));
         } catch (DocumentException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {

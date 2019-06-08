@@ -12,9 +12,9 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.SettingsController">
    <left>
-      <HBox prefHeight="564.0" prefWidth="399.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="564.0" prefWidth="388.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox prefHeight="564.0" prefWidth="407.0">
+            <VBox prefHeight="564.0" prefWidth="448.0">
                <children>
                   <HBox prefHeight="32.0" prefWidth="310.0">
                      <children>
@@ -168,4 +168,34 @@
          </children>
       </HBox>
    </left>
+   <right>
+      <HBox prefHeight="564.0" prefWidth="516.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox prefHeight="564.0" prefWidth="568.0">
+               <children>
+                  <HBox prefHeight="23.0" prefWidth="516.0">
+                     <children>
+                        <Label text="Ścieżka zapisu:">
+                           <HBox.margin>
+                              <Insets top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="40.0" prefWidth="516.0">
+                     <children>
+                        <TextField fx:id="pathTF" editable="false" prefHeight="25.0" prefWidth="494.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#selectPathAction" text="Zmień scieżke" />
+                     </children>
+                  </HBox>
+                  <Button mnemonicParsing="false" onAction="#backButtonAction" text="Powrót" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </right>
 </BorderPane>

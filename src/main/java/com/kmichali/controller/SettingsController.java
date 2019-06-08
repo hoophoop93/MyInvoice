@@ -1,18 +1,25 @@
 package com.kmichali.controller;
 
+import com.kmichali.config.StageManager;
 import com.kmichali.model.Company;
 import com.kmichali.model.Seller;
+import com.kmichali.model.Settings;
 import com.kmichali.serviceImpl.CompanyServiceImpl;
 import com.kmichali.serviceImpl.SellerServiceImpl;
-import javafx.application.Application;
+import com.kmichali.serviceImpl.SettingsServiceImpl;
+import com.kmichali.view.FxmlView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -49,10 +56,20 @@ public class SettingsController implements Initializable {
     @FXML
     private TextField accountNumberTF;
 
+    @FXML
+    private TextField pathTF;
+
+    @Lazy
+    @Autowired
+    private StageManager stageManager;
     @Autowired
     SellerServiceImpl sellerService;
     @Autowired
     CompanyServiceImpl companyService;
+    @Autowired
+    SettingsServiceImpl settingsService;
+
+    Settings settings;
     Seller seller;
     Company company;
 
@@ -72,6 +89,10 @@ public class SettingsController implements Initializable {
        regonTF.setText(company.getRegon());
        phoneNumberTF.setText(company.getPhoneNumber());
        accountNumberTF.setText(company.getAccountNumber());
+
+       settings = settingsService.find(1L);
+       if(settings != null)
+       pathTF.setText(settings.getPath());
     }
     @FXML
     void editAction(ActionEvent event) {
@@ -119,4 +140,24 @@ public class SettingsController implements Initializable {
         company.setAccountNumber(accountNumberTF.getText());
         companyService.update(company);
     }
+
+    @FXML
+    void selectPathAction(ActionEvent event) {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory = directoryChooser.showDialog(null);
+
+        if(selectedDirectory == null){
+            //No Directory selected
+        }else{
+
+            settings.setPath(selectedDirectory.getAbsolutePath());
+            settingsService.save(settings);
+            pathTF.setText(selectedDirectory.getAbsolutePath());
+        }
+    }
+    @FXML
+    void backButtonAction(ActionEvent event) throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.PRIMARYSTAGE);
+    }
+
 }

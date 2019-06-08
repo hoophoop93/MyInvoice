@@ -144,6 +144,8 @@ public class VatInvoiceController implements Initializable {
     @Lazy
     @Autowired
     private StageManager stageManager;
+    @Autowired
+    SettingsServiceImpl settingsService;
 
     /**
      *
@@ -441,7 +443,9 @@ public class VatInvoiceController implements Initializable {
 //        customer = customerService.find(1);
         Company companyCustomer=companyService.findByCustomer(customer);
         Company companySeller=companyService.findBySeller(seller);
-        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType,invoiceTypeIdentyfier);
+        Settings settings = settingsService.find(1);
+        String path = settings.getPath();
+        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType,invoiceTypeIdentyfier,invoiceNumberTF.getText(),path);
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -652,7 +656,7 @@ public class VatInvoiceController implements Initializable {
     }
     private void generateInvoiceNumber(){
         int invoiceCounter=1;
-        String invoiceNumberDB;
+        String invoiceNumberDB,currentMonthInvoiceNumber;
         String invoiceNumber = String.valueOf(issueDate.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         long maxId=invoiceService.getLastInvoiceNumeber("Vat");
         if(maxId ==0) invoiceNumberDB ="1"+ invoiceNumber.substring(2);
@@ -660,7 +664,11 @@ public class VatInvoiceController implements Initializable {
             Invoice invoice = invoiceService.find(maxId);
             invoiceNumberDB = invoice.getInvoiceNumber();
 
-            if (invoiceService.countInvoiceNumber(invoiceNumberDB) && !invoiceNumber.substring(0, 2).equals("01")) {
+            String currentMonth = invoiceNumber.substring(3,5);
+            if(invoiceNumberDB.length() == 10) currentMonthInvoiceNumber = invoiceNumberDB.substring(3,5);
+            else currentMonthInvoiceNumber = invoiceNumberDB.substring(2,4);
+
+            if (invoiceService.countInvoiceNumber(invoiceNumberDB) && currentMonth.equals(currentMonthInvoiceNumber) ) {
                 if (invoiceNumberDB.substring(2, 3).equals("/")) invoiceNumberDB = invoiceNumberDB.substring(0, 2);
                 else invoiceNumberDB = invoiceNumberDB.substring(0, 1);
                 invoiceCounter = Integer.parseInt(invoiceNumberDB);
