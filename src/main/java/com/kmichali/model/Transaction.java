@@ -10,7 +10,7 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_transaction", updatable = false, nullable = false)
-    private int id;
+    private long id;
     @Column(name = "price_netto")
     private double priceNetto;
     @Column(name = "price_brutto")
@@ -21,8 +21,15 @@ public class Transaction {
     private String tax;
     @Column(name = "store_amount")
     private double storeAmount;
-    @Column
+    @Column(name="type")
     private String type;
+    @Column(name = "price_vat")
+    private double priceVat;
+    @Column(name = "product_value")
+    private double productValue;
+    @Column(name = "unit_measure")
+    private String unitMeasure;
+
 
     @OneToOne
     @JoinColumn(name = "customer_id")
@@ -82,11 +89,11 @@ public class Transaction {
         this.productTransactionList = productTransactionList;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -136,5 +143,29 @@ public class Transaction {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public double getPriceVat() {
+        return priceVat;
+    }
+
+    public void setPriceVat(double priceVat) {
+        this.priceVat = priceVat;
+    }
+
+    public double getProductValue() {
+        return productValue;
+    }
+
+    public void setProductValue(double productValue) {
+        this.productValue = productValue;
+    }
+
+    public String getUnitMeasure() {
+        return unitMeasure;
+    }
+
+    public void setUnitMeasure(String unitMeasure) {
+        this.unitMeasure = unitMeasure;
     }
 }

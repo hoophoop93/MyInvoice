@@ -83,4 +83,9 @@ public class InvoiceServiceImpl implements InvoiceService {
             }
             return result;
     }
+
+    @Override
+    public Invoice findByinvoiceNumber(String invoiceNumber) {
+        return invoiceRepository.findByinvoiceNumber(invoiceNumber);
+    }
 }

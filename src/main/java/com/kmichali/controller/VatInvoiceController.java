@@ -102,6 +102,8 @@ public class VatInvoiceController implements Initializable {
     private TextField addressTF;
     @FXML
     private TextField nipTF;
+    @FXML
+    private ToggleGroup invoiceType;
 
     private InvoiceField invoiceField;
     private double priceNetto;
@@ -235,6 +237,7 @@ public class VatInvoiceController implements Initializable {
         taxComboBoxObjectList.add(taxComboBox);
         taxComboBox.setValue(fillTaxComboBox().get(0));
         productNameComboBox.setValue(fillProductNameComboBox().get(0));
+        productNameComboBox.setMinWidth(300);
         productNameComboBox.setEditable(true);
         unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
         invoiceField.setLp(Integer.toString((productTable.getItems().size())));
@@ -325,14 +328,10 @@ public class VatInvoiceController implements Initializable {
     @Transactional
     void createInvoiceAction(ActionEvent event) throws DocumentException, IOException {
         Optional<ButtonType> result = null;
-        for (InvoiceField row: productTable.getItems()) {
-            store = storeService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
-        }
-            if(store == null){
+            if(invoiceService.countInvoiceNumber(invoiceNumberTF.getText())){
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Informacja");
-                alert.setHeaderText("Produkt/y nie istenieja w magazynie. Stan magazynoway nie zostanie obliczony. Kontynuować?");
-                alert.setContentText("Kontynuować?");
+                alert.setHeaderText("Faktura o takim numerze już istnieje. Chcesz ją zamienić?");
                 result = alert.showAndWait();
 
                 if (result.get() == ButtonType.CANCEL) return;
@@ -404,6 +403,9 @@ public class VatInvoiceController implements Initializable {
             transaction.setAmount(row.getAmount());
             transaction.setInvoice(invoice);
             transaction.setCustomer(customer);
+            transaction.setPriceVat(row.getPriceVat());
+            transaction.setProductValue(row.getProductValue());
+            transaction.setUnitMeasure(row.getUnitMeasure().getSelectionModel().getSelectedItem());
             transaction.setSeller(seller);
 
             store = storeService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
@@ -682,5 +684,77 @@ public class VatInvoiceController implements Initializable {
 
 
         invoiceNumberTF.setText(invoiceNumberDB);
+    }
+    @FXML
+    public void onEnter(ActionEvent ae){
+        ObservableList<String> allProductListObservableTmp = FXCollections.observableArrayList();
+        int productIndex=0;
+        int taxIndex =0;
+        int unitMeasureIndex =0;
+
+        Invoice invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
+        LocalDate localDate = LocalDate.parse(invoice.getDate().getIssueDate()); //parse String to localdate
+        issueDate.setValue(localDate);
+        localDate = LocalDate.parse(invoice.getDate().getSellDate()); //parse String to localdate
+        sellDate.setValue(localDate);
+        localDate = LocalDate.parse(invoice.getDate().getPaymentDate()); //parse String to localdate
+        paymentDate.setValue(localDate);
+        paidType.setValue(invoice.getPaidType());
+
+        List idTransactionList =transactionService.findByInvoice(invoice.getInvoiceNumber(),invoice.getId());
+        long idTransaction = (Long)idTransactionList.get(0);
+        Transaction transaction = transactionService.find(idTransaction);
+        Company customerCompany = companyService.findByCustomer(transaction.getCustomer());
+        companyNameTA.setText(customerCompany.getName());
+        customerNameTF.setText(transaction.getCustomer().getName()+ " "+transaction.getCustomer().getSurname());
+        streetTF.setText(transaction.getCustomer().getAddress());
+        postalCodeTF.setText(transaction.getCustomer().getPostalCode());
+        addressTF.setText(transaction.getCustomer().getCity());
+        nipTF.setText(customerCompany.getNip());
+        if(transaction.getType().equals("kupno"))invoiceTypeBuyRB.setSelected(true);
+        else invoiceTypeSellRB.setSelected(true);
+        productTable.getItems().clear();
+
+        //create row in table
+
+        Transaction transaction2;
+        ProductTransaction productTransaction;
+        for(int i=0; i<idTransactionList.size(); i++){
+            idTransaction = (Long)idTransactionList.get(i);
+            transaction2 = transactionService.find(idTransaction);
+            productTransaction = productTransactionService.findByTransaction(transaction2);
+            allProductListObservableTmp = fillProductNameComboBox();
+
+            if(!allProductListObservableTmp.contains(productTransaction.getProduct().getName()))
+                allProductListObservableTmp.add(productTransaction.getProduct().getName());
+
+            for(int t=0; t<allProductListObservableTmp.size(); t++){
+                if(allProductListObservableTmp.get(t).equals(productTransaction.getProduct().getName()))
+                productIndex =t;
+            }
+            for(int t=0; t<fillTaxComboBox().size(); t++){
+                if(fillTaxComboBox().get(t).equals(productTransaction.getTransaction().getTax()))
+                taxIndex =t;
+            }
+            for(int t=0; t<fillUnitMeasureComboBox().size(); t++){
+                if(fillUnitMeasureComboBox().get(t).equals(productTransaction.getTransaction().getUnitMeasure()))
+                unitMeasureIndex =t;
+            }
+            productTable.getItems().add(new InvoiceField(Integer.toString(
+                    i+1),
+                    productNameComboBox = new ComboBox<>(allProductListObservableTmp),
+                    unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),
+                    productTransaction.getTransaction().getAmount(),
+                    productTransaction.getTransaction().getPriceNetto(),
+                    productTransaction.getTransaction().getProductValue(),
+                    taxComboBox = new ComboBox<>(fillTaxComboBox()),
+                    productTransaction.getTransaction().getPriceVat(),
+                    productTransaction.getTransaction().getPriceBrutto()));
+
+                    productNameComboBox.setValue(allProductListObservableTmp.get(productIndex));
+                    productNameComboBox.setMinWidth(300);
+                    taxComboBox.setValue(fillTaxComboBox().get(taxIndex));
+                    unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(unitMeasureIndex));
+        }
     }
 }

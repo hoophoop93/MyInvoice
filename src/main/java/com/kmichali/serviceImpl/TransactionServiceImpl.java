@@ -1,5 +1,6 @@
 package com.kmichali.serviceImpl;
 
+import com.kmichali.model.Invoice;
 import com.kmichali.model.ProductRaport;
 import com.kmichali.model.Transaction;
 import com.kmichali.repository.TransactionRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.List;
 
 @Service
@@ -56,7 +58,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction find(long id) {
-        return null;
+        return transactionRepository.findOne(id);
     }
 
     @Override
@@ -73,5 +75,22 @@ public class TransactionServiceImpl implements TransactionService {
                 .setResultTransformer( Transformers.aliasToBean( ProductRaport.class ) )
                 .getResultList();
         return transactionList;
+    }
+
+
+    @Override
+    public List findByInvoice(String invoiceNumber, long id) {
+        String queryString = "Select t.id from Transaction t, Invoice i where t.invoice.id = :id and i.invoiceNumber = :invoiceNumber ";
+
+       Query query = getEntityManager().createQuery(queryString);
+       query.setParameter("invoiceNumber", invoiceNumber);
+       query.setParameter("id", id);
+       List result=null;
+       try {
+            result = query.getResultList();
+       }catch(NullPointerException e){
+
+       }
+       return result;
     }
 }

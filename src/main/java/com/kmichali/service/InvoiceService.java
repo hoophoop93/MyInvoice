@@ -6,4 +6,5 @@ import com.kmichali.model.Invoice;
 public interface InvoiceService extends GenericService<Invoice> {
     boolean countInvoiceNumber(String invoiceNumber);
     long getLastInvoiceNumeber(String invoiceType);
+    Invoice findByinvoiceNumber(String invoiceNumber);
 }

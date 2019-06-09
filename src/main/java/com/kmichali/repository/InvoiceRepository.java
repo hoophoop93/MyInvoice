@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface InvoiceRepository extends CrudRepository<Invoice,Long> {
 
     Invoice findById(long id);
+    Invoice findByinvoiceNumber(String invoiceNumber);
 }

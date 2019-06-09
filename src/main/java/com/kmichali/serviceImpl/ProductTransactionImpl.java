@@ -1,6 +1,7 @@
 package com.kmichali.serviceImpl;
 
 import com.kmichali.model.ProductTransaction;
+import com.kmichali.model.Transaction;
 import com.kmichali.repository.ProductTransactionRepository;
 import com.kmichali.service.ProductService;
 import com.kmichali.service.ProductTransactionService;
@@ -41,5 +42,10 @@ public class ProductTransactionImpl implements ProductTransactionService {
     @Override
     public Iterable<ProductTransaction> findAll() {
         return null;
+    }
+
+    @Override
+    public ProductTransaction findByTransaction(Transaction transaction) {
+        return productTransactionRepository.findByTransaction(transaction);
     }
 }
