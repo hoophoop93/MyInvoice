@@ -327,14 +327,25 @@ public class VatInvoiceController implements Initializable {
     @FXML
     @Transactional
     void createInvoiceAction(ActionEvent event) throws DocumentException, IOException {
+        boolean sameInvoiceNumber = false;
+        long idTransaction =0;
         Optional<ButtonType> result = null;
             if(invoiceService.countInvoiceNumber(invoiceNumberTF.getText())){
+                ButtonType okButton = new ButtonType("Tak", ButtonBar.ButtonData.YES);
+                ButtonType noButton = new ButtonType("Nie", ButtonBar.ButtonData.NO);
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.getButtonTypes().setAll(okButton, noButton);
                 alert.setTitle("Informacja");
-                alert.setHeaderText("Faktura o takim numerze już istnieje. Chcesz ją zamienić?");
+                alert.setHeaderText("Faktura o takim numerze już istnieje");
+                alert.setContentText("Chcesz ja zamienić?");
                 result = alert.showAndWait();
 
-                if (result.get() == ButtonType.CANCEL) return;
+                if (result.get().getText().equals("Nie")) {
+                    generateInvoiceNumber();
+                    return;
+                }else{
+                    sameInvoiceNumber= true;
+                }
             }
 
 
@@ -349,7 +360,13 @@ public class VatInvoiceController implements Initializable {
         String issueDateToString = String.valueOf(issueDate.getValue());
         String sellDateToString = String.valueOf(sellDate.getValue());
         String paymentDateToString = String.valueOf(paymentDate.getValue());
-        date = new Date();
+
+        if(sameInvoiceNumber == true){
+            invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
+           date = invoice.getDate();
+        }else {
+            date = new Date();
+        }
         date.setIssueDate(issueDateToString);
         date.setSellDate(sellDateToString);
         date.setPaymentDate(paymentDateToString);
@@ -370,7 +387,9 @@ public class VatInvoiceController implements Initializable {
         }
 
         //company
-
+        if(sameInvoiceNumber == true){
+            customer = customerService.findCustomer(splited[0],splited[1],streetTF.getText());
+        }
         company = new Company();
         company.setName(companyNameTA.getText());
         company.setNip(nipTF.getText());
@@ -385,18 +404,29 @@ public class VatInvoiceController implements Initializable {
         companyService.save(company);
 
        // invoice
-        invoice = new Invoice();
+        if(sameInvoiceNumber == true){
+            invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
+        }else{
+            invoice = new Invoice();
+        }
+
         invoice.setInvoiceNumber(invoiceNumberTF.getText());
         invoice.setPaidType(paidType.getSelectionModel().getSelectedItem());
         invoice.setInvoiceType("Vat");
         invoice.setDate(date);
         invoiceService.save(invoice);
 
+        List idTransactionList =transactionService.findByInvoice(invoice.getInvoiceNumber(),invoice.getId());
 
         //transaction
         List<Transaction> transactionList = new ArrayList<>();
         for (InvoiceField row: productTable.getItems()) {
-            transaction = new Transaction();
+            if(sameInvoiceNumber == true){
+                idTransaction = (Long)idTransactionList.get(productTable.getSelectionModel().getSelectedIndex()-1);
+                transaction = transactionService.find(idTransaction);
+            }else {
+                transaction = new Transaction();
+            }
             transaction.setTax(row.getTax().getSelectionModel().getSelectedItem());
             transaction.setPriceNetto(row.getPriceNetto());
             transaction.setPriceBrutto(row.getPriceBrutto());
@@ -409,15 +439,27 @@ public class VatInvoiceController implements Initializable {
             transaction.setSeller(seller);
 
             store = storeService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
-            if(store != null) {
+            if(store == null){
+                if (invoiceTypeIdentyfier == 0)  transaction.setType("sprzedaż");
+                else {
+                    transaction.setType("kupno");
+                    //store = new Store();
+                    //store.setName(row.getNameProduct().getSelectionModel().getSelectedItem());
+                    //store.setAmount(row.getAmount());
+                }
+            }else{
                 getProductAmount = store.getAmount();
                 if (invoiceTypeIdentyfier == 1) {
                     calculateAmount = getProductAmount + row.getAmount();
                     transaction.setType("kupno");
                 }
                 else {
-                    calculateAmount = getProductAmount - row.getAmount();
-                    transaction.setType("sprzedaż");
+                    if(getProductAmount - row.getAmount() > 0) {
+                        calculateAmount = getProductAmount - row.getAmount();
+                        transaction.setType("sprzedaż");
+                    }else{
+
+                    }
                 }
                 store.setAmount(calculateAmount);
                 storeService.update(store);
@@ -425,16 +467,24 @@ public class VatInvoiceController implements Initializable {
 
                 transaction.setStore(store);
             }
+
             transactionService.save(transaction);
 
-        //product
-            product = new Product();
-            product.setName(row.getNameProduct().getSelectionModel().getSelectedItem());
-            //if(!productService.checkIfExist(row.getNameProduct())) {
+            //product
+            if(productService.checkIfExist(row.getNameProduct().getSelectionModel().getSelectedItem())){
+                product = productService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
+            }else {
+                product = new Product();
+                product.setName(row.getNameProduct().getSelectionModel().getSelectedItem());
                 productService.save(product);
+            }
 
             //join product and transaction
-            productTransaction = new ProductTransaction();
+            if(sameInvoiceNumber == true) {
+                productTransaction = productTransactionService.findByTransaction(transaction);
+            }else {
+                productTransaction = new ProductTransaction();
+            }
             productTransaction.setProduct(product);
             productTransaction.setTransaction(transaction);
             productTransactionService.save(productTransaction);
@@ -753,6 +803,7 @@ public class VatInvoiceController implements Initializable {
 
                     productNameComboBox.setValue(allProductListObservableTmp.get(productIndex));
                     productNameComboBox.setMinWidth(300);
+                    productNameComboBox.setEditable(true);
                     taxComboBox.setValue(fillTaxComboBox().get(taxIndex));
                     unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(unitMeasureIndex));
         }

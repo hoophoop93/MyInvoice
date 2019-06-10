@@ -70,4 +70,9 @@ public class ProductServiceImpl implements ProductService {
 
         return result > 0;
     }
+
+    @Override
+    public Product findByName(String name) {
+        return productRepository.findByName(name);
+    }
 }

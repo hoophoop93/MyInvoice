@@ -8,4 +8,5 @@ import javax.persistence.GeneratedValue;
 public interface ProductService extends GenericService<Product> {
 
      boolean checkIfExist(String name);
+     Product findByName(String name);
 }
