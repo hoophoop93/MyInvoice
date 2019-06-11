@@ -39,7 +39,6 @@ public class VatRRInvoiceController implements Initializable {
     @Lazy
     @Autowired
     private StageManager stageManager;
-
     @FXML
     private ComboBox<String> veterinaryInspectorateCB;
     @FXML
@@ -75,7 +74,7 @@ public class VatRRInvoiceController implements Initializable {
     @FXML
     private TableColumn<InvoiceField,String>  lpColumn;
     @FXML
-    private TableColumn<InvoiceField, String> productNameColumn;
+    private TableColumn<InvoiceField, ComboBox> productNameColumn;
     @FXML
     private TableColumn<InvoiceField, ComboBox> unitMeasureColumn;
     @FXML
@@ -158,6 +157,21 @@ public class VatRRInvoiceController implements Initializable {
     private double priceBrutto;
     private String selectedValueComboBox;
 
+
+    @FXML
+    void menuInvoiceVatAction(ActionEvent event)throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
+    }
+
+    @FXML
+    void menuSettingsAction(ActionEvent event)throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.SETTINGSSTAGE);
+    }
+
+    @FXML
+    void menuStoreAction(ActionEvent event) throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.STORESTAGE);
+    }
     @FXML
     void addNewCustomerAction(ActionEvent event) {
 
@@ -190,12 +204,9 @@ public class VatRRInvoiceController implements Initializable {
         unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
         invoiceField.setLp(Integer.toString((productTable.getItems().size())));
 
+        productNameComboBox.setEditable(true);
+        productNameComboBox.setMinWidth(300);
         taxComboBox.setOnAction(this::clickComboBox);
-    }
-
-    @FXML
-    void backButtonAction(ActionEvent event) throws UnsupportedEncodingException {
-        stageManager.switchScene(FxmlView.PRIMARYSTAGE);
     }
 
 //    @FXML
@@ -348,6 +359,8 @@ public class VatRRInvoiceController implements Initializable {
         setLocalDateForDataPicker();
         setValueForCombobox();
         productTable.setItems(getFirstRow());
+        productNameComboBox.setEditable(true);
+        productNameComboBox.setMinWidth(300);
         taxComboBox.setValue(fillTaxComboBox().get(3));
         unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
         veterinaryInspectorateCB.setItems(fillVeterinaryInspectorateComboBox());
@@ -358,7 +371,6 @@ public class VatRRInvoiceController implements Initializable {
         lpColumn.setEditable(false);
 
         lpColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
-        productNameColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
         amountColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn(new DoubleStringConverter()));
         productValueColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn((new DoubleStringConverter())));
         priceNettoColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn((new DoubleStringConverter())));
@@ -534,7 +546,6 @@ public class VatRRInvoiceController implements Initializable {
     private  ObservableList<String> fillProductNameComboBox(){
         List<Store> allProductList = (List<Store>) storeService.findAll();
         ObservableList<String> allProductListObservable = FXCollections.observableArrayList();
-        allProductListObservable.add("Wszystko");
 
         for (Store s: allProductList ) {
             allProductListObservable.add(s.getName());

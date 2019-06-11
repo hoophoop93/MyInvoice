@@ -62,6 +62,21 @@ public class StoreController  implements Initializable {
     TransactionServiceImpl transactionService;
 
 
+
+    @FXML
+    void menuInvoiceVatAction(ActionEvent event)throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
+    }
+
+    @FXML
+    void menuInvoiceVatRRAction(ActionEvent event)throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.INVOICERRSTAGE);
+    }
+
+    @FXML
+    void menuSettingsAction(ActionEvent event) throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.SETTINGSSTAGE);
+    }
     @FXML
     void addNewProductAction(ActionEvent event) {
         store = new Store();
@@ -124,10 +139,6 @@ public class StoreController  implements Initializable {
         Alert alert = new Alert(alertType, message, ButtonType.OK);
         alert.setTitle(typeMessage);
         alert.showAndWait();
-    }
-    @FXML
-    void backButtonAction(ActionEvent event) throws UnsupportedEncodingException {
-        stageManager.switchScene(FxmlView.PRIMARYSTAGE);
     }
 
     @FXML

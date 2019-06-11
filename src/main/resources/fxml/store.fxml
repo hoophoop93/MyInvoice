@@ -4,6 +4,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -12,7 +15,10 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.StoreController">
-   <top>
+   <bottom>
+      <TableView fx:id="storeProductsTable" prefHeight="447.0" prefWidth="1029.0" BorderPane.alignment="CENTER" />
+   </bottom>
+   <center>
       <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <Label prefHeight="17.0" prefWidth="92.0" text="Wybierz towar:">
@@ -73,21 +79,24 @@
                </HBox.margin>
             </Button>
             <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#backButtonAction" text="Powrót">
-                     <HBox.margin>
-                        <Insets right="5.0" top="5.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" />
                </HBox.margin>
             </HBox>
          </children>
       </HBox>
-   </top>
-   <center>
-      <TableView fx:id="storeProductsTable" prefHeight="250.0" prefWidth="1029.0" BorderPane.alignment="CENTER" />
    </center>
+   <top>
+      <MenuBar prefHeight="25.0" prefWidth="1123.0" BorderPane.alignment="CENTER">
+         <menus>
+            <Menu mnemonicParsing="false" text="Menu">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#menuInvoiceVatAction" text="Faktura VAT" />
+                  <MenuItem mnemonicParsing="false" onAction="#menuInvoiceVatRRAction" text="Faktura VAT RR" />
+                  <MenuItem mnemonicParsing="false" onAction="#menuSettingsAction" text="Ustawienia" />
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+   </top>
 </BorderPane>

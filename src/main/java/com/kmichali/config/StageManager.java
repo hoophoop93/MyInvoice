@@ -3,6 +3,7 @@ import com.kmichali.view.FxmlView;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 
@@ -32,6 +33,7 @@ public class StageManager {
         //scene.getStylesheets().add("/styles/Styles.css");
 
         //primaryStage.initStyle(StageStyle.TRANSPARENT);
+        primaryStage.getIcons().add(new Image("/images/grainLogo.png"));
         primaryStage.setTitle(title);
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();

@@ -72,7 +72,20 @@ public class SettingsController implements Initializable {
     Settings settings;
     Seller seller;
     Company company;
+    @FXML
+    void menuInvoiceVatAction(ActionEvent event)throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
+    }
 
+    @FXML
+    void menuInvoiceVatRRAction(ActionEvent event)throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.INVOICERRSTAGE);
+    }
+
+    @FXML
+    void menuStoreAction(ActionEvent event) throws UnsupportedEncodingException {
+        stageManager.switchScene(FxmlView.STORESTAGE);
+    }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         seller = sellerService.find(1);
@@ -155,9 +168,4 @@ public class SettingsController implements Initializable {
             pathTF.setText(selectedDirectory.getAbsolutePath());
         }
     }
-    @FXML
-    void backButtonAction(ActionEvent event) throws UnsupportedEncodingException {
-        stageManager.switchScene(FxmlView.PRIMARYSTAGE);
-    }
-
 }

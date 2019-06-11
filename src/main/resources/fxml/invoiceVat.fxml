@@ -155,7 +155,7 @@
             <children>
                 <VBox prefHeight="342.0" prefWidth="1029.0">
                     <children>
-                        <TableView fx:id="productTable" onMouseClicked="#invoiceTableAction" prefHeight="290.0" prefWidth="1029.0">
+                        <TableView fx:id="productTable" prefHeight="290.0" prefWidth="1029.0">
                             <columns>
                                 <TableColumn fx:id="lpColumn" prefWidth="38.0" text="LP" />
                                 <TableColumn fx:id="productNameColumn" prefWidth="351.0" style="-fx-aligment: CENTER;" text="Nazwa towaru lub usługi" />
@@ -175,7 +175,7 @@
                                 </ContextMenu>
                             </contextMenu>
                         </TableView>
-                  <HBox prefHeight="0.0" prefWidth="1029.0">
+                  <HBox prefHeight="29.0" prefWidth="1029.0">
                      <children>
                         <Button fx:id="addNewRow" mnemonicParsing="false" onAction="#addNewRowAction" prefHeight="25.0" prefWidth="74.0" text="Nowy">
                            <HBox.margin>
@@ -216,6 +216,9 @@
                            </children>
                         </HBox>
                      </children>
+                     <VBox.margin>
+                        <Insets top="1.0" />
+                     </VBox.margin>
                   </HBox>
                     </children>
                 </VBox>
@@ -305,26 +308,17 @@
    <top>
       <HBox prefHeight="32.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
          <children>
-            <MenuBar prefHeight="25.0" prefWidth="969.0">
+            <MenuBar prefHeight="25.0" prefWidth="1118.0">
               <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="Menu">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
+                        <MenuItem mnemonicParsing="false" onAction="#menuInvoiceVatRRActopm" text="Faktura VAT RR" />
+                        <MenuItem mnemonicParsing="false" onAction="#menuStoreAction" text="Magazyn" />
+                        <MenuItem mnemonicParsing="false" onAction="#menuSettingsAction" text="Ustawienia" />
                   </items>
                 </Menu>
               </menus>
             </MenuBar>
-            <Button mnemonicParsing="false" onAction="#backButtonAction" prefHeight="25.0" prefWidth="66.0" text="Powrót" />
          </children>
       </HBox>
    </top>

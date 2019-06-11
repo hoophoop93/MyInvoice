@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatRRInvoiceController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatRRInvoiceController">
     <center>
         <VBox prefHeight="229.0" prefWidth="657.0" BorderPane.alignment="CENTER">
             <children>
@@ -345,26 +345,17 @@
    <top>
       <HBox prefHeight="19.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
          <children>
-            <MenuBar prefHeight="25.0" prefWidth="996.0">
+            <MenuBar prefHeight="25.0" prefWidth="1123.0">
               <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu mnemonicParsing="false" text="Menu">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
+                        <MenuItem mnemonicParsing="false" onAction="#menuInvoiceVatAction" text="Faktura VAT" />
+                        <MenuItem mnemonicParsing="false" onAction="#menuStoreAction" text="Magazyn" />
+                        <MenuItem mnemonicParsing="false" onAction="#menuSettingsAction" text="Ustawienia" />
                   </items>
                 </Menu>
               </menus>
             </MenuBar>
-            <Button mnemonicParsing="false" onAction="#backButtonAction" prefHeight="25.0" prefWidth="92.0" text="Powrót" />
          </children>
       </HBox>
    </top>
