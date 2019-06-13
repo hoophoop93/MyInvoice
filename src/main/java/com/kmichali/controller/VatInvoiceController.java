@@ -34,6 +34,9 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Controller
 public class VatInvoiceController implements Initializable {
@@ -270,6 +273,13 @@ public class VatInvoiceController implements Initializable {
     }
     @FXML
     private void clickComboBox(ActionEvent event)  {
+       for (int i=0; i<taxComboBoxObjectList.size(); i++){
+           if(event.getSource().equals(taxComboBoxObjectList.get(i))) {
+               productTable.getSelectionModel().select(i);
+               productTable.getFocusModel().focus(0);
+           }
+       }
+
         taxComboBox = taxComboBoxObjectList.get(productTable.getSelectionModel().getFocusedIndex());
         invoiceField = productTable.getSelectionModel().getSelectedItem();
         try {
@@ -290,24 +300,28 @@ public class VatInvoiceController implements Initializable {
     void removeRowAction(ActionEvent event) {
         InvoiceField selectedRow = productTable.getSelectionModel().getSelectedItem();
         if(productTable.getItems().size() >1) {
+            taxComboBoxObjectList.remove(productTable.getSelectionModel().getFocusedIndex());
             productTable.getItems().remove(selectedRow);
+            productTable.refresh();
 
             int counter=1;
             for (InvoiceField row : productTable.getItems()) {
-                invoiceField.setLp(String.valueOf(counter));
+                row.setLp(String.valueOf(counter));
                 lpColumn.setCellFactory(TextFieldTableCell.forTableColumn());
                 lpColumn.setCellValueFactory(  new PropertyValueFactory<>("lp"));
 
                 counter++;
             }
+            totalPrice();
         }
-
-        productTable.refresh();
-        totalPrice();
     }
+
+
+
     @FXML
     void addNewCustomerAction(ActionEvent event) {
-        //validateCustomerField();
+
+        if(!validateCustomerField()) return;
         customer = new Customer();
         String nameCustomer = customerNameTF.getText();
         String [] splited = nameCustomer.split("\\s+");
@@ -320,21 +334,23 @@ public class VatInvoiceController implements Initializable {
             customer.setPostalCode(postalCodeTF.getText());
             customerService.save(customer);
             message("Klient został dodany do listy klientów. ",Alert.AlertType.NONE,"Sukces");
-            selectCustomerCB.setItems(fillCustomerComboBox());
+            customerList.add(customer.getName()+" "+customer.getSurname()+"    "+customer.getAddress());
+            selectCustomerCB.setItems(customerList);
+            new ComboBoxAutoComplete<String>(selectCustomerCB);
         }else{
             message("Taki klient jest juz w bazie!",Alert.AlertType.NONE,"Wiadomość");
         }
     }
     @FXML
     private void selectCustomerAction(Event event) {
-
+        selectCustomerCB.setItems(customerList);
             if(selectCustomerCB.getSelectionModel().getSelectedItem() != null) {
                 String[] splitedItem = selectCustomerCB.getSelectionModel().getSelectedItem().split("\\s");
-                String[] removedEmptyElemnt = Arrays.stream(splitedItem).filter(value -> value != null && value.length() > 0).toArray(size -> new String[size]);
-                if (removedEmptyElemnt.length == 3) {
-                    customer = customerService.findCustomer(removedEmptyElemnt[0], removedEmptyElemnt[1], removedEmptyElemnt[2]);
+                String[] allCustomerArray = Arrays.stream(splitedItem).filter(value -> value != null && value.length() > 0).toArray(size -> new String[size]);
+                if (allCustomerArray.length == 3) {
+                    customer = customerService.findCustomer(allCustomerArray[0], allCustomerArray[1], allCustomerArray[2]);
                 } else {
-                    customer = customerService.findCustomer(removedEmptyElemnt[0], removedEmptyElemnt[1], removedEmptyElemnt[2] + " " + removedEmptyElemnt[3]);
+                    customer = customerService.findCustomer(allCustomerArray[0], allCustomerArray[1], allCustomerArray[2] + " " + allCustomerArray[3]);
                 }
                 company = companyService.findByCustomer(customer);
                 fillCustomerFiled(customer, company);
@@ -345,8 +361,12 @@ public class VatInvoiceController implements Initializable {
     void createInvoiceAction(ActionEvent event) throws DocumentException, IOException {
         boolean sameInvoiceNumber = false;
         long idTransaction =0;
+        double getProductAmount = 0;
+        double calculateAmount = 0;
         Optional<ButtonType> result = null;
-            if(invoiceService.countInvoiceNumber(invoiceNumberTF.getText())){
+        String[] splited = null;
+        boolean countInvoiceNum = invoiceService.countInvoiceNumber(invoiceNumberTF.getText());
+            if(countInvoiceNum){
                 ButtonType okButton = new ButtonType("Tak", ButtonBar.ButtonData.YES);
                 ButtonType noButton = new ButtonType("Nie", ButtonBar.ButtonData.NO);
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -364,23 +384,24 @@ public class VatInvoiceController implements Initializable {
                 }
             }
 
+        if(!countInvoiceNum){
+            if(!validateAllField())
+            return;
+        }
 
-
-        double getProductAmount=0;
-        double calculateAmount=0;
         Seller seller = sellerService.find(1);
 
-        if(invoiceTypeBuyRB.isSelected())invoiceTypeIdentyfier=1;
-        else invoiceTypeIdentyfier=0;
+        if (invoiceTypeBuyRB.isSelected()) invoiceTypeIdentyfier = 1;
+        else invoiceTypeIdentyfier = 0;
 
         String issueDateToString = String.valueOf(issueDate.getValue());
         String sellDateToString = String.valueOf(sellDate.getValue());
         String paymentDateToString = String.valueOf(paymentDate.getValue());
 
-        if(sameInvoiceNumber == true){
+        if (sameInvoiceNumber == true) {
             invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
-           date = invoice.getDate();
-        }else {
+            date = invoice.getDate();
+        } else {
             date = new Date();
         }
         date.setIssueDate(issueDateToString);
@@ -389,40 +410,44 @@ public class VatInvoiceController implements Initializable {
         dateService.save(date);
 
         //custommer
-        String nameCustomer = customerNameTF.getText();
-        String [] splited = nameCustomer.split("\\s+");
-        if(!(customerService.countCustomerByAddress(streetTF.getText()) && customerService.countCustomerBySurname(splited[1]))) {
-        customer = new Customer();
+        if(sameInvoiceNumber == false) {
+            String nameCustomer = customerNameTF.getText();
+            splited = nameCustomer.split("\\s+");
+            if (!(customerService.countCustomerByAddress(streetTF.getText()) && customerService.countCustomerBySurname(splited[1]))) {
+                customer = new Customer();
 
-        customer.setName(splited[0]);
-        customer.setSurname(splited[1]);
-        customer.setAddress(streetTF.getText());
-        customer.setCity(addressTF.getText());
-        customer.setPostalCode(postalCodeTF.getText());
-        customerService.save(customer);
+                customer.setName(splited[0]);
+                customer.setSurname(splited[1]);
+                customer.setAddress(streetTF.getText());
+                customer.setCity(addressTF.getText());
+                customer.setPostalCode(postalCodeTF.getText());
+                customerService.save(customer);
+                customerList.add(customer.getName()+" "+customer.getSurname()+"    "+customer.getAddress());
+                selectCustomerCB.setItems(customerList);
+                new ComboBoxAutoComplete<String>(selectCustomerCB);
+            }else {
+                if (customer == null)
+                    customer = customerService.findCustomer(splited[0], splited[1], streetTF.getText());
+            }
         }
-
-        //company
-        if(sameInvoiceNumber == true){
-            customer = customerService.findCustomer(splited[0],splited[1],streetTF.getText());
+        if (!companyService.countByNip(nipTF.getText())) {
+            company = new Company();
+            company.setName(companyNameTA.getText());
+            company.setNip(nipTF.getText());
+            company.setCustomer(customer);
+            companyService.save(company);
         }
-        company = new Company();
-        company.setName(companyNameTA.getText());
-        company.setNip(nipTF.getText());
-        company.setCustomer(customer);
-        if(!companyService.countByNip(company.getNip()))
-        companyService.save(company);
 
         company = companyService.findBySeller(seller);
         company.setSeller(seller);
 
-        if(!companyService.countByNip(company.getNip()))
-        companyService.save(company);
+        if (!companyService.countByNip(company.getNip()))
+            companyService.save(company);
 
-       // invoice
-        if(sameInvoiceNumber == true){
+        // invoice
+        if (sameInvoiceNumber == true) {
             invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
-        }else{
+        } else {
             invoice = new Invoice();
         }
 
@@ -432,15 +457,17 @@ public class VatInvoiceController implements Initializable {
         invoice.setDate(date);
         invoiceService.save(invoice);
 
-        List idTransactionList =transactionService.findByInvoice(invoice.getInvoiceNumber(),invoice.getId());
+        List idTransactionList = transactionService.findByInvoice(invoice.getInvoiceNumber(), invoice.getId());
 
         //transaction
+        int counter =0;
         List<Transaction> transactionList = new ArrayList<>();
-        for (InvoiceField row: productTable.getItems()) {
-            if(sameInvoiceNumber == true){
-                idTransaction = (Long)idTransactionList.get(productTable.getSelectionModel().getSelectedIndex()-1);
+        for (InvoiceField row : productTable.getItems()) {
+            if (sameInvoiceNumber == true) {
+                idTransaction = (Long) idTransactionList.get(counter);
+                counter++;
                 transaction = transactionService.find(idTransaction);
-            }else {
+            } else {
                 transaction = new Transaction();
             }
             transaction.setTax(row.getTax().getSelectionModel().getSelectedItem());
@@ -455,28 +482,27 @@ public class VatInvoiceController implements Initializable {
             transaction.setSeller(seller);
 
             store = storeService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
-            if(store == null){
-                if (invoiceTypeIdentyfier == 0)  transaction.setType("sprzedaż");
+            if (store == null) {
+                if (invoiceTypeIdentyfier == 0) transaction.setType("sprzedaż");
                 else {
                     transaction.setType("kupno");
                     //store = new Store();
                     //store.setName(row.getNameProduct().getSelectionModel().getSelectedItem());
                     //store.setAmount(row.getAmount());
                 }
-            }else{
+            } else {
                 getProductAmount = store.getAmount();
                 if (invoiceTypeIdentyfier == 1) {
                     calculateAmount = getProductAmount + row.getAmount();
                     transaction.setType("kupno");
-                }
-                else {
-                    if(getProductAmount - row.getAmount() > 0) {
+                } else {
+                    if (getProductAmount - row.getAmount() > 0) {
                         calculateAmount = getProductAmount - row.getAmount();
                         transaction.setType("sprzedaż");
 
-                    }else{
-                        message("Nie masz tyle ilości "+ row.getNameProduct().getSelectionModel().getSelectedItem()+". W magazynie jest: "
-                                +store.getAmount()+" "+row.getUnitMeasure().getSelectionModel().getSelectedItem(),Alert.AlertType.NONE,"");
+                    } else {
+                        message("Nie masz tyle ilości " + row.getNameProduct().getSelectionModel().getSelectedItem() + ". W magazynie jest: "
+                                + store.getAmount() + " " + row.getUnitMeasure().getSelectionModel().getSelectedItem(), Alert.AlertType.NONE, "");
                         return;
                     }
                 }
@@ -490,33 +516,31 @@ public class VatInvoiceController implements Initializable {
             transactionService.save(transaction);
 
             //product
-            if(productService.checkIfExist(row.getNameProduct().getSelectionModel().getSelectedItem())){
+            if (productService.checkIfExist(row.getNameProduct().getSelectionModel().getSelectedItem())) {
                 product = productService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
-            }else {
+            } else {
                 product = new Product();
                 product.setName(row.getNameProduct().getSelectionModel().getSelectedItem());
                 productService.save(product);
             }
 
             //join product and transaction
-            if(sameInvoiceNumber == true) {
+            if (sameInvoiceNumber == true) {
                 productTransaction = productTransactionService.findByTransaction(transaction);
-            }else {
+            } else {
                 productTransaction = new ProductTransaction();
             }
             productTransaction.setProduct(product);
             productTransaction.setTransaction(transaction);
             productTransactionService.save(productTransaction);
         }
-//        selectCustomerCB.setItems(fillCustomerComboBox());
-//        invoice= invoiceService.find(1);
-//        date = dateService.find(1);
-//        customer = customerService.find(1);
-        Company companyCustomer=companyService.findByCustomer(customer);
-        Company companySeller=companyService.findBySeller(seller);
+
+        Company companyCustomer = companyService.findByCustomer(customer);
+        Company companySeller = companyService.findBySeller(seller);
         Settings settings = settingsService.find(1);
         String path = settings.getPath();
-        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType,invoiceTypeIdentyfier,invoiceNumberTF.getText(),path);
+        VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice, date, companySeller, companyCustomer, productTable, paidType, invoiceTypeIdentyfier, invoiceNumberTF.getText(), path);
+
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -697,13 +721,22 @@ public class VatInvoiceController implements Initializable {
         long tmp = Math.round(value);
         return (double) tmp / factor;
     }
-    public void validateCustomerField(){
+    public boolean validateAllField(){
         if(customerNameTF.getText().equals("") || companyNameTA.getText().equals("") || addressTF.getText().equals("") ||
-                streetTF.getText().equals("") || nipTF.getText().equals("")|| postalCodeTF.getText().equals("")){
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Jedno z wymaganych pól klineta jest puste.", ButtonType.OK);
-            alert.setTitle("Ostrzeżenie!");
-            alert.showAndWait();
+                streetTF.getText().equals("") || nipTF.getText().equals("")|| postalCodeTF.getText().equals("") || invoiceNumberTF.getText().equals("")
+        || issueDate.getEditor().getText().equals("")|| sellDate.getEditor().getText().equals("")|| paymentDate.getEditor().getText().equals("")) {
+            message("Nie wszystkie pola są wypełnione", Alert.AlertType.NONE, "Informacja");
+            return false;
         }
+        return true;
+    }
+    public boolean validateCustomerField(){
+        if(customerNameTF.getText().equals("") || companyNameTA.getText().equals("") || addressTF.getText().equals("") ||
+                streetTF.getText().equals("") || nipTF.getText().equals("")|| postalCodeTF.getText().equals("")) {
+            message("Nie wszystkie pola klienta są wypełnione", Alert.AlertType.NONE, "Informacja");
+            return false;
+        }
+        return true;
     }
     private ObservableList<String> fillCustomerComboBox(){
         customerList = FXCollections.observableArrayList();
@@ -713,8 +746,10 @@ public class VatInvoiceController implements Initializable {
         return customerList;
     }
     private void fillCustomerFiled(Customer customer, Company company){
-        companyNameTA.setText(company.getName());
-        nipTF.setText(company.getNip());
+        if(company != null) {
+            companyNameTA.setText(company.getName());
+            nipTF.setText(company.getNip());
+        }
         customerNameTF.setText(customer.getName()+" "+customer.getSurname());
         streetTF.setText(customer.getAddress());
         postalCodeTF.setText(customer.getPostalCode());
