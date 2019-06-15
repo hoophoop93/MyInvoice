@@ -34,9 +34,6 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Controller
 public class VatInvoiceController implements Initializable {
@@ -114,7 +111,8 @@ public class VatInvoiceController implements Initializable {
     private double priceBrutto;
     private String selectedValueComboBox;
     private List<ComboBox> taxComboBoxObjectList = new ArrayList<>();
-
+    private List<ComboBox> nameProductComboBoxObjectList = new ArrayList<>();
+    private List<ComboBox> unitMeasureComboBoxObjectList = new ArrayList<>();
     private Customer customer;
     private Company company;
     private Date date;
@@ -262,6 +260,8 @@ public class VatInvoiceController implements Initializable {
         productTable.getSelectionModel().focus(productTable.getItems().size()-1);
 
         taxComboBoxObjectList.add(taxComboBox);
+        nameProductComboBoxObjectList.add(productNameComboBox);
+        unitMeasureComboBoxObjectList.add(unitMeasureComboBox);
         taxComboBox.setValue(fillTaxComboBox().get(0));
         productNameComboBox.setValue(fillProductNameComboBox().get(0));
         productNameComboBox.setMinWidth(300);
@@ -269,16 +269,13 @@ public class VatInvoiceController implements Initializable {
         unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
         invoiceField.setLp(Integer.toString((productTable.getItems().size())));
 
-        taxComboBox.setOnAction(this::clickComboBox);
+        taxComboBox.setOnMouseClicked(this::clickTaxComboBoxAction);
+        taxComboBox.setOnAction(this::taxComboBoxAction);
+        productNameComboBox.setOnMouseClicked(this::clickNameProductComboBox);
+        unitMeasureComboBox.setOnMouseClicked(this::clickUnitMeasureComboBox);
     }
     @FXML
-    private void clickComboBox(ActionEvent event)  {
-       for (int i=0; i<taxComboBoxObjectList.size(); i++){
-           if(event.getSource().equals(taxComboBoxObjectList.get(i))) {
-               productTable.getSelectionModel().select(i);
-               productTable.getFocusModel().focus(0);
-           }
-       }
+    private void taxComboBoxAction(ActionEvent event)  {
 
         taxComboBox = taxComboBoxObjectList.get(productTable.getSelectionModel().getFocusedIndex());
         invoiceField = productTable.getSelectionModel().getSelectedItem();
@@ -296,11 +293,41 @@ public class VatInvoiceController implements Initializable {
 
         }
     }
+    private void clickTaxComboBoxAction(MouseEvent event)  {
+        for (int i=0; i<taxComboBoxObjectList.size(); i++){
+            if(event.getSource().equals(taxComboBoxObjectList.get(i))) {
+                productTable.getSelectionModel().select(i);
+                productTable.getFocusModel().focus(0);
+            }
+        }
+    }
+
+    @FXML
+    private void clickNameProductComboBox(MouseEvent event) {
+        for (int i = 0; i < nameProductComboBoxObjectList.size(); i++) {
+            if (event.getSource().equals(nameProductComboBoxObjectList.get(i))) {
+                productTable.getSelectionModel().select(i);
+                productTable.getFocusModel().focus(0);
+            }
+        }
+    }
+    @FXML
+    private void clickUnitMeasureComboBox(MouseEvent event) {
+        for (int i = 0; i < unitMeasureComboBoxObjectList.size(); i++) {
+            if (event.getSource().equals(unitMeasureComboBoxObjectList.get(i))) {
+                productTable.getSelectionModel().select(i);
+                productTable.getFocusModel().focus(0);
+            }
+        }
+    }
     @FXML
     void removeRowAction(ActionEvent event) {
         InvoiceField selectedRow = productTable.getSelectionModel().getSelectedItem();
         if(productTable.getItems().size() >1) {
-            taxComboBoxObjectList.remove(productTable.getSelectionModel().getFocusedIndex());
+            int rowIndex = productTable.getSelectionModel().getFocusedIndex();
+            taxComboBoxObjectList.remove(rowIndex);
+            nameProductComboBoxObjectList.remove(rowIndex);
+            unitMeasureComboBoxObjectList.remove(rowIndex);
             productTable.getItems().remove(selectedRow);
             productTable.refresh();
 
@@ -333,6 +360,13 @@ public class VatInvoiceController implements Initializable {
             customer.setCity(addressTF.getText());
             customer.setPostalCode(postalCodeTF.getText());
             customerService.save(customer);
+            if (!companyService.countByNip(nipTF.getText())) {
+                company = new Company();
+                company.setName(companyNameTA.getText());
+                company.setNip(nipTF.getText());
+                company.setCustomer(customer);
+                companyService.save(company);
+            }
             message("Klient został dodany do listy klientów. ",Alert.AlertType.NONE,"Sukces");
             customerList.add(customer.getName()+" "+customer.getSurname()+"    "+customer.getAddress());
             selectCustomerCB.setItems(customerList);
@@ -356,6 +390,7 @@ public class VatInvoiceController implements Initializable {
                 fillCustomerFiled(customer, company);
             }
     }
+
     @FXML
     @Transactional
     void createInvoiceAction(ActionEvent event) throws DocumentException, IOException {
@@ -542,6 +577,31 @@ public class VatInvoiceController implements Initializable {
         VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice, date, companySeller, companyCustomer, productTable, paidType, invoiceTypeIdentyfier, invoiceNumberTF.getText(), path);
 
     }
+    @FXML
+    void clearData(ActionEvent event) {
+        customerNameTF.setText("");
+        companyNameTA.setText("");
+        addressTF.setText("");
+        streetTF.setText("");
+        nipTF.setText("");
+        postalCodeTF.setText("");
+        selectCustomerCB.getSelectionModel().clearSelection();
+        setLocalDateForDataPicker();
+    }
+    @FXML
+    void clearTableAction(ActionEvent event) {
+        taxComboBoxObjectList = new ArrayList<>();
+        nameProductComboBoxObjectList = new ArrayList<>();
+        unitMeasureComboBoxObjectList = new ArrayList<>();
+        productTable.getItems().clear();
+        productTable.setItems(getFirstRow());
+        taxComboBox.setValue(fillTaxComboBox().get(0));
+        unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
+        productNameComboBox.setValue(fillProductNameComboBox().get(0));
+        productNameComboBox.setEditable(true);
+        productNameComboBox.setMinWidth(300);
+        addComboBoxObjectToList();
+    }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -556,10 +616,10 @@ public class VatInvoiceController implements Initializable {
         productNameComboBox.setValue(fillProductNameComboBox().get(0));
         productNameComboBox.setEditable(true);
         productNameComboBox.setMinWidth(300);
-        taxComboBoxObjectList.add(taxComboBox);
+
         productTable.setEditable(true);
         lpColumn.setEditable(false);
-
+        addComboBoxObjectToList();
         lpColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn());
         amountColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn(new DoubleStringConverter()));
         productValueColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn((new DoubleStringConverter())));
@@ -578,8 +638,15 @@ public class VatInvoiceController implements Initializable {
         priceVatColumn.setCellValueFactory(  new PropertyValueFactory<>("priceVat"));
         priceBruttoColumn.setCellValueFactory(  new PropertyValueFactory<>("priceBrutto"));
 
-        taxComboBox.setOnAction(this::clickComboBox);
-
+        taxComboBox.setOnMouseClicked(this::clickTaxComboBoxAction);
+        taxComboBox.setOnAction(this::taxComboBoxAction);
+        productNameComboBox.setOnMouseClicked(this::clickNameProductComboBox);
+        unitMeasureComboBox.setOnMouseClicked(this::clickUnitMeasureComboBox);
+    }
+    private void addComboBoxObjectToList(){
+        taxComboBoxObjectList.add(taxComboBox);
+        nameProductComboBoxObjectList.add(productNameComboBox);
+        unitMeasureComboBoxObjectList.add(unitMeasureComboBox);
     }
     private double StringToDoubleConverter(String value){
         if(value.length()==3)

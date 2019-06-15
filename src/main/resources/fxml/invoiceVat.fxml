@@ -23,7 +23,7 @@
     <center>
         <VBox prefHeight="355.0" prefWidth="657.0" BorderPane.alignment="CENTER">
             <children>
-                <HBox prefHeight="232.0" prefWidth="323.0">
+                <HBox prefHeight="161.0" prefWidth="657.0">
                     <children>
                   <HBox prefHeight="232.0" prefWidth="342.0">
                      <children>
@@ -63,11 +63,6 @@
                                     <Insets top="5.0" />
                                  </VBox.margin>
                               </TextField>
-                              <Button mnemonicParsing="false" onAction="#addNewCustomerAction" text="Dodaj klienta">
-                                 <VBox.margin>
-                                    <Insets top="10.0" />
-                                 </VBox.margin>
-                              </Button>
                            </children>
                         </VBox>
                      </children>
@@ -147,15 +142,25 @@
                         </HBox>
                     </children>
                 </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#addNewCustomerAction" prefHeight="25.0" prefWidth="97.0" text="Dodaj klienta">
+                     <HBox.margin>
+                        <Insets right="15.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#clearData" text=" Wyczyść dane" />
+               </children>
+            </HBox>
             </children>
         </VBox>
     </center>
     <bottom>
-        <VBox prefHeight="344.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
+        <VBox prefHeight="330.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
             <children>
                 <VBox prefHeight="342.0" prefWidth="1029.0">
                     <children>
-                        <TableView fx:id="productTable" prefHeight="290.0" prefWidth="1029.0">
+                        <TableView fx:id="productTable" prefHeight="289.0" prefWidth="1029.0">
                             <columns>
                                 <TableColumn fx:id="lpColumn" prefWidth="38.0" text="LP" />
                                 <TableColumn fx:id="productNameColumn" prefWidth="351.0" style="-fx-aligment: CENTER;" text="Nazwa towaru lub usługi" />
@@ -192,7 +197,14 @@
                               <Insets bottom="1.0" left="10.0" top="1.0" />
                            </HBox.margin>
                         </Button>
-                        <HBox fillHeight="false" maxWidth="-Infinity" prefHeight="27.0" prefWidth="244.0" />
+                        <HBox fillHeight="false" maxWidth="-Infinity" prefHeight="27.0" prefWidth="244.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#clearTableAction" text="Wyczyść tabele">
+                                 <HBox.margin>
+                                    <Insets left="10.0" top="1.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children></HBox>
                         <HBox prefHeight="27.0" prefWidth="601.0">
                            <children>
                               <Label prefHeight="17.0" prefWidth="117.0" text="Razem do zapłaty:" textAlignment="CENTER">
