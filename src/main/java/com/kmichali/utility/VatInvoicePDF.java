@@ -31,7 +31,7 @@ public class VatInvoicePDF {
 
     public VatInvoicePDF(Invoice invoice, Date date, Company companySeller,Company companyCustomer,
                          TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType,String invoiceNumber, String path) throws DocumentException, IOException {
-        PDFPATH = path.replaceAll("\\\\", "/")+"/";
+        PDFPATH = path.replaceAll("\\\\", "/")+"/VAT/";
         CreateDirectory(PDFPATH,invoiceNumber);
         CreateDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,invoiceType,invoiceNumber);
         OpenPDF(PDFPATH+invoiceNum+".pdf");
@@ -42,7 +42,7 @@ public class VatInvoicePDF {
         else yearWithInvoiceNumber = invoiceNumber.substring(5,invoiceNumber.length());
         File file = new File(path+yearWithInvoiceNumber);
         if(!file.exists()){
-            if(file.mkdir()){
+            if(file.mkdirs()){
                 System.out.println("Directory was created");
             }
         }

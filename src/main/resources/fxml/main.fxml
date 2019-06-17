@@ -10,7 +10,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="339.0" prefWidth="608.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.MainAppController">
    <center>
-      <AnchorPane prefHeight="333.0" prefWidth="670.0" BorderPane.alignment="CENTER">
+      <AnchorPane cacheShape="false" centerShape="false" prefHeight="333.0" prefWidth="670.0" scaleShape="false" BorderPane.alignment="CENTER">
          <children>
             <GridPane alignment="CENTER" layoutX="104.0" layoutY="70.0" prefHeight="200.0" prefWidth="401.0">
               <columnConstraints>

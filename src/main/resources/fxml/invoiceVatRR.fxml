@@ -9,18 +9,17 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatRRInvoiceController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" scaleShape="false" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatRRInvoiceController">
     <center>
         <VBox prefHeight="229.0" prefWidth="657.0" BorderPane.alignment="CENTER">
             <children>
@@ -34,28 +33,24 @@
                                  <VBox.margin>
                                     <Insets bottom="18.0" top="5.0" />
                                  </VBox.margin>
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
                               </Label>
                               <Line endX="5.0" startX="-100.0" strokeWidth="2.0" />
-                              <RadioButton fx:id="nipRadioButton" mnemonicParsing="false" onAction="#nipRadioButtonAction" text="NIP">
-                                 <VBox.margin>
-                                    <Insets top="18.0" />
-                                 </VBox.margin>
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="radioButtonGroup" />
-                                 </toggleGroup></RadioButton>
                               <Label fx:id="radioButtonLabel" nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="161.0" text="Pesel:">
                                  <VBox.margin>
-                                    <Insets right="5.0" top="10.0" />
+                                    <Insets right="5.0" top="17.0" />
                                  </VBox.margin>
                               </Label>
                               <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="102.0" text="Seria i numer:">
                                  <VBox.margin>
-                                    <Insets top="15.0" />
+                                    <Insets top="17.0" />
                                  </VBox.margin>
                               </Label>
                               <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="101.0" text="Wydany dnia:">
                                  <VBox.margin>
-                                    <Insets top="15.0" />
+                                    <Insets top="17.0" />
                                  </VBox.margin>
                               </Label>
                               <Label nodeOrientation="RIGHT_TO_LEFT" prefHeight="17.0" prefWidth="115.0" text="Przez:">
@@ -67,7 +62,7 @@
                         </VBox>
                         <VBox prefHeight="232.0" prefWidth="184.0">
                            <children>
-                              <TextField fx:id="invoiceNumberTF" text="1/05/2019">
+                              <TextField fx:id="invoiceNumberTF">
                                  <VBox.margin>
                                     <Insets top="5.0" />
                                  </VBox.margin>
@@ -77,14 +72,9 @@
                                     <Insets top="10.0" />
                                  </VBox.margin>
                               </Line>
-                              <RadioButton fx:id="peselRadioButton" mnemonicParsing="false" onAction="#peselRadioButtonAction" prefHeight="17.0" prefWidth="68.0" selected="true" text="PESEL" toggleGroup="$radioButtonGroup">
+                              <TextField fx:id="peselTF">
                                  <VBox.margin>
-                                    <Insets top="17.0" />
-                                 </VBox.margin>
-                              </RadioButton>
-                              <TextField fx:id="peselOrNipTF">
-                                 <VBox.margin>
-                                    <Insets top="7.0" />
+                                    <Insets top="15.0" />
                                  </VBox.margin>
                               </TextField>
                               <TextField fx:id="seriaAndNumberIdCard">
@@ -97,7 +87,7 @@
                                     <Insets top="9.0" />
                                  </VBox.margin>
                               </DatePicker>
-                              <TextArea fx:id="releaseByTF" prefHeight="41.0" prefWidth="202.0" wrapText="true">
+                              <TextArea fx:id="releaseByTF" prefHeight="56.0" prefWidth="202.0" wrapText="true">
                                  <VBox.margin>
                                     <Insets top="9.0" />
                                  </VBox.margin>
@@ -170,7 +160,7 @@
             <children>
                 <VBox prefHeight="270.0" prefWidth="1029.0">
                     <children>
-                        <TableView fx:id="productTable" onMouseClicked="#invoiceTableAction" prefHeight="230.0" prefWidth="1029.0">
+                        <TableView fx:id="productTable" onMouseClicked="#invoiceTableAction" prefHeight="230.0" prefWidth="1023.0">
                             <columns>
                                 <TableColumn fx:id="lpColumn" prefWidth="38.0" text="LP" />
                                 <TableColumn fx:id="productNameColumn" prefWidth="350.0" text="Nazwa towaru lub usługi" />
@@ -194,20 +184,27 @@
                      <children>
                         <Button fx:id="addNewRow" mnemonicParsing="false" onAction="#addNewRowAction" prefHeight="25.0" prefWidth="74.0" text="Nowy">
                            <HBox.margin>
-                              <Insets bottom="1.0" left="1.0" top="1.0" />
+                              <Insets bottom="1.0" left="1.0" top="2.0" />
                            </HBox.margin>
                         </Button>
                         <Button fx:id="removeRow" mnemonicParsing="false" onAction="#removeRowAction" prefHeight="25.0" prefWidth="74.0" text="Usuń">
                            <HBox.margin>
-                              <Insets bottom="1.0" left="10.0" top="1.0" />
+                              <Insets bottom="1.0" left="10.0" top="2.0" />
                            </HBox.margin>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#createInvoiceAction" prefHeight="25.0" prefWidth="83.0" text="Faktura">
                            <HBox.margin>
-                              <Insets bottom="1.0" left="10.0" top="1.0" />
+                              <Insets bottom="1.0" left="10.0" top="2.0" />
                            </HBox.margin>
                         </Button>
-                        <HBox fillHeight="false" maxWidth="-Infinity" prefHeight="27.0" prefWidth="244.0" />
+                        <HBox fillHeight="false" maxWidth="-Infinity" prefHeight="27.0" prefWidth="244.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#clearTableAction" text="Wyczyść tabele">
+                                 <HBox.margin>
+                                    <Insets left="30.0" top="2.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children></HBox>
                         <HBox prefHeight="27.0" prefWidth="601.0">
                            <children>
                               <Label prefHeight="17.0" prefWidth="117.0" text="Razem do zapłaty:" textAlignment="CENTER">
@@ -215,19 +212,28 @@
                                     <Insets left="5.0" top="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="forPrice" prefHeight="25.0" prefWidth="140.0" />
+                              <TextField fx:id="forPrice" prefHeight="25.0" prefWidth="140.0" text="0">
+                                 <HBox.margin>
+                                    <Insets top="2.0" />
+                                 </HBox.margin></TextField>
                               <Label prefHeight="17.0" prefWidth="53.0" text="Netto:">
                                  <HBox.margin>
                                     <Insets left="5.0" top="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="sumNetto" prefHeight="25.0" prefWidth="140.0" />
+                              <TextField fx:id="sumNetto" prefHeight="25.0" prefWidth="140.0" text="0">
+                                 <HBox.margin>
+                                    <Insets top="2.0" />
+                                 </HBox.margin></TextField>
                               <Label prefHeight="17.0" prefWidth="45.0" text="VAT:">
                                  <HBox.margin>
                                     <Insets left="5.0" top="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="sumVat" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="140.0" />
+                              <TextField fx:id="sumVat" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="140.0" text="0">
+                                 <HBox.margin>
+                                    <Insets top="2.0" />
+                                 </HBox.margin></TextField>
                            </children>
                         </HBox>
                      </children>
@@ -274,7 +280,7 @@
                         </HBox>
                     </children>
                 </VBox>
-            <VBox prefHeight="180.0" prefWidth="372.0">
+            <VBox prefHeight="191.0" prefWidth="372.0">
                <children>
                   <HBox prefHeight="35.0" prefWidth="372.0">
                      <children>
@@ -314,27 +320,28 @@
                         <TextField fx:id="postalCodeTF" prefHeight="25.0" prefWidth="255.0" />
                      </children>
                   </HBox>
-                  <HBox prefHeight="68.0" prefWidth="372.0">
+                  <HBox prefHeight="44.0" prefWidth="372.0">
                      <children>
-                        <VBox prefHeight="47.0" prefWidth="372.0">
-                           <children>
-                              <HBox prefHeight="100.0" prefWidth="200.0">
-                                 <children>
-                                    <Label fx:id="label5" prefHeight="17.0" prefWidth="85.0" text="Miejscowość:">
-                                       <HBox.margin>
-                                          <Insets left="5.0" right="5.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                    <TextField fx:id="addressTF" prefHeight="25.0" prefWidth="255.0" />
-                                 </children>
-                              </HBox>
-                              <Button mnemonicParsing="false" onAction="#addNewCustomerAction" text="Dodaj klienta">
-                                 <VBox.margin>
-                                    <Insets bottom="10.0" left="10.0" />
-                                 </VBox.margin>
-                              </Button>
-                           </children>
-                        </VBox>
+                        <Label fx:id="label5" prefHeight="17.0" prefWidth="85.0" text="Miejscowość:">
+                           <HBox.margin>
+                              <Insets left="5.0" right="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="addressTF" prefHeight="25.0" prefWidth="255.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="35.0" prefWidth="372.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#addNewCustomerAction" text="Dodaj klienta">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#clearData" text="Wyczyść dane">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </Button>
                      </children>
                   </HBox>
                </children>

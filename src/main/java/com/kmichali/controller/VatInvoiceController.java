@@ -400,7 +400,7 @@ public class VatInvoiceController implements Initializable {
         double calculateAmount = 0;
         Optional<ButtonType> result = null;
         String[] splited = null;
-        boolean countInvoiceNum = invoiceService.countInvoiceNumber(invoiceNumberTF.getText());
+        boolean countInvoiceNum = invoiceService.countInvoiceNumber(invoiceNumberTF.getText(),"Vat");
             if(countInvoiceNum){
                 ButtonType okButton = new ButtonType("Tak", ButtonBar.ButtonData.YES);
                 ButtonType noButton = new ButtonType("Nie", ButtonBar.ButtonData.NO);
@@ -841,7 +841,7 @@ public class VatInvoiceController implements Initializable {
             if(invoiceNumberDB.length() == 10) currentMonthInvoiceNumber = invoiceNumberDB.substring(3,5);
             else currentMonthInvoiceNumber = invoiceNumberDB.substring(2,4);
 
-            if (invoiceService.countInvoiceNumber(invoiceNumberDB) && currentMonth.equals(currentMonthInvoiceNumber) ) {
+            if (invoiceService.countInvoiceNumber(invoiceNumberDB,"Vat") && currentMonth.equals(currentMonthInvoiceNumber) ) {
                 if (invoiceNumberDB.substring(2, 3).equals("/")) invoiceNumberDB = invoiceNumberDB.substring(0, 2);
                 else invoiceNumberDB = invoiceNumberDB.substring(0, 1);
                 invoiceCounter = Integer.parseInt(invoiceNumberDB);
@@ -862,70 +862,73 @@ public class VatInvoiceController implements Initializable {
         int productIndex=0;
         int taxIndex =0;
         int unitMeasureIndex =0;
+        if(invoiceService.countInvoiceNumber(invoiceNumberTF.getText(),"Vat")) {
+            Invoice invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
+            LocalDate localDate = LocalDate.parse(invoice.getDate().getIssueDate()); //parse String to localdate
+            issueDate.setValue(localDate);
+            localDate = LocalDate.parse(invoice.getDate().getSellDate()); //parse String to localdate
+            sellDate.setValue(localDate);
+            localDate = LocalDate.parse(invoice.getDate().getPaymentDate()); //parse String to localdate
+            paymentDate.setValue(localDate);
+            paidType.setValue(invoice.getPaidType());
 
-        Invoice invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
-        LocalDate localDate = LocalDate.parse(invoice.getDate().getIssueDate()); //parse String to localdate
-        issueDate.setValue(localDate);
-        localDate = LocalDate.parse(invoice.getDate().getSellDate()); //parse String to localdate
-        sellDate.setValue(localDate);
-        localDate = LocalDate.parse(invoice.getDate().getPaymentDate()); //parse String to localdate
-        paymentDate.setValue(localDate);
-        paidType.setValue(invoice.getPaidType());
+            List idTransactionList = transactionService.findByInvoice(invoice.getInvoiceNumber(), invoice.getId());
+            long idTransaction = (Long) idTransactionList.get(0);
+            Transaction transaction = transactionService.find(idTransaction);
+            Company customerCompany = companyService.findByCustomer(transaction.getCustomer());
+            companyNameTA.setText(customerCompany.getName());
+            customerNameTF.setText(transaction.getCustomer().getName() + " " + transaction.getCustomer().getSurname());
+            streetTF.setText(transaction.getCustomer().getAddress());
+            postalCodeTF.setText(transaction.getCustomer().getPostalCode());
+            addressTF.setText(transaction.getCustomer().getCity());
+            nipTF.setText(customerCompany.getNip());
+            if (transaction.getType().equals("kupno")) invoiceTypeBuyRB.setSelected(true);
+            else invoiceTypeSellRB.setSelected(true);
+            productTable.getItems().clear();
+            //create row in table
 
-        List idTransactionList =transactionService.findByInvoice(invoice.getInvoiceNumber(),invoice.getId());
-        long idTransaction = (Long)idTransactionList.get(0);
-        Transaction transaction = transactionService.find(idTransaction);
-        Company customerCompany = companyService.findByCustomer(transaction.getCustomer());
-        companyNameTA.setText(customerCompany.getName());
-        customerNameTF.setText(transaction.getCustomer().getName()+ " "+transaction.getCustomer().getSurname());
-        streetTF.setText(transaction.getCustomer().getAddress());
-        postalCodeTF.setText(transaction.getCustomer().getPostalCode());
-        addressTF.setText(transaction.getCustomer().getCity());
-        nipTF.setText(customerCompany.getNip());
-        if(transaction.getType().equals("kupno"))invoiceTypeBuyRB.setSelected(true);
-        else invoiceTypeSellRB.setSelected(true);
-        productTable.getItems().clear();
-        //create row in table
+            Transaction transaction2;
+            ProductTransaction productTransaction;
+            for (int i = 0; i < idTransactionList.size(); i++) {
+                idTransaction = (Long) idTransactionList.get(i);
+                transaction2 = transactionService.find(idTransaction);
+                productTransaction = productTransactionService.findByTransaction(transaction2);
+                allProductListObservableTmp = fillProductNameComboBox();
 
-        Transaction transaction2;
-        ProductTransaction productTransaction;
-        for(int i=0; i<idTransactionList.size(); i++){
-            idTransaction = (Long)idTransactionList.get(i);
-            transaction2 = transactionService.find(idTransaction);
-            productTransaction = productTransactionService.findByTransaction(transaction2);
-            allProductListObservableTmp = fillProductNameComboBox();
+                if (!allProductListObservableTmp.contains(productTransaction.getProduct().getName()))
+                    allProductListObservableTmp.add(productTransaction.getProduct().getName());
 
-            if(!allProductListObservableTmp.contains(productTransaction.getProduct().getName()))
-                allProductListObservableTmp.add(productTransaction.getProduct().getName());
+                for (int t = 0; t < allProductListObservableTmp.size(); t++) {
+                    if (allProductListObservableTmp.get(t).equals(productTransaction.getProduct().getName()))
+                        productIndex = t;
+                }
+                for (int t = 0; t < fillTaxComboBox().size(); t++) {
+                    if (fillTaxComboBox().get(t).equals(productTransaction.getTransaction().getTax()))
+                        taxIndex = t;
+                }
+                for (int t = 0; t < fillUnitMeasureComboBox().size(); t++) {
+                    if (fillUnitMeasureComboBox().get(t).equals(productTransaction.getTransaction().getUnitMeasure()))
+                        unitMeasureIndex = t;
+                }
+                productTable.getItems().add(new InvoiceField(Integer.toString(
+                        i + 1),
+                        productNameComboBox = new ComboBox<>(allProductListObservableTmp),
+                        unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),
+                        productTransaction.getTransaction().getAmount(),
+                        productTransaction.getTransaction().getPriceNetto(),
+                        productTransaction.getTransaction().getProductValue(),
+                        taxComboBox = new ComboBox<>(fillTaxComboBox()),
+                        productTransaction.getTransaction().getPriceVat(),
+                        productTransaction.getTransaction().getPriceBrutto()));
 
-            for(int t=0; t<allProductListObservableTmp.size(); t++){
-                if(allProductListObservableTmp.get(t).equals(productTransaction.getProduct().getName()))
-                productIndex =t;
+                productNameComboBox.setValue(allProductListObservableTmp.get(productIndex));
+                productNameComboBox.setMinWidth(300);
+                productNameComboBox.setEditable(true);
+                taxComboBox.setValue(fillTaxComboBox().get(taxIndex));
+                unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(unitMeasureIndex));
             }
-            for(int t=0; t<fillTaxComboBox().size(); t++){
-                if(fillTaxComboBox().get(t).equals(productTransaction.getTransaction().getTax()))
-                taxIndex =t;
-            }
-            for(int t=0; t<fillUnitMeasureComboBox().size(); t++){
-                if(fillUnitMeasureComboBox().get(t).equals(productTransaction.getTransaction().getUnitMeasure()))
-                unitMeasureIndex =t;
-            }
-            productTable.getItems().add(new InvoiceField(Integer.toString(
-                    i+1),
-                    productNameComboBox = new ComboBox<>(allProductListObservableTmp),
-                    unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),
-                    productTransaction.getTransaction().getAmount(),
-                    productTransaction.getTransaction().getPriceNetto(),
-                    productTransaction.getTransaction().getProductValue(),
-                    taxComboBox = new ComboBox<>(fillTaxComboBox()),
-                    productTransaction.getTransaction().getPriceVat(),
-                    productTransaction.getTransaction().getPriceBrutto()));
-
-                    productNameComboBox.setValue(allProductListObservableTmp.get(productIndex));
-                    productNameComboBox.setMinWidth(300);
-                    productNameComboBox.setEditable(true);
-                    taxComboBox.setValue(fillTaxComboBox().get(taxIndex));
-                    unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(unitMeasureIndex));
+        }else{
+            message("Nie ma faktury o takim numerze!", Alert.AlertType.NONE,"Informacja");
         }
     }
 

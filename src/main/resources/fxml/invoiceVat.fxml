@@ -18,6 +18,8 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatInvoiceController">
     <center>
@@ -33,10 +35,18 @@
                                  <VBox.margin>
                                     <Insets top="5.0" />
                                  </VBox.margin>
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
                               </Label>
+                              <Line endX="5.0" startX="-100.0" strokeWidth="2.0">
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </Line>
                               <Label prefHeight="17.0" prefWidth="70.0" text="Miejscowość:">
                                  <VBox.margin>
-                                    <Insets top="45.0" />
+                                    <Insets top="25.0" />
                                  </VBox.margin>
                               </Label>
                               <Label text="NIP:">
@@ -46,16 +56,21 @@
                               </Label>
                            </children>
                         </VBox>
-                        <VBox prefHeight="232.0" prefWidth="147.0">
+                        <VBox prefHeight="168.0" prefWidth="205.0">
                            <children>
                               <TextField fx:id="invoiceNumberTF" onAction="#onEnter">
                                  <VBox.margin>
                                     <Insets top="5.0" />
                                  </VBox.margin>
                               </TextField>
+                              <Line endX="104.0" startX="-100.0" strokeWidth="2.0">
+                                 <VBox.margin>
+                                    <Insets top="12.0" />
+                                 </VBox.margin>
+                              </Line>
                               <TextField fx:id="addressTF">
                                  <VBox.margin>
-                                    <Insets top="35.0" />
+                                    <Insets top="23.0" />
                                  </VBox.margin>
                               </TextField>
                               <TextField fx:id="nipTF">
@@ -212,19 +227,19 @@
                                     <Insets left="5.0" top="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="forPrice" prefHeight="25.0" prefWidth="140.0" />
+                              <TextField fx:id="forPrice" prefHeight="25.0" prefWidth="140.0" text="0" />
                               <Label prefHeight="17.0" prefWidth="53.0" text="Netto:">
                                  <HBox.margin>
                                     <Insets left="5.0" top="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="sumNetto" prefHeight="25.0" prefWidth="140.0" />
+                              <TextField fx:id="sumNetto" prefHeight="25.0" prefWidth="140.0" text="0" />
                               <Label prefHeight="17.0" prefWidth="45.0" text="VAT:">
                                  <HBox.margin>
                                     <Insets left="5.0" top="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="sumVat" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="140.0" />
+                              <TextField fx:id="sumVat" alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="140.0" text="0" />
                            </children>
                         </HBox>
                      </children>

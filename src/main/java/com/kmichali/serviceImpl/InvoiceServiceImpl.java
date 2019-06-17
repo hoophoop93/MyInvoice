@@ -61,10 +61,11 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public boolean countInvoiceNumber(String invoiceNumber){
-        String queryString="Select count(c.invoiceNumber) from Invoice c where c.invoiceNumber = :invoiceNumber";
+    public boolean countInvoiceNumber(String invoiceNumber,String invoiceType){
+        String queryString="Select count(c.invoiceNumber) from Invoice c where c.invoiceNumber = :invoiceNumber and c.invoiceType = :invoiceType";
         Query query = getEntityManager().createQuery(queryString);
         query.setParameter("invoiceNumber",invoiceNumber);
+        query.setParameter("invoiceType",invoiceType);
         long result = (long) query.getSingleResult();
         return result > 0;
     }
