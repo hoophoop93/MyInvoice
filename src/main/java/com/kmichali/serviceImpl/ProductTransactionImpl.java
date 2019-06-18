@@ -26,12 +26,12 @@ public class ProductTransactionImpl implements ProductTransactionService {
 
     @Override
     public void delete(ProductTransaction entity) {
-
+        productTransactionRepository.delete(entity);
     }
 
     @Override
     public void delete(long id) {
-
+        productTransactionRepository.delete(id);
     }
 
     @Override

@@ -288,13 +288,13 @@ public class VatInvoicePDF {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-        cell= new PdfPCell(new Paragraph(new Paragraph("Ilość",new Font(bf, 10, Font.BOLD))));
+        cell= new PdfPCell(new Paragraph("J.m",new Font(bf, 10, Font.BOLD)));
         cell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-        cell= new PdfPCell(new Paragraph("J.m",new Font(bf, 10, Font.BOLD)));
+        cell= new PdfPCell(new Paragraph(new Paragraph("Ilość",new Font(bf, 10, Font.BOLD))));
         cell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);

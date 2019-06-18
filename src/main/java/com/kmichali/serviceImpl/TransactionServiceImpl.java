@@ -48,12 +48,12 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void delete(Transaction entity) {
-
+        transactionRepository.delete(entity);
     }
 
     @Override
     public void delete(long id) {
-
+        transactionRepository.delete(id);
     }
 
     @Override
@@ -79,12 +79,13 @@ public class TransactionServiceImpl implements TransactionService {
 
 
     @Override
-    public List findByInvoice(String invoiceNumber, long id) {
-        String queryString = "Select t.id from Transaction t, Invoice i where t.invoice.id = :id and i.invoiceNumber = :invoiceNumber ";
+    public List findByInvoice(String invoiceNumber, long id,String invoiceType) {
+        String queryString = "Select t.id from Transaction t, Invoice i where t.invoice.id = :id and i.invoiceNumber = :invoiceNumber and i.invoiceType = :invoiceType";
 
        Query query = getEntityManager().createQuery(queryString);
        query.setParameter("invoiceNumber", invoiceNumber);
        query.setParameter("id", id);
+        query.setParameter("invoiceType",invoiceType);
        List result=null;
        try {
             result = query.getResultList();

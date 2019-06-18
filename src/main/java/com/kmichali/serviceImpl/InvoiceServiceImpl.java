@@ -86,7 +86,19 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public Invoice findByinvoiceNumber(String invoiceNumber) {
-        return invoiceRepository.findByinvoiceNumber(invoiceNumber);
+    public Invoice findByinvoiceNumber(String invoiceNumber,String invoiceType){
+        Invoice invoice = null;
+        String queryString="Select c from Invoice c where c.invoiceNumber = :invoiceNumber and c.invoiceType = :invoiceType";
+
+        Query query = getEntityManager().createQuery(queryString);
+        query.setParameter("invoiceNumber",invoiceNumber);
+        query.setParameter("invoiceType",invoiceType);
+       try {
+           invoice = (Invoice) query.getSingleResult();
+       }catch (NullPointerException e){
+           
+       }
+        
+        return invoice;
     }
 }

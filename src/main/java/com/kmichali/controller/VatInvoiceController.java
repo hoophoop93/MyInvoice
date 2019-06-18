@@ -434,7 +434,7 @@ public class VatInvoiceController implements Initializable {
         String paymentDateToString = String.valueOf(paymentDate.getValue());
 
         if (sameInvoiceNumber == true) {
-            invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
+            invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText(),"Vat");
             date = invoice.getDate();
         } else {
             date = new Date();
@@ -445,7 +445,7 @@ public class VatInvoiceController implements Initializable {
         dateService.save(date);
 
         //custommer
-        if(sameInvoiceNumber == false) {
+        if(sameInvoiceNumber == true) {
             String nameCustomer = customerNameTF.getText();
             splited = nameCustomer.split("\\s+");
             if (!(customerService.countCustomerByAddress(streetTF.getText()) && customerService.countCustomerBySurname(splited[1]))) {
@@ -481,7 +481,7 @@ public class VatInvoiceController implements Initializable {
 
         // invoice
         if (sameInvoiceNumber == true) {
-            invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
+            invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText(),"Vat");
         } else {
             invoice = new Invoice();
         }
@@ -492,16 +492,19 @@ public class VatInvoiceController implements Initializable {
         invoice.setDate(date);
         invoiceService.save(invoice);
 
-        List idTransactionList = transactionService.findByInvoice(invoice.getInvoiceNumber(), invoice.getId());
+        List idTransactionList = transactionService.findByInvoice(invoice.getInvoiceNumber(), invoice.getId(),"Vat");
 
         //transaction
         int counter =0;
         List<Transaction> transactionList = new ArrayList<>();
         for (InvoiceField row : productTable.getItems()) {
             if (sameInvoiceNumber == true) {
-                idTransaction = (Long) idTransactionList.get(counter);
-                counter++;
-                transaction = transactionService.find(idTransaction);
+                if(counter < idTransactionList.size()) {
+                    idTransaction = (Long) idTransactionList.get(counter);
+                    transaction = transactionService.find(idTransaction);
+                }else{
+                    transaction = new Transaction();
+                }
             } else {
                 transaction = new Transaction();
             }
@@ -561,13 +564,30 @@ public class VatInvoiceController implements Initializable {
 
             //join product and transaction
             if (sameInvoiceNumber == true) {
-                productTransaction = productTransactionService.findByTransaction(transaction);
+                if(counter < idTransactionList.size()) {
+                    productTransaction = productTransactionService.findByTransaction(transaction);
+                    counter++;
+                }else{
+                    productTransaction = new ProductTransaction();
+                }
             } else {
                 productTransaction = new ProductTransaction();
             }
             productTransaction.setProduct(product);
             productTransaction.setTransaction(transaction);
             productTransactionService.save(productTransaction);
+        }
+        if (sameInvoiceNumber == true) {
+            if(counter < idTransactionList.size()) {
+                for (int i = counter; i < idTransactionList.size(); i++) {
+                    idTransaction = (Long) idTransactionList.get(counter);
+                    counter++;
+                    transaction = transactionService.find(idTransaction);
+                    productTransaction = productTransactionService.findByTransaction(transaction);
+                    productTransactionService.delete(productTransaction);
+                    transactionService.delete(idTransaction);
+                }
+            }
         }
 
         Company companyCustomer = companyService.findByCustomer(customer);
@@ -857,13 +877,16 @@ public class VatInvoiceController implements Initializable {
         invoiceNumberTF.setText(invoiceNumberDB);
     }
     @FXML
-    public void onEnter(ActionEvent ae){
+    public void onEnter(ActionEvent actionEvent){
+        taxComboBoxObjectList = new ArrayList<>();
+        nameProductComboBoxObjectList = new ArrayList<>();
+        unitMeasureComboBoxObjectList = new ArrayList<>();
         ObservableList<String> allProductListObservableTmp = FXCollections.observableArrayList();
         int productIndex=0;
         int taxIndex =0;
         int unitMeasureIndex =0;
         if(invoiceService.countInvoiceNumber(invoiceNumberTF.getText(),"Vat")) {
-            Invoice invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
+            Invoice invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText(),"Vat");
             LocalDate localDate = LocalDate.parse(invoice.getDate().getIssueDate()); //parse String to localdate
             issueDate.setValue(localDate);
             localDate = LocalDate.parse(invoice.getDate().getSellDate()); //parse String to localdate
@@ -872,7 +895,7 @@ public class VatInvoiceController implements Initializable {
             paymentDate.setValue(localDate);
             paidType.setValue(invoice.getPaidType());
 
-            List idTransactionList = transactionService.findByInvoice(invoice.getInvoiceNumber(), invoice.getId());
+            List idTransactionList = transactionService.findByInvoice(invoice.getInvoiceNumber(), invoice.getId(),"Vat");
             long idTransaction = (Long) idTransactionList.get(0);
             Transaction transaction = transactionService.find(idTransaction);
             Company customerCompany = companyService.findByCustomer(transaction.getCustomer());
@@ -899,16 +922,22 @@ public class VatInvoiceController implements Initializable {
                     allProductListObservableTmp.add(productTransaction.getProduct().getName());
 
                 for (int t = 0; t < allProductListObservableTmp.size(); t++) {
-                    if (allProductListObservableTmp.get(t).equals(productTransaction.getProduct().getName()))
+                    if (allProductListObservableTmp.get(t).equals(productTransaction.getProduct().getName())) {
                         productIndex = t;
+                        break;
+                    }
                 }
                 for (int t = 0; t < fillTaxComboBox().size(); t++) {
-                    if (fillTaxComboBox().get(t).equals(productTransaction.getTransaction().getTax()))
+                    if (fillTaxComboBox().get(t).equals(productTransaction.getTransaction().getTax())) {
                         taxIndex = t;
+                        break;
+                    }
                 }
                 for (int t = 0; t < fillUnitMeasureComboBox().size(); t++) {
-                    if (fillUnitMeasureComboBox().get(t).equals(productTransaction.getTransaction().getUnitMeasure()))
+                    if (fillUnitMeasureComboBox().get(t).equals(productTransaction.getTransaction().getUnitMeasure())) {
                         unitMeasureIndex = t;
+                        break;
+                    }
                 }
                 productTable.getItems().add(new InvoiceField(Integer.toString(
                         i + 1),
@@ -921,12 +950,14 @@ public class VatInvoiceController implements Initializable {
                         productTransaction.getTransaction().getPriceVat(),
                         productTransaction.getTransaction().getPriceBrutto()));
 
+                addComboBoxObjectToList();
                 productNameComboBox.setValue(allProductListObservableTmp.get(productIndex));
                 productNameComboBox.setMinWidth(300);
                 productNameComboBox.setEditable(true);
                 taxComboBox.setValue(fillTaxComboBox().get(taxIndex));
                 unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(unitMeasureIndex));
             }
+            totalPrice();
         }else{
             message("Nie ma faktury o takim numerze!", Alert.AlertType.NONE,"Informacja");
         }

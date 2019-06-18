@@ -16,7 +16,8 @@ public class Store {
     @Column(name = "amount")
     private double amount;
 
-    @OneToMany(mappedBy ="store",cascade=CascadeType.ALL)
+    @OneToMany(mappedBy ="store",cascade=CascadeType.ALL,orphanRemoval = true)
+    @org.hibernate.annotations.ForeignKey(name = "none")
     private List<Transaction> transactionList;
 
     public List<Transaction> getTransactionList() {

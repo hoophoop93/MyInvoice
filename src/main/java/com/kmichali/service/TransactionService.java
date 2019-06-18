@@ -8,5 +8,5 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface TransactionService extends GenericService<Transaction> {
-    List findByInvoice(String invoiceNumber,long id);
+    List findByInvoice(String invoiceNumber,long id,String invoiceType);
 }

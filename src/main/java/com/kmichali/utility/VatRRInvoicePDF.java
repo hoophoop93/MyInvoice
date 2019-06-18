@@ -26,12 +26,12 @@ public class VatRRInvoicePDF {
     Document document;
     String invoiceNum;
 
-    public VatRRInvoicePDF(Invoice invoice, Date date, Company companySeller, Company companyCustomer,
+    public VatRRInvoicePDF(Invoice invoice, Date date, Company companySeller, Customer customer,
                          TableView<InvoiceField> productTable, ComboBox paidType,IdentityCard identityCard,ComboBox promotionFoundComboBox,String invoiceNumber, String path
     ) throws DocumentException, IOException {
         PDFPATH = path.replaceAll("\\\\", "/")+"/VatRR/";
         CreateDirectory(PDFPATH,invoiceNumber);
-        CreateDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,identityCard,promotionFoundComboBox,invoiceNumber);
+        CreateDocument(invoice ,date,companySeller,customer,productTable,paidType,identityCard,promotionFoundComboBox,invoiceNumber);
         OpenPDF(PDFPATH+invoiceNum+".pdf");
     }
     public void CreateDirectory(String path, String invoiceNumber){
@@ -65,7 +65,7 @@ public class VatRRInvoicePDF {
         }
         PDFPATH += yearWithInvoiceNumber+"/"+monthEnum+"/";
     }
-    private void CreateDocument(Invoice invoice, Date date, Company companySeller,Company companyCustomer,
+    private void CreateDocument(Invoice invoice, Date date, Company companySeller,Customer customer,
                                 TableView<InvoiceField> productTable, ComboBox paidType, IdentityCard identityCard,ComboBox promotionFoundComboBox, String invoiceNumber
     ) throws DocumentException, IOException {
 
@@ -81,7 +81,7 @@ public class VatRRInvoicePDF {
 
         document.open();
 
-        fillPdfDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,identityCard,promotionFoundComboBox);
+        fillPdfDocument(invoice ,date,companySeller,customer,productTable,paidType,identityCard,promotionFoundComboBox);
 
         document.close();
     }
@@ -95,7 +95,7 @@ public class VatRRInvoicePDF {
         }
     }
 
-    private void fillPdfDocument(Invoice invoice, Date date, Company companySeller, Company companyCustomer,
+    private void fillPdfDocument(Invoice invoice, Date date, Company companySeller, Customer customer,
                                  TableView<InvoiceField> productTable, ComboBox paidType, IdentityCard identityCard,ComboBox promotionFoundComboBox) throws DocumentException, IOException {
         double promotionFoundAmount=0;
         List<String> taxList = new ArrayList<>();
@@ -258,21 +258,18 @@ public class VatRRInvoicePDF {
         Paragraph paragraph5 = new Paragraph();
         paragraph5.setLeading(2f);
         paragraph5.setFont(new Font(bf,11));
-        if(companyCustomer != null) {
-            paragraph5.add(companyCustomer.getCustomer().getName() + " " + companyCustomer.getCustomer().getSurname());
+        if(customer != null) {
+            paragraph5.add(customer.getName() + " " + customer.getSurname());
             paragraph5.add(Chunk.NEWLINE);
-            paragraph5.add(companyCustomer.getCustomer().getAddress()+", "+companyCustomer.getCustomer().getCity()+" "+companyCustomer.getCustomer().getPostalCode());
+            paragraph5.add(customer.getAddress()+", "+customer.getCity()+" "+customer.getPostalCode());
             paragraph5.add(Chunk.NEWLINE);
             paragraph5.add("Dowód osob. "+identityCard.getSeriaAndNumber()+" wydany dnia "+identityCard.getReleaseDate()+" r");
             paragraph5.add(Chunk.NEWLINE);
             paragraph5.add("przez "+identityCard.getOrganization());
             paragraph5.add(Chunk.NEWLINE);
-            if(companyCustomer.getCustomer().getPesel().length() >0) {
-                paragraph5.add("PESEL: " + companyCustomer.getCustomer().getPesel());
+            paragraph5.add("PESEL: " + customer.getPesel());
 
-            }else{
-                paragraph5.add("NIP: " + companyCustomer.getNip());
-            }
+
             for(int i=0; i<2; i++) {
                 paragraph5.add(Chunk.NEWLINE);
             }
@@ -316,14 +313,13 @@ public class VatRRInvoicePDF {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-
-        cell= new PdfPCell(new Paragraph(new Paragraph("Ilość",new Font(bf, 10, Font.BOLD))));
+        cell= new PdfPCell(new Paragraph("J.m",new Font(bf, 10, Font.BOLD)));
         cell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-        cell= new PdfPCell(new Paragraph("J.m",new Font(bf, 10, Font.BOLD)));
+        cell= new PdfPCell(new Paragraph(new Paragraph("Ilość",new Font(bf, 10, Font.BOLD))));
         cell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);

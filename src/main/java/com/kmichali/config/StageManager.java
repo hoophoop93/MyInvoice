@@ -33,7 +33,7 @@ public class StageManager {
         //scene.getStylesheets().add("/styles/Styles.css");
 
         //primaryStage.initStyle(StageStyle.TRANSPARENT);
-        primaryStage.getIcons().add(new Image("/images/grainLogo.png"));
+        primaryStage.getIcons().add(new Image("/images/logo3.png"));
         primaryStage.setTitle(title);
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();

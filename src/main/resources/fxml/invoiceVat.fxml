@@ -21,7 +21,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatInvoiceController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatInvoiceController">
     <center>
         <VBox prefHeight="355.0" prefWidth="657.0" BorderPane.alignment="CENTER">
             <children>
@@ -44,12 +44,12 @@
                                     <Insets top="20.0" />
                                  </VBox.margin>
                               </Line>
-                              <Label prefHeight="17.0" prefWidth="70.0" text="Miejscowość:">
+                              <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="98.0" text="Poczta:">
                                  <VBox.margin>
                                     <Insets top="25.0" />
                                  </VBox.margin>
                               </Label>
-                              <Label text="NIP:">
+                              <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="101.0" text="NIP:">
                                  <VBox.margin>
                                     <Insets top="15.0" />
                                  </VBox.margin>
@@ -226,6 +226,9 @@
                                  <HBox.margin>
                                     <Insets left="5.0" top="5.0" />
                                  </HBox.margin>
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
                               </Label>
                               <TextField fx:id="forPrice" prefHeight="25.0" prefWidth="140.0" text="0" />
                               <Label prefHeight="17.0" prefWidth="53.0" text="Netto:">
@@ -305,7 +308,7 @@
                   </HBox>
                   <HBox prefHeight="42.0" prefWidth="372.0">
                      <children>
-                        <Label prefHeight="17.0" prefWidth="85.0" text="Ulica:">
+                        <Label prefHeight="17.0" prefWidth="85.0" text="Miejscowość/ul:">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" top="7.0" />
                            </HBox.margin>

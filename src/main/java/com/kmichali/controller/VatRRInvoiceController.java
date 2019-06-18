@@ -371,7 +371,7 @@ public class VatRRInvoiceController implements Initializable {
         String paymentDateToString = String.valueOf(paymentDate.getValue());
 
         if (sameInvoiceNumber == true) {
-            invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
+            invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText(),"VatRR");
             date = invoice.getDate();
         } else {
             date = new Date();
@@ -382,7 +382,7 @@ public class VatRRInvoiceController implements Initializable {
         dateService.save(date);
 
         //custommer
-        if(sameInvoiceNumber == false) {
+        if(sameInvoiceNumber == true) {
             String nameCustomer = customerNameTF.getText();
             splited = nameCustomer.split("\\s+");
             if (!(customerService.countCustomerByAddress(streetTF.getText()) && customerService.countCustomerBySurname(splited[1]))) {
@@ -415,7 +415,7 @@ public class VatRRInvoiceController implements Initializable {
 
         // invoice
         if (sameInvoiceNumber == true) {
-            invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText());
+            invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText(),"VatRR");
         } else {
             invoice = new Invoice();
         }
@@ -426,16 +426,19 @@ public class VatRRInvoiceController implements Initializable {
         invoice.setDate(date);
         invoiceService.save(invoice);
 
-        List idTransactionList = transactionService.findByInvoice(invoice.getInvoiceNumber(), invoice.getId());
+        List idTransactionList = transactionService.findByInvoice(invoice.getInvoiceNumber(), invoice.getId(),"VatRR");
 
         //transaction
         int counter =0;
         List<Transaction> transactionList = new ArrayList<>();
         for (InvoiceField row : productTable.getItems()) {
             if (sameInvoiceNumber == true) {
-                idTransaction = (Long) idTransactionList.get(counter);
-                counter++;
-                transaction = transactionService.find(idTransaction);
+                if(counter < idTransactionList.size()) {
+                    idTransaction = (Long) idTransactionList.get(counter);
+                    transaction = transactionService.find(idTransaction);
+                }else{
+                    transaction = new Transaction();
+                }
             } else {
                 transaction = new Transaction();
             }
@@ -465,7 +468,6 @@ public class VatRRInvoiceController implements Initializable {
                 transaction.setStore(store);
 
             }
-
             transactionService.save(transaction);
 
             //product
@@ -479,20 +481,37 @@ public class VatRRInvoiceController implements Initializable {
 
             //join product and transaction
             if (sameInvoiceNumber == true) {
-                productTransaction = productTransactionService.findByTransaction(transaction);
+                if(counter < idTransactionList.size()) {
+                    productTransaction = productTransactionService.findByTransaction(transaction);
+                    counter++;
+                }else{
+                    productTransaction = new ProductTransaction();
+                }
             } else {
                 productTransaction = new ProductTransaction();
             }
             productTransaction.setProduct(product);
             productTransaction.setTransaction(transaction);
             productTransactionService.save(productTransaction);
+
+        }
+        if (sameInvoiceNumber == true) {
+            if(counter < idTransactionList.size()) {
+                for (int i = counter; i < idTransactionList.size(); i++) {
+                    idTransaction = (Long) idTransactionList.get(counter);
+                    counter++;
+                    transaction = transactionService.find(idTransaction);
+                    productTransaction = productTransactionService.findByTransaction(transaction);
+                    productTransactionService.delete(productTransaction);
+                    transactionService.delete(idTransaction);
+                }
+            }
         }
 
-        Company companyCustomer = companyService.findByCustomer(customer);
         Company companySeller = companyService.findBySeller(seller);
         Settings settings = settingsService.find(1);
         String path = settings.getPath();
-        VatRRInvoicePDF pdfCreator = new VatRRInvoicePDF(invoice ,date,companySeller,companyCustomer,productTable, paidType,identityCard,promotionFoundCB,invoiceNumberTF.getText(), path);
+        VatRRInvoicePDF pdfCreator = new VatRRInvoicePDF(invoice ,date,companySeller,customer,productTable, paidType,identityCard,promotionFoundCB,invoiceNumberTF.getText(), path);
         //StatementPDF statementPDF = new StatementPDF(customer,veterinaryInspectorateCB,issueDate,productTable);
     }
 
@@ -511,8 +530,9 @@ public class VatRRInvoiceController implements Initializable {
             unitMeasureComboBoxObjectList.remove(rowIndex);
             productTable.getItems().remove(selectedRow);
             int counter=1;
+
             for (InvoiceField row : productTable.getItems()) {
-                invoiceField.setLp(String.valueOf(counter));
+                row.setLp(String.valueOf(counter));
                 lpColumn.setCellFactory(TextFieldTableCell.forTableColumn());
                 lpColumn.setCellValueFactory(  new PropertyValueFactory<>("lp"));
 
@@ -854,5 +874,93 @@ public class VatRRInvoiceController implements Initializable {
             return false;
         }
         return true;
+    }
+    @FXML
+    public void onEnter(ActionEvent actionEvent){
+        taxComboBoxObjectList = new ArrayList<>();
+        nameProductComboBoxObjectList = new ArrayList<>();
+        unitMeasureComboBoxObjectList = new ArrayList<>();
+        ObservableList<String> allProductListObservableTmp = FXCollections.observableArrayList();
+        int productIndex=0;
+        int taxIndex =0;
+        int unitMeasureIndex =0;
+        if(invoiceService.countInvoiceNumber(invoiceNumberTF.getText(),"VatRR")) {
+            Invoice invoice = invoiceService.findByinvoiceNumber(invoiceNumberTF.getText(),"VatRR");
+            LocalDate localDate = LocalDate.parse(invoice.getDate().getIssueDate()); //parse String to localdate
+            issueDate.setValue(localDate);
+            localDate = LocalDate.parse(invoice.getDate().getSellDate()); //parse String to localdate
+            sellDate.setValue(localDate);
+            localDate = LocalDate.parse(invoice.getDate().getPaymentDate()); //parse String to localdate
+            paymentDate.setValue(localDate);
+            paidType.setValue(invoice.getPaidType());
+
+            List idTransactionList = transactionService.findByInvoice(invoice.getInvoiceNumber(), invoice.getId(),"VatRR");
+            long idTransaction = (Long) idTransactionList.get(0);
+            Transaction transaction = transactionService.find(idTransaction);
+            IdentityCard identityCard = identityCardService.findByCustomer(transaction.getCustomer());
+            customerNameTF.setText(transaction.getCustomer().getName() + " " + transaction.getCustomer().getSurname());
+            streetTF.setText(transaction.getCustomer().getAddress());
+            postalCodeTF.setText(transaction.getCustomer().getPostalCode());
+            addressTF.setText(transaction.getCustomer().getCity());
+            peselTF.setText(transaction.getCustomer().getPesel());
+            seriaAndNumberIdCard.setText(identityCard.getSeriaAndNumber());
+            releaseByTF.setText(identityCard.getOrganization());
+            releaseDateTF.getEditor().setText(identityCard.getReleaseDate());
+            productTable.getItems().clear();
+            //create row in table
+
+            Transaction transaction2;
+            ProductTransaction productTransaction;
+            for (int i = 0; i < idTransactionList.size(); i++) {
+                idTransaction = (Long) idTransactionList.get(i);
+                transaction2 = transactionService.find(idTransaction);
+                productTransaction = productTransactionService.findByTransaction(transaction2);
+                allProductListObservableTmp = fillProductNameComboBox();
+
+                if (!allProductListObservableTmp.contains(productTransaction.getProduct().getName()))
+                    allProductListObservableTmp.add(productTransaction.getProduct().getName());
+
+                for (int t = 0; t < allProductListObservableTmp.size(); t++) {
+                    if (allProductListObservableTmp.get(t).equals(productTransaction.getProduct().getName())){
+                        productIndex = t;
+                        break;
+                    }
+
+                }
+                for (int t = 0; t < fillTaxComboBox().size(); t++) {
+                    if (fillTaxComboBox().get(t).equals(productTransaction.getTransaction().getTax())) {
+                        taxIndex = t;
+                        break;
+                    }
+                }
+                for (int t = 0; t < fillUnitMeasureComboBox().size(); t++) {
+                    if (fillUnitMeasureComboBox().get(t).equals(productTransaction.getTransaction().getUnitMeasure())) {
+                        unitMeasureIndex = t;
+                        break;
+                    }
+                }
+                productTable.getItems().add(new InvoiceField(Integer.toString(
+                        i + 1),
+                        productNameComboBox = new ComboBox<>(allProductListObservableTmp),
+                        unitMeasureComboBox = new ComboBox<>(fillUnitMeasureComboBox()),
+                        productTransaction.getTransaction().getAmount(),
+                        productTransaction.getTransaction().getPriceNetto(),
+                        productTransaction.getTransaction().getProductValue(),
+                        taxComboBox = new ComboBox<>(fillTaxComboBox()),
+                        productTransaction.getTransaction().getPriceVat(),
+                        productTransaction.getTransaction().getPriceBrutto()));
+
+                addComboBoxObjectToList();
+                productNameComboBox.setValue(allProductListObservableTmp.get(productIndex));
+                productNameComboBox.setMinWidth(300);
+                productNameComboBox.setEditable(true);
+                taxComboBox.setValue(fillTaxComboBox().get(taxIndex));
+                unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(unitMeasureIndex));
+
+            }
+            totalPrice();
+        }else{
+            message("Nie ma faktury o takim numerze!", Alert.AlertType.NONE,"Informacja");
+        }
     }
 }
