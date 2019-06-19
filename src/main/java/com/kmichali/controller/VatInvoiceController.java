@@ -104,6 +104,8 @@ public class VatInvoiceController implements Initializable {
     private TextField nipTF;
     @FXML
     private ToggleGroup invoiceType;
+    @FXML
+    private Label transactionDateLabel;
 
     private InvoiceField invoiceField;
     private double priceNetto;
@@ -171,19 +173,18 @@ public class VatInvoiceController implements Initializable {
     void menuStoreAction(ActionEvent event) throws UnsupportedEncodingException {
         stageManager.switchScene(FxmlView.STORESTAGE);
     }
-    public double calculateValuesByUnitMeasure(InvoiceField invoiceField, double amount)
-    {
-        if(invoiceField.getUnitMeasure().getSelectionModel().getSelectedItem().equals("szt.")){
-            amount = amount;
-        }else if(invoiceField.getUnitMeasure().getSelectionModel().getSelectedItem().equals("tona")){
-            amount = amount / 1000;
+    @FXML
+    void buyRadioButtonAction(ActionEvent event) {
+        if(invoiceTypeBuyRB.isSelected()){
+            transactionDateLabel.setText("Data zakupu");
         }
-        else if(invoiceField.getUnitMeasure().getSelectionModel().getSelectedItem().equals("kg.")){
-            amount =  amount/100;
-        }
-        return amount;
     }
-
+    @FXML
+    void sellRadioButtonAction(ActionEvent event) {
+        if(invoiceTypeSellRB.isSelected()){
+            transactionDateLabel.setText("Data sprzedaży");
+        }
+    }
     @FXML
     public void changeAmountCellEvent(TableColumn.CellEditEvent editedCell){
         invoiceField = productTable.getSelectionModel().getSelectedItem();
@@ -518,6 +519,11 @@ public class VatInvoiceController implements Initializable {
             transaction.setProductValue(row.getProductValue());
             transaction.setUnitMeasure(row.getUnitMeasure().getSelectionModel().getSelectedItem());
             transaction.setSeller(seller);
+            if(row.getUnitMeasure().getSelectionModel().getSelectedItem().equals("tona")){
+                transaction.setConversionKilograms(row.getAmount()*1000);
+            }else{
+                transaction.setConversionKilograms(-1);
+            }
 
             store = storeService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
             if (store == null) {
@@ -531,11 +537,20 @@ public class VatInvoiceController implements Initializable {
             } else {
                 getProductAmount = store.getAmount();
                 if (invoiceTypeIdentyfier == 1) {
-                    calculateAmount = getProductAmount + row.getAmount();
+                    if(row.getUnitMeasure().getSelectionModel().getSelectedItem().equals("tona")) {
+                        calculateAmount = getProductAmount + row.getAmount()*1000;
+                    }else{
+                        calculateAmount = getProductAmount + row.getAmount();
+                    }
                     transaction.setType("kupno");
                 } else {
                     if (getProductAmount - row.getAmount() > 0) {
-                        calculateAmount = getProductAmount - row.getAmount();
+                        if(row.getUnitMeasure().getSelectionModel().getSelectedItem().equals("tona")) {
+                            calculateAmount = getProductAmount - row.getAmount()*1000;
+                        }else{
+                            calculateAmount = getProductAmount - row.getAmount();
+                        }
+
                         transaction.setType("sprzedaż");
 
                     } else {
@@ -633,7 +648,11 @@ public class VatInvoiceController implements Initializable {
         productTable.setItems(getFirstRow());
         taxComboBox.setValue(fillTaxComboBox().get(0));
         unitMeasureComboBox.setValue(fillUnitMeasureComboBox().get(0));
+
+        List<Store> allProductList = (List<Store>) storeService.findAll();
+        if(allProductList.size() >0)
         productNameComboBox.setValue(fillProductNameComboBox().get(0));
+
         productNameComboBox.setEditable(true);
         productNameComboBox.setMinWidth(300);
 
@@ -709,9 +728,9 @@ public class VatInvoiceController implements Initializable {
     }
     private  ObservableList<String> fillUnitMeasureComboBox(){
         ObservableList<String> fillUnitMeasureList = FXCollections.observableArrayList();
-        fillUnitMeasureList.add("szt.");
         fillUnitMeasureList.add("tona");
         fillUnitMeasureList.add("kg.");
+        fillUnitMeasureList.add("szt.");
         return fillUnitMeasureList;
     }
     private ObservableList<String> fillInvoiceTypeComboBox(){
@@ -723,9 +742,8 @@ public class VatInvoiceController implements Initializable {
     }
     private ObservableList<String> fillPaidTypeComboBox(){
         ObservableList<String> paidTypeList = FXCollections.observableArrayList();
-        paidTypeList.add("Gotówka");
         paidTypeList.add("Przelew");
-
+        paidTypeList.add("Gotówka");
         return paidTypeList;
     }
 
@@ -961,6 +979,18 @@ public class VatInvoiceController implements Initializable {
         }else{
             message("Nie ma faktury o takim numerze!", Alert.AlertType.NONE,"Informacja");
         }
+    }
+    public double calculateValuesByUnitMeasure(InvoiceField invoiceField, double amount)
+    {
+        if(invoiceField.getUnitMeasure().getSelectionModel().getSelectedItem().equals("szt.")){
+            amount = amount;
+        }else if(invoiceField.getUnitMeasure().getSelectionModel().getSelectedItem().equals("tona")){
+            amount = amount ;
+        }
+        else if(invoiceField.getUnitMeasure().getSelectionModel().getSelectedItem().equals("kg.")){
+            amount =  amount/100;
+        }
+        return amount;
     }
 
 }

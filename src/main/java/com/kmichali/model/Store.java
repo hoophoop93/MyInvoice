@@ -15,6 +15,8 @@ public class Store {
     private String name;
     @Column(name = "amount")
     private double amount;
+    @Column(name = "unit_measure")
+    private String unitMeasure;
 
     @OneToMany(mappedBy ="store",cascade=CascadeType.ALL,orphanRemoval = true)
     @org.hibernate.annotations.ForeignKey(name = "none")
@@ -50,5 +52,13 @@ public class Store {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public String getUnitMeasure() {
+        return unitMeasure;
+    }
+
+    public void setUnitMeasure(String unitMeasure) {
+        this.unitMeasure = unitMeasure;
     }
 }

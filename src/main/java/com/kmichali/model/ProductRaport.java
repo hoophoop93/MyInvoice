@@ -2,17 +2,22 @@ package com.kmichali.model;
 
 public class ProductRaport {
 
-    double storeAmount;
+    double transactionAmount;
     String name;
     String date;
     double wholeAmount;
     String type;
-    public double getStoreAmount() {
-        return storeAmount;
+    private String unitMeasure;
+    double conversionKilograms;
+
+
+
+    public double getTransactionAmount() {
+        return transactionAmount;
     }
 
-    public void setStoreAmount(double storeAmount) {
-        this.storeAmount = storeAmount;
+    public void setTransactionAmount(double transactionAmount) {
+        this.transactionAmount = transactionAmount;
     }
 
     public String getName() {
@@ -45,5 +50,21 @@ public class ProductRaport {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getUnitMeasure() {
+        return unitMeasure;
+    }
+
+    public void setUnitMeasure(String unitMeasure) {
+        this.unitMeasure = unitMeasure;
+    }
+
+    public double getConversionKilograms() {
+        return conversionKilograms;
+    }
+
+    public void setConversionKilograms(double conversionKilograms) {
+        this.conversionKilograms = conversionKilograms;
     }
 }

@@ -67,10 +67,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public List<ProductRaport> findTransactionByProduct(String name) {
-        List<ProductRaport> transactionList = entityManager.createQuery("Select t.storeAmount as storeAmount,t.customer.name || ' ' ||  t.customer.surname as name " +
-                ",d.issueDate as date, s.amount as wholeAmount, t.type as type " +
+        List<ProductRaport> transactionList = entityManager.createQuery("Select t.conversionKilograms as conversionKilograms," +
+                "t.unitMeasure as unitMeasure, t.amount as transactionAmount,t.customer.name || ' ' ||  t.customer.surname as name " +
+                ",d.issueDate as date, t.storeAmount as wholeAmount, t.type as type " +
                 "from Transaction t, Store s,Invoice i, Date d where t.store.id = s.id and " +
-                "t.invoice.id = i.id and d.id = i.date.id and  s.name= :name ").setParameter("name",name).
+                "t.invoice.id = i.id and d.id = i.date.id and  s.name= :name ORDER BY d.sellDate desc").setParameter("name",name).
                 unwrap( org.hibernate.query.Query.class )
                 .setResultTransformer( Transformers.aliasToBean( ProductRaport.class ) )
                 .getResultList();

@@ -11,6 +11,8 @@ import com.kmichali.view.FxmlView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
@@ -90,19 +92,19 @@ public class SettingsController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         seller = sellerService.find(1);
         company = companyService.findBySeller(seller);
+        if(seller !=null && company != null) {
+            nameTF.setText(company.getSeller().getName());
+            surnameTF.setText(company.getSeller().getSurname());
+            streetTF.setText(company.getSeller().getAddress());
+            postalCodeTF.setText(company.getSeller().getPostalCode());
+            cityTF.setText(company.getSeller().getCity());
 
-       nameTF.setText(company.getSeller().getName());
-       surnameTF.setText(company.getSeller().getSurname());
-       streetTF.setText(company.getSeller().getAddress());
-       postalCodeTF.setText(company.getSeller().getPostalCode());
-       cityTF.setText(company.getSeller().getCity());
-
-       companyNameTA.setText(company.getName());
-       nipTF.setText(company.getNip());
-       regonTF.setText(company.getRegon());
-       phoneNumberTF.setText(company.getPhoneNumber());
-       accountNumberTF.setText(company.getAccountNumber());
-
+            companyNameTA.setText(company.getName());
+            nipTF.setText(company.getNip());
+            regonTF.setText(company.getRegon());
+            phoneNumberTF.setText(company.getPhoneNumber());
+            accountNumberTF.setText(company.getAccountNumber());
+        }
        settings = settingsService.find(1L);
        if(settings != null)
        pathTF.setText(settings.getPath());
@@ -138,6 +140,8 @@ public class SettingsController implements Initializable {
 
     @FXML
     void updateAction(ActionEvent event) {
+        seller = sellerService.find(1);
+        if(seller ==null)seller = new Seller();
 
         seller.setName(nameTF.getText());
         seller.setSurname(surnameTF.getText());
@@ -146,12 +150,19 @@ public class SettingsController implements Initializable {
         seller.setCity(cityTF.getText());
         sellerService.update(seller);
 
+        company = companyService.findBySeller(seller);
+        if(company ==null)company = new Company();
+
         company.setName(companyNameTA.getText());
         company.setNip(nipTF.getText());
         company.setRegon(regonTF.getText());
         company.setPhoneNumber(phoneNumberTF.getText());
         company.setAccountNumber(accountNumberTF.getText());
+        company.setSeller(seller);
         companyService.update(company);
+        if(companyService.countByNip(nipTF.getText())) {
+            message("Twoje dane zostały poprawnie zaaktualizowane.", Alert.AlertType.NONE, "Informacja");
+        }
     }
 
     @FXML
@@ -162,10 +173,18 @@ public class SettingsController implements Initializable {
         if(selectedDirectory == null){
             //No Directory selected
         }else{
-
+            settings = settingsService.find(1);
+            if(settings== null){
+                settings = new Settings();
+            }
             settings.setPath(selectedDirectory.getAbsolutePath());
             settingsService.save(settings);
             pathTF.setText(selectedDirectory.getAbsolutePath());
         }
+    }
+    private void message(String message, Alert.AlertType alertType, String typeMessage){
+        Alert alert = new Alert(alertType, message, ButtonType.OK);
+        alert.setTitle(typeMessage);
+        alert.showAndWait();
     }
 }

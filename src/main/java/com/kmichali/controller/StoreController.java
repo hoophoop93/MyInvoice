@@ -40,17 +40,21 @@ public class StoreController  implements Initializable {
     @FXML
     TableColumn<Store, String> nameColumn;
     @FXML
-    TableColumn<Store, String> amountColumn;
+    TableColumn<Store, Double> amountColumn;
+    @FXML
+    TableColumn<Store, String> unitMeasure;
     @FXML
     TableColumn<ProductRaport, String> nameCustomer;
     @FXML
-    TableColumn<ProductRaport, String> amountTransaction;
+    TableColumn<ProductRaport, Double> amountTransaction;
     @FXML
     TableColumn<ProductRaport, String> sellDate;
     @FXML
-    TableColumn<ProductRaport, String> wholeAmount;
+    TableColumn<ProductRaport, Double> wholeAmount;
     @FXML
     TableColumn<ProductRaport, String> type;
+    @FXML
+    private ComboBox<String> unitMeasureCB;
 
     Store store;
     List<Store> allProductList;
@@ -82,11 +86,15 @@ public class StoreController  implements Initializable {
         store = new Store();
         store.setName(productName.getText());
         store.setAmount(Double.parseDouble(amount.getText()));
+        store.setUnitMeasure(unitMeasureCB.getSelectionModel().getSelectedItem());
 
         if(!storeService.countProductStore(store.getName())) {
             storeService.save(store);
             allProductList.add(store);
             prepareTableColumn();
+            productName.setText("");
+            amount.setText("");
+            unitMeasureCB.getItems().clear();
         }else{
             message("Taki produkt jest już w magazynie!", Alert.AlertType.NONE,"Informacja");
         }
@@ -95,6 +103,7 @@ public class StoreController  implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         productCB.setItems(fillProductCB());
+        unitMeasureCB.setItems(fillUnitMeasureComboBox());
 
         productCB.setValue(allProductListObservable.get(0));
         prepareTableColumn();
@@ -107,12 +116,15 @@ public class StoreController  implements Initializable {
         nameColumn.setMinWidth(200);
 
         // Create column Email (Data type of String).
-        amountColumn   = new TableColumn<Store, String>("Ilość w mgazynie");
+        amountColumn   = new TableColumn<Store, Double>("Ilość w mgazynie");
         amountColumn.setMinWidth(150);
+        unitMeasure   = new TableColumn<Store, String>("Jednotka miary");
+        unitMeasure.setMinWidth(150);
 
-        storeProductsTable.getColumns().addAll(nameColumn,amountColumn);
+        storeProductsTable.getColumns().addAll(nameColumn,amountColumn,unitMeasure);
         nameColumn.setCellValueFactory(  new PropertyValueFactory<>("name"));
         amountColumn.setCellValueFactory(  new PropertyValueFactory<>("amount"));
+        unitMeasure.setCellValueFactory(  new PropertyValueFactory<>("unitMeasure"));
 
         storeProductsTable.setItems(getNameAndAmount());
 
@@ -140,6 +152,10 @@ public class StoreController  implements Initializable {
         alert.setTitle(typeMessage);
         alert.showAndWait();
     }
+    @FXML
+    void unitMeasureCBAction(ActionEvent event) {
+
+    }
 
     @FXML
     void productComboBoxAction(ActionEvent event) {
@@ -149,13 +165,16 @@ public class StoreController  implements Initializable {
         if (productCB.getSelectionModel().getSelectedItem().equals("Wszystko")) {
             prepareTableColumn();
         }else {
+            if (!productCB.getSelectionModel().getSelectedItem().equals("Wszystko")) {
+           store = storeService.findByName(productCB.getSelectionModel().getSelectedItem());
+         }
             nameCustomer = new TableColumn<ProductRaport, String>("Klient");
             nameCustomer.setMinWidth(200);
-            amountTransaction = new TableColumn<ProductRaport, String>("Ilość - transakcja");
+            amountTransaction = new TableColumn<ProductRaport, Double>("Ilość - transakcja"+" ("+store.getUnitMeasure()+")");
             amountTransaction.setMinWidth(200);
-            wholeAmount = new TableColumn<ProductRaport, String>("Ilość w magazynie");
+            wholeAmount = new TableColumn<ProductRaport, Double>("Ilość w magazynie"+" ("+store.getUnitMeasure()+")");
             wholeAmount.setMinWidth(200);
-            sellDate = new TableColumn<ProductRaport, String>("Data sprzedaży");
+            sellDate = new TableColumn<ProductRaport, String>("Data transakcji");
             sellDate.setMinWidth(200);
             type = new TableColumn<ProductRaport, String>("Typ transakcji");
             type.setMinWidth(200);
@@ -163,7 +182,7 @@ public class StoreController  implements Initializable {
             storeProductsTable.getColumns().clear();
             storeProductsTable.getColumns().addAll(nameCustomer, amountTransaction, type, wholeAmount, sellDate);
             nameCustomer.setCellValueFactory(new PropertyValueFactory<>("name"));
-            amountTransaction.setCellValueFactory(new PropertyValueFactory<>("storeAmount"));
+            amountTransaction.setCellValueFactory(new PropertyValueFactory<>("transactionAmount"));
             type.setCellValueFactory(new PropertyValueFactory<>("type"));
             sellDate.setCellValueFactory(new PropertyValueFactory<>("date"));
             wholeAmount.setCellValueFactory(new PropertyValueFactory<>("wholeAmount"));
@@ -173,6 +192,16 @@ public class StoreController  implements Initializable {
             }
             storeProductsTable.setItems(allProductList);
         }
+        updateCellFactory();
+
+    }
+    private  ObservableList<String> fillUnitMeasureComboBox(){
+        ObservableList<String> fillUnitMeasureList = FXCollections.observableArrayList();
+        fillUnitMeasureList.add("kg.");
+        fillUnitMeasureList.add("szt.");
+        return fillUnitMeasureList;
+    }
+    public void updateCellFactory(){
         type.setCellFactory(column -> {
             return new TableCell<ProductRaport, String>() {
                 @Override
@@ -201,7 +230,42 @@ public class StoreController  implements Initializable {
                 }
             };
         });
-    }
+        amountTransaction.setCellFactory(column -> {
+            return new TableCell<ProductRaport, Double>() {
+                @Override
+                protected void updateItem(Double item, boolean empty) {
+                    super.updateItem(item, empty); //This is mandatory
 
-
+                    if (item == null || empty) { //If the cell is empty
+                        setText(null);
+                        setStyle("");
+                    } else { //If the cell is not empty
+                        ProductRaport productRaport = getTableView().getItems().get(getIndex());
+                        if (productRaport.getConversionKilograms() > 0) {
+                            setText(String.valueOf(productRaport.getConversionKilograms())); //Put the String data in the cell
+                        }
+                    }
+                }
+            };
+        });
+//        if (!productCB.getSelectionModel().getSelectedItem().equals("Wszystko")) {
+//            store = storeService.findByName(productCB.getSelectionModel().getSelectedItem());
+//        }
+//        wholeAmount.setCellFactory(column -> {
+//            return new TableCell<ProductRaport, Double>() {
+//                @Override
+//                protected void updateItem(Double item, boolean empty) {
+//                    super.updateItem(item, empty); //This is mandatory
+//
+//                    if (item == null || empty) { //If the cell is empty
+//                        setText(null);
+//                        setStyle("");
+//                    } else { //If the cell is not empty
+//                        setText(String.valueOf(item+" "+ store.getUnitMeasure())); //Put the String data in the cell
+//
+//                    }
+//                }
+//            };
+//        });
+        }
 }

@@ -137,7 +137,11 @@ public class VatInvoicePDF {
         cellDate.setBorder(0);
         dateTable.addCell(cellDate);
 
-        cellDate = new PdfPCell(new Paragraph("Data sprzedaży",new Font(bf, 11, Font.BOLD)));
+        if(invoiceType==1){
+            cellDate = new PdfPCell(new Paragraph("Data zakupu",new Font(bf, 11, Font.BOLD)));
+        }else{
+            cellDate = new PdfPCell(new Paragraph("Data sprzedaży",new Font(bf, 11, Font.BOLD)));
+        }
         cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
         cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);

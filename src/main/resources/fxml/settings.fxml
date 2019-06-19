@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.SettingsController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.SettingsController">
    <left>
       <HBox prefHeight="564.0" prefWidth="388.0" BorderPane.alignment="CENTER">
          <children>
@@ -33,17 +33,17 @@
                   </HBox>
                   <HBox prefHeight="37.0" prefWidth="399.0">
                      <children>
-                        <TextField fx:id="nameTF" disable="true" prefHeight="25.0" prefWidth="180.0">
+                        <TextField fx:id="nameTF" disable="true" prefHeight="25.0" prefWidth="180.0" promptText="Imie">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin>
                         </TextField>
-                        <TextField fx:id="surnameTF" disable="true" prefHeight="25.0" prefWidth="180.0" />
+                        <TextField fx:id="surnameTF" disable="true" prefHeight="25.0" prefWidth="180.0" promptText="Nazwisko" />
                      </children>
                   </HBox>
                   <HBox prefHeight="40.0" prefWidth="399.0">
                      <children>
-                        <TextField fx:id="streetTF" disable="true" prefHeight="25.0" prefWidth="180.0">
+                        <TextField fx:id="streetTF" disable="true" prefHeight="25.0" prefWidth="180.0" promptText="Adress zamieszkania">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin>
@@ -52,12 +52,12 @@
                   </HBox>
                   <HBox prefHeight="37.0" prefWidth="399.0">
                      <children>
-                        <TextField fx:id="postalCodeTF" disable="true" prefHeight="25.0" prefWidth="180.0">
+                        <TextField fx:id="postalCodeTF" disable="true" prefHeight="25.0" prefWidth="180.0" promptText="Kod pocztowy">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin>
                         </TextField>
-                        <TextField fx:id="cityTF" disable="true" prefHeight="25.0" prefWidth="180.0" />
+                        <TextField fx:id="cityTF" disable="true" prefHeight="25.0" prefWidth="180.0" promptText="Poczta" />
                      </children>
                   </HBox>
                   <HBox prefHeight="32.0" prefWidth="399.0">
@@ -74,7 +74,7 @@
                   </HBox>
                   <HBox prefHeight="50.0" prefWidth="399.0">
                      <children>
-                        <TextArea fx:id="companyNameTA" disable="true" prefHeight="20.0" prefWidth="365.0">
+                        <TextArea fx:id="companyNameTA" disable="true" prefHeight="20.0" prefWidth="365.0" promptText="Nazwa firmy">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" />
                            </HBox.margin>

@@ -7,14 +7,14 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.StoreController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.StoreController">
    <bottom>
       <TableView fx:id="storeProductsTable" prefHeight="447.0" prefWidth="1029.0" BorderPane.alignment="CENTER" />
    </bottom>
@@ -31,9 +31,13 @@
                   <Insets left="5.0" top="10.0" />
                </HBox.margin>
             </ComboBox>
-            <VBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="170.0">
+            <VBox alignment="TOP_RIGHT" prefHeight="101.0" prefWidth="72.0">
                <children>
-                  <Separator halignment="RIGHT" orientation="VERTICAL" prefHeight="200.0" />
+                  <Line endX="-97.19230651855469" endY="238.87867736816406" startX="-97.8995361328125" startY="162.58578491210938">
+                     <VBox.margin>
+                        <Insets top="5.0" />
+                     </VBox.margin>
+                  </Line>
                </children>
             </VBox>
             <HBox prefHeight="100.0" prefWidth="273.0">
@@ -56,7 +60,7 @@
                         </HBox>
                         <HBox prefHeight="33.0" prefWidth="344.0">
                            <children>
-                              <Label prefHeight="17.0" prefWidth="45.0" text="Ilość:">
+                              <Label prefHeight="17.0" prefWidth="44.0" text="Ilość:">
                                  <HBox.margin>
                                     <Insets left="10.0" top="10.0" />
                                  </HBox.margin>
@@ -68,20 +72,46 @@
                               </TextField>
                            </children>
                         </HBox>
-                        <HBox prefHeight="37.0" prefWidth="451.0" />
+                        <HBox alignment="CENTER" prefHeight="37.0" prefWidth="451.0" />
                      </children>
                   </VBox>
                </children>
-            </HBox>
-            <Button mnemonicParsing="false" onAction="#addNewProductAction" prefHeight="61.0" prefWidth="52.0" text="Dodaj">
                <HBox.margin>
                   <Insets top="5.0" />
                </HBox.margin>
-            </Button>
-            <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0">
+            </HBox>
+            <HBox alignment="TOP_RIGHT" prefHeight="91.0" prefWidth="254.0">
                <HBox.margin>
-                  <Insets bottom="5.0" left="5.0" />
+                  <Insets bottom="5.0" left="5.0" top="5.0" />
                </HBox.margin>
+               <children>
+                  <VBox prefHeight="91.0" prefWidth="262.0">
+                     <children>
+                        <Label text="Podaj jednostke miary dla produktu:">
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </Label>
+                        <ComboBox fx:id="unitMeasureCB" onAction="#unitMeasureCBAction" prefHeight="25.0" prefWidth="200.0">
+                           <VBox.margin>
+                              <Insets top="12.0" />
+                           </VBox.margin>
+                        </ComboBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </VBox>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="92.0" prefWidth="168.0">
+               <children>
+                  <Button alignment="CENTER" mnemonicParsing="false" onAction="#addNewProductAction" prefHeight="55.0" prefWidth="118.0" text="Dodaj produkt">
+                     <HBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
             </HBox>
          </children>
       </HBox>

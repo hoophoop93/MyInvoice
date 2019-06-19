@@ -15,6 +15,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -263,9 +265,16 @@ public class VatRRInvoicePDF {
             paragraph5.add(Chunk.NEWLINE);
             paragraph5.add(customer.getAddress()+", "+customer.getCity()+" "+customer.getPostalCode());
             paragraph5.add(Chunk.NEWLINE);
-            paragraph5.add("Dowód osob. "+identityCard.getSeriaAndNumber()+" wydany dnia "+identityCard.getReleaseDate()+" r");
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat outputFormat   = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                String output = outputFormat.format(inputFormat.parse(identityCard.getReleaseDate()));
+            paragraph5.add("Dowód osob. "+identityCard.getSeriaAndNumber()+" wydany dnia "+output+" r.");
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             paragraph5.add(Chunk.NEWLINE);
-            paragraph5.add("przez "+identityCard.getOrganization());
+            paragraph5.add("przez: "+identityCard.getOrganization());
             paragraph5.add(Chunk.NEWLINE);
             paragraph5.add("PESEL: " + customer.getPesel());
 
