@@ -67,7 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public List<ProductRaport> findTransactionByProduct(String name) {
-        List<ProductRaport> transactionList = entityManager.createQuery("Select t.conversionKilograms as conversionKilograms," +
+        List<ProductRaport> transactionList = entityManager.createQuery("Select " +
                 "t.unitMeasure as unitMeasure, t.amount as transactionAmount,t.customer.name || ' ' ||  t.customer.surname as name " +
                 ",d.issueDate as date, t.storeAmount as wholeAmount, t.type as type " +
                 "from Transaction t, Store s,Invoice i, Date d where t.store.id = s.id and " +

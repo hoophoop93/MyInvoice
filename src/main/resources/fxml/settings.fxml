@@ -181,7 +181,7 @@
                <items>
                   <MenuItem mnemonicParsing="false" onAction="#menuInvoiceVatAction" text="Faktura VAT" />
                   <MenuItem mnemonicParsing="false" onAction="#menuInvoiceVatRRAction" text="Faktura VAT RR" />
-                  <MenuItem mnemonicParsing="false" onAction="#menuStoreAction" text="Ustawienia" />
+                  <MenuItem mnemonicParsing="false" onAction="#menuStoreAction" text="Magazyn" />
                </items>
             </Menu>
          </menus>

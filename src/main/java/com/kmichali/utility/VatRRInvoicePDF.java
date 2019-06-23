@@ -29,8 +29,8 @@ public class VatRRInvoicePDF {
     String invoiceNum;
 
     public VatRRInvoicePDF(Invoice invoice, Date date, Company companySeller, Customer customer,
-                         TableView<InvoiceField> productTable, ComboBox paidType,IdentityCard identityCard,ComboBox promotionFoundComboBox,String invoiceNumber, String path
-    ) throws DocumentException, IOException {
+                         TableView<InvoiceField> productTable, ComboBox paidType,IdentityCard identityCard,
+                           ComboBox promotionFoundComboBox,String invoiceNumber, String path) throws DocumentException, IOException {
         PDFPATH = path.replaceAll("\\\\", "/")+"/VatRR/";
         CreateDirectory(PDFPATH,invoiceNumber);
         CreateDocument(invoice ,date,companySeller,customer,productTable,paidType,identityCard,promotionFoundComboBox,invoiceNumber);
@@ -68,8 +68,8 @@ public class VatRRInvoicePDF {
         PDFPATH += yearWithInvoiceNumber+"/"+monthEnum+"/";
     }
     private void CreateDocument(Invoice invoice, Date date, Company companySeller,Customer customer,
-                                TableView<InvoiceField> productTable, ComboBox paidType, IdentityCard identityCard,ComboBox promotionFoundComboBox, String invoiceNumber
-    ) throws DocumentException, IOException {
+                                TableView<InvoiceField> productTable, ComboBox paidType, IdentityCard identityCard,
+                                ComboBox promotionFoundComboBox, String invoiceNumber) throws DocumentException, IOException {
 
         invoiceNum = invoiceNumber.replaceAll("/","-");
         document = new Document(PageSize.A4,5,5,20,20);
@@ -112,9 +112,6 @@ public class VatRRInvoicePDF {
 
         Paragraph paragraph2 = new Paragraph("FAKTURA VAT RR "+invoice.getInvoiceNumber(),new Font(bf, 15, Font.BOLD));
         paragraph2.add(Chunk.NEWLINE);
-        paragraph2.setLeading(32);
-        paragraph2.setFont(new Font(bf,12));
-        paragraph2.add("ORYGINAŁ");
         PdfPCell invoiceNameCell = new PdfPCell(paragraph2);
         invoiceNameCell.setHorizontalAlignment(Element.ALIGN_CENTER);
         invoiceNameCell.setVerticalAlignment(Element.ALIGN_TOP);
@@ -623,7 +620,10 @@ public class VatRRInvoicePDF {
         float[] columnWidths4 = {80,20};
         paymentTable.setWidths(columnWidths4);
         PdfPCell paymentCell;
-        promotionFoundAmount = totalProductValue * 0.01;
+        double promotionAmount;
+        promotionAmount = totalBrutto;
+        promotionAmount = Math.ceil(promotionAmount / 1000) * 1000;
+        promotionFoundAmount = promotionAmount * 0.001;
         paymentCell = new PdfPCell(new Paragraph("Kwota potrącona na fundusz promocji "+
                 promotionFoundComboBox.getSelectionModel().getSelectedItem().toString(),new Font(bf, 10)));
         paymentCell.setUseVariableBorders(true);
@@ -672,7 +672,7 @@ public class VatRRInvoicePDF {
         finalPriceCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         finalPriceTable.addCell(finalPriceCell);
 
-        finalPriceCell = new PdfPCell(new Paragraph(String.valueOf(totalBrutto)+" zł",new Font(bf, 14, Font.BOLD)));
+        finalPriceCell = new PdfPCell(new Paragraph(String.valueOf(totalBrutto-promotionFoundAmount)+" zł",new Font(bf, 14, Font.BOLD)));
         finalPriceCell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         finalPriceCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         finalPriceCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -683,7 +683,7 @@ public class VatRRInvoicePDF {
         finalPriceTable.addCell(finalPriceCell);
 
         MoneyConverters converter = MoneyConverters.POLISH_BANKING_MONEY_VALUE;
-        String moneyAsWords  = converter.asWords(new BigDecimal(Double.toString(totalBrutto)));
+        String moneyAsWords  = converter.asWords(new BigDecimal(Double.toString(totalBrutto - promotionFoundAmount)));
 
         finalPriceCell = new PdfPCell(new Paragraph("Słownie: "+moneyAsWords,new Font(bf, 9)));
         finalPriceCell.setHorizontalAlignment(Element.ALIGN_LEFT);

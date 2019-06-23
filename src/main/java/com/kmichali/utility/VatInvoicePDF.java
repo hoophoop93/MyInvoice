@@ -113,7 +113,6 @@ public class VatInvoicePDF {
         paragraph2.add(Chunk.NEWLINE);
         paragraph2.setLeading(32);
         paragraph2.setFont(new Font(bf,12));
-        paragraph2.add("ORYGINAŁ");
         PdfPCell invoiceNameCell = new PdfPCell(paragraph2);
         invoiceNameCell.setHorizontalAlignment(Element.ALIGN_CENTER);
         invoiceNameCell.setVerticalAlignment(Element.ALIGN_TOP);

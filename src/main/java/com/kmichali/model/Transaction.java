@@ -29,8 +29,8 @@ public class Transaction {
     private double productValue;
     @Column(name = "unit_measure")
     private String unitMeasure;
-    @Column(name = "conversion_kilograms",nullable = true)
-    private Double conversionKilograms;
+//    @Column(name = "conversion_kilograms",nullable = true)
+//    private Double conversionKilograms;
 
     @OneToOne
     @JoinColumn(name = "customer_id")
@@ -170,11 +170,4 @@ public class Transaction {
         this.unitMeasure = unitMeasure;
     }
 
-    public double getConversionKilograms() {
-        return conversionKilograms;
-    }
-
-    public void setConversionKilograms(double conversionKilograms) {
-        this.conversionKilograms = conversionKilograms;
-    }
 }

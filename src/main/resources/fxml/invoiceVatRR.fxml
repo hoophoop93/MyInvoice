@@ -144,8 +144,14 @@
                                     <DatePicker fx:id="paymentDate" prefWidth="200.0" />
                                  </children>
                               </HBox>
-                              <HBox prefHeight="17.0" prefWidth="333.0" />
-                              <HBox prefHeight="36.0" prefWidth="333.0" />
+                              <HBox prefHeight="20.0" prefWidth="333.0">
+                                 <children>
+                                    <Label text="Numer konta klienta:" />
+                                 </children></HBox>
+                              <HBox prefHeight="36.0" prefWidth="333.0">
+                                 <children>
+                                    <TextField fx:id="accountNumberTF" prefHeight="25.0" prefWidth="309.0" />
+                                 </children></HBox>
                            </children>
                         </VBox>
                      </children>
@@ -160,7 +166,7 @@
             <children>
                 <VBox prefHeight="270.0" prefWidth="1029.0">
                     <children>
-                        <TableView fx:id="productTable" onMouseClicked="#invoiceTableAction" prefHeight="230.0" prefWidth="1023.0">
+                        <TableView fx:id="productTable" prefHeight="230.0" prefWidth="1023.0">
                             <columns>
                                 <TableColumn fx:id="lpColumn" prefWidth="38.0" text="LP" />
                                 <TableColumn fx:id="productNameColumn" prefWidth="350.0" text="Nazwa towaru lub usługi" />
@@ -364,6 +370,11 @@
                         <MenuItem mnemonicParsing="false" onAction="#menuSettingsAction" text="Ustawienia" />
                   </items>
                 </Menu>
+                  <Menu mnemonicParsing="false" text="Faktura">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#nextNewInvoice" text="Nowa" />
+                     </items>
+                  </Menu>
               </menus>
             </MenuBar>
          </children>

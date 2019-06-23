@@ -21,7 +21,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatInvoiceController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.VatInvoiceController">
     <center>
         <VBox prefHeight="355.0" prefWidth="657.0" BorderPane.alignment="CENTER">
             <children>
@@ -347,6 +347,11 @@
                         <MenuItem mnemonicParsing="false" onAction="#menuSettingsAction" text="Ustawienia" />
                   </items>
                 </Menu>
+                  <Menu mnemonicParsing="false" text="Faktura">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#nextNewInvoice" text="Nowa" />
+                     </items>
+                  </Menu>
               </menus>
             </MenuBar>
          </children>

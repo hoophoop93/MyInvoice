@@ -1,7 +1,9 @@
 package com.kmichali.controller;
 
 import com.kmichali.config.StageManager;
+import com.kmichali.model.Seller;
 import com.kmichali.model.Store;
+import com.kmichali.serviceImpl.SellerServiceImpl;
 import com.kmichali.serviceImpl.StoreServiceImpl;
 import com.kmichali.view.FxmlView;
 import javafx.event.ActionEvent;
@@ -24,14 +26,17 @@ public class MainAppController {
 
     @Autowired
     StoreServiceImpl storeService;
+    @Autowired
+    SellerServiceImpl sellerService;
+    Seller seller;
     Store store;
 
     @FXML
     void invoiceVatAction(ActionEvent event) throws UnsupportedEncodingException {
 
-        List<Store> productList = (List<Store>) storeService.findAll();
-        if(productList.isEmpty()){
-           message("Przed rozpoczęciem musisz dodac produkty do magazynu!!!", Alert.AlertType.INFORMATION,"Informacja");
+        seller = sellerService.find(1);
+        if(seller == null){
+            message("Przed rozpoczęciem dodaj swoje dane w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
         }else{
             stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
         }
@@ -40,9 +45,9 @@ public class MainAppController {
     @FXML
     void invoiceVatRrAction(ActionEvent event) throws UnsupportedEncodingException {
 
-        List<Store> productList = (List<Store>) storeService.findAll();
-        if(productList.isEmpty()){
-            message("Przed rozpoczęciem musisz dodac produkty do magazynu!!!", Alert.AlertType.INFORMATION,"Informacja");
+        seller = sellerService.find(1);
+        if(seller == null){
+            message("Przed rozpoczęciem dodaj swoje dane w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
         }else{
             stageManager.switchScene(FxmlView.INVOICERRSTAGE);
         }

@@ -26,6 +26,8 @@ public class Customer {
     private String street;
     @Column(name = "pesel")
     private String pesel;
+    @Column(name = "account_number")
+    private String accountNumber;
 
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -123,6 +125,14 @@ public class Customer {
 
     public void setPesel(String pesel) {
         this.pesel = pesel;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     @Override

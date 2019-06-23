@@ -104,7 +104,7 @@ public class StoreController  implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         productCB.setItems(fillProductCB());
         unitMeasureCB.setItems(fillUnitMeasureComboBox());
-
+        unitMeasureCB.setValue(fillUnitMeasureComboBox().get(0));
         productCB.setValue(allProductListObservable.get(0));
         prepareTableColumn();
 
@@ -197,7 +197,7 @@ public class StoreController  implements Initializable {
     }
     private  ObservableList<String> fillUnitMeasureComboBox(){
         ObservableList<String> fillUnitMeasureList = FXCollections.observableArrayList();
-        fillUnitMeasureList.add("kg.");
+        fillUnitMeasureList.add("tona");
         fillUnitMeasureList.add("szt.");
         return fillUnitMeasureList;
     }
@@ -230,24 +230,24 @@ public class StoreController  implements Initializable {
                 }
             };
         });
-        amountTransaction.setCellFactory(column -> {
-            return new TableCell<ProductRaport, Double>() {
-                @Override
-                protected void updateItem(Double item, boolean empty) {
-                    super.updateItem(item, empty); //This is mandatory
-
-                    if (item == null || empty) { //If the cell is empty
-                        setText(null);
-                        setStyle("");
-                    } else { //If the cell is not empty
-                        ProductRaport productRaport = getTableView().getItems().get(getIndex());
-                        if (productRaport.getConversionKilograms() > 0) {
-                            setText(String.valueOf(productRaport.getConversionKilograms())); //Put the String data in the cell
-                        }
-                    }
-                }
-            };
-        });
+//        amountTransaction.setCellFactory(column -> {
+//            return new TableCell<ProductRaport, Double>() {
+//                @Override
+//                protected void updateItem(Double item, boolean empty) {
+//                    super.updateItem(item, empty); //This is mandatory
+//
+//                    if (item == null || empty) { //If the cell is empty
+//                        setText(null);
+//                        setStyle("");
+//                    } else { //If the cell is not empty
+//                        ProductRaport productRaport = getTableView().getItems().get(getIndex());
+//                        if (productRaport.getConversionKilograms() > 0) {
+//                            setText(String.valueOf(productRaport.getConversionKilograms())); //Put the String data in the cell
+//                        }
+//                    }
+//                }
+//            };
+//        });
 //        if (!productCB.getSelectionModel().getSelectedItem().equals("Wszystko")) {
 //            store = storeService.findByName(productCB.getSelectionModel().getSelectedItem());
 //        }
