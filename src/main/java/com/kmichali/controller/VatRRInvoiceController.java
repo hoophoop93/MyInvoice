@@ -939,7 +939,7 @@ public class VatRRInvoiceController implements Initializable {
     public boolean validateAllField(){
         boolean productNameEmpty = false;
         for (InvoiceField row : productTable.getItems()) {
-            if(row.getNameProduct().getSelectionModel().getSelectedItem() == null && row.getNameProduct().getEditor().getText() == null){
+            if(row.getNameProduct().getEditor().getText().equals("")){
                 productNameEmpty = true;
                 break;
             }

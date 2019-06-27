@@ -14,11 +14,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 
 public class SellAgreement {
     private String PDFPATH;
     Document document;
-    public static final String FONT = "C:\\IntellijProject\\MyInvoice\\src\\main\\resources\\fonts\\FreeSans.ttf";
+    public static final String FONT = "/fonts/FreeSans.ttf";
 
 
     public SellAgreement(Customer customer,

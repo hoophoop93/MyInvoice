@@ -24,7 +24,7 @@ import java.util.List;
 public class VatRRInvoicePDF {
 
     private String PDFPATH;
-    public static final String IMG1 = "src/main//resources/images/grain.png";
+    public static final String IMG1 = "/images/grain.png";
     Document document;
     String invoiceNum;
 
@@ -796,7 +796,7 @@ public class VatRRInvoicePDF {
     }
 
     public static PdfPCell createImageCell(String path) throws DocumentException, IOException {
-        Image img = Image.getInstance(path);
+        Image img = Image.getInstance(VatInvoicePDF.class.getResource(path));
         PdfPCell cell = new PdfPCell(img, true);
         cell.setMinimumHeight(60);
         cell.setBorder(0);

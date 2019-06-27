@@ -603,7 +603,7 @@ public class VatInvoiceController implements Initializable {
             transactionService.save(transaction);
 
             //product
-            if (productService.checkIfExist(row.getNameProduct().getSelectionModel().getSelectedItem())) {
+            if (productService.checkIfExist(row.getNameProduct().getEditor().getText())) {
                 product = productService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
             } else {
                 product = new Product();
@@ -644,6 +644,7 @@ public class VatInvoiceController implements Initializable {
         Settings settings = settingsService.find(1);
         String path = settings.getPath();
         VatInvoicePDF pdfCreator = new VatInvoicePDF(invoice, date, companySeller, companyCustomer, productTable, paidType, invoiceTypeIdentyfier, invoiceNumberTF.getText(), path);
+
 
     }
     @FXML
@@ -863,7 +864,7 @@ public class VatInvoiceController implements Initializable {
     public boolean validateAllField(){
         boolean productNameEmpty = false;
         for (InvoiceField row : productTable.getItems()) {
-            if(row.getNameProduct().getSelectionModel().getSelectedItem() == null && row.getNameProduct().getEditor().getText() == null){
+            if(row.getNameProduct().getEditor().getText().equals("")){
                 productNameEmpty = true;
                 break;
             }

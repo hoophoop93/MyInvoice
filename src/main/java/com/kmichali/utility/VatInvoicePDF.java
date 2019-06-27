@@ -20,12 +20,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ResourceBundle;
 
 
 public class VatInvoicePDF {
 
     private String PDFPATH;
-    public static final String IMG1 = "src/main//resources/images/grain.png";
+    public  String IMG1 = "/images/grain.png";
     Document document;
     String invoiceNum;
 
@@ -814,7 +815,8 @@ public class VatInvoicePDF {
     }
 
     public static PdfPCell createImageCell(String path) throws DocumentException, IOException {
-        Image img = Image.getInstance(path);
+        Image img = Image.getInstance(VatInvoicePDF.class.getResource(path));
+        System.out.println(VatInvoicePDF.class.getResource(path));
         PdfPCell cell = new PdfPCell(img, true);
         cell.setMinimumHeight(60);
         cell.setBorder(0);
