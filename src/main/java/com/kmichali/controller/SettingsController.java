@@ -2,6 +2,7 @@ package com.kmichali.controller;
 
 import com.kmichali.config.StageManager;
 import com.kmichali.model.Company;
+import com.kmichali.model.Customer;
 import com.kmichali.model.Seller;
 import com.kmichali.model.Settings;
 import com.kmichali.serviceImpl.CompanyServiceImpl;
@@ -76,12 +77,24 @@ public class SettingsController implements Initializable {
     Company company;
     @FXML
     void menuInvoiceVatAction(ActionEvent event)throws UnsupportedEncodingException {
-        stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
+        Seller seller = sellerService.find(1);
+        Settings settings = settingsService.find(1L);
+        if(seller == null || settings == null){
+            message("Przed rozpoczęciem dodaj swoje dane i ścieżke do zapisu faktur w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
+        }else{
+            stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
+        }
     }
 
     @FXML
     void menuInvoiceVatRRAction(ActionEvent event)throws UnsupportedEncodingException {
-        stageManager.switchScene(FxmlView.INVOICERRSTAGE);
+        Seller seller = sellerService.find(1);
+        Settings settings = settingsService.find(1L);
+        if(seller == null || settings == null){
+            message("Przed rozpoczęciem dodaj swoje dane i ścieżke do zapisu faktur w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
+        }else{
+            stageManager.switchScene(FxmlView.INVOICERRSTAGE);
+        }
     }
 
     @FXML
@@ -103,41 +116,40 @@ public class SettingsController implements Initializable {
             nipTF.setText(company.getNip());
             regonTF.setText(company.getRegon());
             phoneNumberTF.setText(company.getPhoneNumber());
-            accountNumberTF.setText(company.getAccountNumber());
+            accountNumberTF.setText(setAccountNumber(company));
         }
        settings = settingsService.find(1L);
        if(settings != null)
        pathTF.setText(settings.getPath());
     }
-    @FXML
-    void editAction(ActionEvent event) {
-        if(nameTF.isDisable()){
-            nameTF.setDisable(false);
-            surnameTF.setDisable(false);
-            streetTF.setDisable(false);
-            postalCodeTF.setDisable(false);
-            cityTF.setDisable(false);
-            companyNameTA.setDisable(false);
-            nipTF.setDisable(false);
-            regonTF.setDisable(false);
-            phoneNumberTF.setDisable(false);
-            accountNumberTF.setDisable(false);
-
-        }else{
-            nameTF.setDisable(true);
-            surnameTF.setDisable(true);
-            streetTF.setDisable(true);
-            postalCodeTF.setDisable(true);
-            cityTF.setDisable(true);
-            companyNameTA.setDisable(true);
-            nipTF.setDisable(true);
-            regonTF.setDisable(true);
-            phoneNumberTF.setDisable(true);
-            accountNumberTF.setDisable(true);
-        }
-
-    }
-
+//    @FXML
+//    void editAction(ActionEvent event) {
+//        if(nameTF.isDisable()){
+//            nameTF.setDisable(false);
+//            surnameTF.setDisable(false);
+//            streetTF.setDisable(false);
+//            postalCodeTF.setDisable(false);
+//            cityTF.setDisable(false);
+//            companyNameTA.setDisable(false);
+//            nipTF.setDisable(false);
+//            regonTF.setDisable(false);
+//            phoneNumberTF.setDisable(false);
+//            accountNumberTF.setDisable(false);
+//
+//        }else{
+//            nameTF.setDisable(true);
+//            surnameTF.setDisable(true);
+//            streetTF.setDisable(true);
+//            postalCodeTF.setDisable(true);
+//            cityTF.setDisable(true);
+//            companyNameTA.setDisable(true);
+//            nipTF.setDisable(true);
+//            regonTF.setDisable(true);
+//            phoneNumberTF.setDisable(true);
+//            accountNumberTF.setDisable(true);
+//        }
+//
+//    }
     @FXML
     void updateAction(ActionEvent event) {
         seller = sellerService.find(1);
@@ -161,6 +173,7 @@ public class SettingsController implements Initializable {
         company.setSeller(seller);
         companyService.update(company);
         if(companyService.countByNip(nipTF.getText())) {
+            accountNumberTF.setText(setAccountNumber(company));
             message("Twoje dane zostały poprawnie zaaktualizowane.", Alert.AlertType.NONE, "Informacja");
         }
     }
@@ -180,11 +193,29 @@ public class SettingsController implements Initializable {
             settings.setPath(selectedDirectory.getAbsolutePath());
             settingsService.save(settings);
             pathTF.setText(selectedDirectory.getAbsolutePath());
+            message("Scieżka została ustawiona", Alert.AlertType.NONE,"Informacja");
         }
     }
     private void message(String message, Alert.AlertType alertType, String typeMessage){
         Alert alert = new Alert(alertType, message, ButtonType.OK);
         alert.setTitle(typeMessage);
         alert.showAndWait();
+    }
+    public String setAccountNumber(Company company) {
+        String accountNum = company.getAccountNumber().replaceAll(" ","");
+        String numberAccount = "";
+        int counter2 = 0;
+        for (int i = 0; i < accountNum.length(); i++) {
+
+            numberAccount += accountNum.charAt(i);
+
+            if (i == 1) numberAccount += " ";
+            if (i > 1) counter2++;
+            if (counter2 == 4) {
+                numberAccount += " ";
+                counter2 = 0;
+            }
+        }
+        return numberAccount;
     }
 }

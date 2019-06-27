@@ -204,12 +204,12 @@ public class StatementAndRodoPDF {
 
 
         String rodoText="1. Administratorem danych jest Krzysztof Pac - FHU UNIWERS Krzysztof Pac, 38-204 Tarnowiec, Wrocanka 148," +
-                "NIP: 685-123-84-20\n" +
+                " NIP: 685-123-84-20\n" +
                 "2. Administrator prowadzi operacje przetwarzania danych osobowych Producenta niezbędnych do wykonania umowy," +
-                "której stroną jest osoba, której dane dotyczą lub do podjęcia działań na żądania osoby," +
-                "której dane dotyczą, przed zawarciem umowy\n" +
-                "3.Podstawą przetwarzania danych osobowych jest umowa - art. 6 ust. 1 lit b RODO.\n" +
-                "4.Producent ma posiada prawo:\n" +
+                " której stroną jest osoba, której dane dotyczą lub do podjęcia działań na żądania osoby," +
+                " której dane dotyczą, przed zawarciem umowy.\n" +
+                "3. Podstawą przetwarzania danych osobowych jest umowa - art. 6 ust. 1 lit b RODO.\n" +
+                "4. Producent ma posiada prawo:\n" +
                 "-żądania od Administratora dostępu do swoich danych, ich sprostowania, usunięcia lub ograniczenia przetwarzania danych" +
                 "osobowych\n" +
                 "-wniesienia sprzeciwu wobce takiego przetwarzania,\n" +

@@ -6,9 +6,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.kmichali.model.Customer;
-import com.kmichali.model.IdentityCard;
 import com.kmichali.model.InvoiceField;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableView;
 
@@ -16,8 +14,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import static com.itextpdf.text.html.HtmlTags.FONT;
 
 public class SellAgreement {
     private String PDFPATH;
@@ -95,10 +91,10 @@ public class SellAgreement {
         }
 
         String statementTextPart1="zawarta w dniu "+ datePicker.getValue() +" w Jedliczu pomiędzy:\n" +
-                "FHU UNIWERS Krzsztof Pac, Wrocanka 148 , 38-204 Tarnowiec, NIP 685-123-84-20\n zwany dalej KONTRAKTUJĄCYM\n" +
+                "FHU UNIWERS Krzsztof Pac, Wrocanka 148 , 38-204 Tarnowiec, NIP 685-123-84-20\nzwany dalej KONTRAKTUJĄCYM\n" +
                 "a "+customer.getName() +" "+customer.getSurname()+", zam. "+customer.getAddress()+", "+customer.getPostalCode()+"" +
             " "+customer.getCity()+" nr. dowodu osobistego "
-                +customer.getIdentityCard().getSeriaAndNumber()+" zwanym dalej PRODUCENTEM";
+                +customer.getIdentityCard().getSeriaAndNumber()+"\nzwanym dalej PRODUCENTEM";
 
         cell = new PdfPCell(new Paragraph(statementTextPart1,new Font(bf, 12)));
         cell.setHorizontalAlignment(Element.ALIGN_JUSTIFIED);

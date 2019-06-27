@@ -123,6 +123,19 @@ public class VatInvoicePDF {
 
         PdfPCell cellDate;
 
+        cellDate = new PdfPCell(new Paragraph("Miejsce wystawienia",new Font(bf, 11, Font.BOLD)));
+        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        cellDate = new PdfPCell(new Paragraph("Jedlicze",new Font(bf, 11)));
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
         cellDate = new PdfPCell(new Paragraph("Data wystawienia",new Font(bf, 11, Font.BOLD)));
         cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -629,6 +642,28 @@ public class VatInvoicePDF {
         paymentTable.addCell(paymentCell);
 
 
+
+        paymentCell = new PdfPCell(new Paragraph("Numer konta:",new Font(bf, 12)));
+        paymentCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        paymentCell.setUseVariableBorders(true);
+        paymentCell.setBorderColorRight(BaseColor.WHITE);
+        paymentCell.setBorderColorLeft(BaseColor.WHITE);
+        paymentCell.setBorderColorBottom(BaseColor.WHITE);
+        paymentCell.setColspan(2);
+        paymentTable.addCell(paymentCell);
+
+        paymentCell = new PdfPCell(new Paragraph(setAccountNumber(companySeller.getAccountNumber()),new Font(bf, 12)));
+        paymentCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        paymentCell.setUseVariableBorders(true);
+        paymentCell.setBorderColorRight(BaseColor.WHITE);
+        paymentCell.setBorderColorLeft(BaseColor.WHITE);
+        paymentCell.setBorderColorBottom(BaseColor.WHITE);
+        paymentCell.setColspan(2);
+        paymentTable.addCell(paymentCell);
+
+
         PdfPCell mainCell1 = new PdfPCell();
         mainCell1.setHorizontalAlignment(Element.ALIGN_RIGHT);
         mainCell1.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -785,5 +820,21 @@ public class VatInvoicePDF {
         cell.setBorder(0);
         return cell;
     }
+    public String setAccountNumber(String string ){
+        String accountNum = string;
+        String numberAccount = "";
+        int counter2 = 0;
+        for (int i = 0; i < accountNum.length(); i++) {
 
+            numberAccount += accountNum.charAt(i);
+
+            if (i == 1) numberAccount += " ";
+            if (i > 1) counter2++;
+            if (counter2 == 4) {
+                numberAccount += " ";
+                counter2 = 0;
+            }
+        }
+        return numberAccount;
+    }
 }

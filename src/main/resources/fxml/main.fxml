@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -27,19 +28,31 @@
                   <Button mnemonicParsing="false" onAction="#invoiceVatRrAction" prefHeight="124.0" prefWidth="181.0" text="Faktura VAT RR" GridPane.halignment="CENTER">
                      <font>
                         <Font name="System Bold" size="15.0" />
-                     </font></Button>
+                     </font>
+                     <effect>
+                        <InnerShadow choke="0.03" color="#686868" height="62.51" radius="29.2725" width="56.58" />
+                     </effect></Button>
                   <Button mnemonicParsing="false" onAction="#invoiceVatAction" prefHeight="112.0" prefWidth="182.0" text="Faktura VAT" GridPane.columnIndex="2" GridPane.halignment="CENTER">
                      <font>
                         <Font name="System Bold" size="15.0" />
-                     </font></Button>
+                     </font>
+                     <effect>
+                        <InnerShadow choke="0.03" color="#686868" height="62.51" radius="29.2725" width="56.58" />
+                     </effect></Button>
                   <Button mnemonicParsing="false" onAction="#storeAction" prefHeight="115.0" prefWidth="196.0" text="Magazyn" GridPane.halignment="CENTER" GridPane.rowIndex="2">
                      <font>
                         <Font name="System Bold" size="15.0" />
-                     </font></Button>
+                     </font>
+                     <effect>
+                        <InnerShadow choke="0.03" color="#686868" height="62.51" radius="29.2725" width="56.58" />
+                     </effect></Button>
                   <Button mnemonicParsing="false" onAction="#settingsAction" prefHeight="113.0" prefWidth="186.0" text="Ustawienia" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
                      <font>
                         <Font name="System Bold" size="15.0" />
-                     </font></Button>
+                     </font>
+                     <effect>
+                        <InnerShadow choke="0.03" color="#686868" height="62.51" radius="29.2725" width="56.58" />
+                     </effect></Button>
                </children>
             </GridPane>
          </children></AnchorPane>

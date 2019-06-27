@@ -3,11 +3,33 @@ package com.kmichali;
 import com.kmichali.config.StageManager;
 import com.kmichali.view.FxmlView;
 import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import javafx.animation.FadeTransition;
+import javafx.application.Application;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.collections.*;
+import javafx.concurrent.*;
+import javafx.geometry.*;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.*;
+import javafx.util.Duration;
 
 import java.io.UnsupportedEncodingException;
 
@@ -15,12 +37,17 @@ import java.io.UnsupportedEncodingException;
 @EnableAutoConfiguration
 public class MainApp extends Application {
 
+    public static final String SPLASH_IMAGE =
+            "http://fxexperience.com/wp-content/uploads/2010/06/logo.png";
+
     private ConfigurableApplicationContext springContext;
     private StageManager stageManager;
 
     @Override
     public void init()throws Exception{
-
+        ImageView splash = new ImageView(new Image(
+                SPLASH_IMAGE
+        ));
         springContext = springBootApplicationContext();
     }
     @Override

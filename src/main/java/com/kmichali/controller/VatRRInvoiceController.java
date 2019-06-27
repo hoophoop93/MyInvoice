@@ -160,7 +160,13 @@ public class VatRRInvoiceController implements Initializable {
 
     @FXML
     void menuInvoiceVatAction(ActionEvent event)throws UnsupportedEncodingException {
-        stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
+        Seller seller = sellerService.find(1);
+        Settings settings = settingsService.find(1L);
+        if(seller == null || settings == null){
+            message("Przed rozpoczęciem dodaj swoje dane i ścieżke do zapisu faktur w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
+        }else{
+            stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
+        }
     }
 
     @FXML
@@ -196,6 +202,7 @@ public class VatRRInvoiceController implements Initializable {
         productNameComboBox.setEditable(true);
         productNameComboBox.setMinWidth(300);
         addComboBoxObjectToList();
+        generateInvoiceNumber();
     }
     @FXML
     void addNewCustomerAction(ActionEvent event) {
@@ -214,9 +221,9 @@ public class VatRRInvoiceController implements Initializable {
                 if (customer.getAccountNumber() == null && accountNumberTF.getText() != null) {
                     customer.setAccountNumber(accountNumberTF.getText());
                     customerService.save(customer);
+                    if(identityCardService.findByCustomer(customer) != null)
                     message("Numer konta został dodany. ", Alert.AlertType.NONE, "Sukces");
                     setAccountNumber();
-                    return;
                 }
             }
             if (!(customerService.countCustomerByAddress(streetTF.getText()) && customerService.countCustomerBySurname(splited[1]))) {
@@ -228,7 +235,6 @@ public class VatRRInvoiceController implements Initializable {
                 customer.setPostalCode(postalCodeTF.getText());
                 customerService.save(customer);
 
-                message("Klient został dodany do listy klientów. ", Alert.AlertType.NONE, "Sukces");
                 customerList.add(customer.getName() + " " + customer.getSurname() + "    " + customer.getAddress());
                 selectCustomerCB.setItems(customerList);
                 new ComboBoxAutoComplete<String>(selectCustomerCB);
@@ -242,6 +248,7 @@ public class VatRRInvoiceController implements Initializable {
                 identityCard.setOrganization(releaseByTF.getText());
                 identityCard.setCustomer(customer);
                 identityCardService.save(identityCard);
+                message("Klient został dodany do listy klientów. ", Alert.AlertType.NONE, "Sukces");
                 //message("Klient został zaktualizowany!",Alert.AlertType.NONE,"Wiadomość");
             }
         }
@@ -304,22 +311,17 @@ public class VatRRInvoiceController implements Initializable {
         unitMeasureComboBox.setOnMouseClicked(this::clickUnitMeasureComboBox);
     }
 
-//    @FXML
-//    public void changeNameProductCellEvent(TableColumn.CellEditEvent editedCell){
-//        invoiceField = productTable.getSelectionModel().getSelectedItem();
-//        invoiceField.setNameProduct(editedCell.getNewValue().toString());
-//
-//    }
     @FXML
     public void changeAmountCellEvent(TableColumn.CellEditEvent editedCell){
         invoiceField = productTable.getSelectionModel().getSelectedItem();
         invoiceField.setAmount(Double.parseDouble(editedCell.getNewValue().toString()));
         selectedValueComboBox = taxComboBox.getSelectionModel().getSelectedItem();
 
-        priceNetto = invoiceField.getPriceNetto() * invoiceField.getAmount();;
-        onlyVat = invoiceField.getPriceVat() * invoiceField.getAmount();
+
+        priceNetto = invoiceField.getPriceNetto();
+        onlyVat = priceNetto * StringToDoubleConverter(selectedValueComboBox);
         priceBrutto = priceNetto + onlyVat ;
-        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
+        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2),round(invoiceField.getAmount(),2));
         totalPrice();
     }
     @FXML
@@ -328,10 +330,10 @@ public class VatRRInvoiceController implements Initializable {
         invoiceField.setPriceNetto(Double.parseDouble(editedCell.getNewValue().toString()));
         selectedValueComboBox = taxComboBox.getSelectionModel().getSelectedItem();
 
-        priceNetto = invoiceField.getPriceNetto() * invoiceField.getAmount();
+        priceNetto = invoiceField.getPriceNetto();
         onlyVat = priceNetto * StringToDoubleConverter(selectedValueComboBox);
         priceBrutto = priceNetto + onlyVat ;
-        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
+        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2),round(invoiceField.getAmount(),2));
 
         totalPrice();
     }
@@ -340,12 +342,12 @@ public class VatRRInvoiceController implements Initializable {
     public void changeProductValueCellEvent(TableColumn.CellEditEvent editedCell){
         invoiceField = productTable.getSelectionModel().getSelectedItem();
         invoiceField.setProductValue(Double.parseDouble(editedCell.getNewValue().toString()));
-
         selectedValueComboBox = taxComboBox.getSelectionModel().getSelectedItem();
+
         priceNetto = invoiceField.getProductValue() * invoiceField.getAmount();
         onlyVat = priceNetto * StringToDoubleConverter(selectedValueComboBox);
         priceBrutto = priceNetto + onlyVat ;
-        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
+        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2),round(invoiceField.getAmount(),2));
         totalPrice();
     }
     @FXML
@@ -356,9 +358,9 @@ public class VatRRInvoiceController implements Initializable {
 
         double tax = StringToDoubleConverter(selectedValueComboBox);
         onlyVat = invoiceField.getPriceVat();
-        priceNetto = onlyVat * 100/ (tax*100) * invoiceField.getAmount();
+        priceNetto = onlyVat * 100/ (tax*100);
         priceBrutto = priceNetto + onlyVat ;
-        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
+        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2),round(invoiceField.getAmount(),2));
         totalPrice();
     }
     @FXML
@@ -367,11 +369,11 @@ public class VatRRInvoiceController implements Initializable {
         invoiceField.setPriceBrutto(Double.parseDouble(editedCell.getNewValue().toString()));
         selectedValueComboBox = taxComboBox.getSelectionModel().getSelectedItem();
 
-        priceBrutto = round(invoiceField.getPriceBrutto(),2);
+        priceBrutto = round(invoiceField.getPriceBrutto(),2) ;
         priceNetto = priceBrutto *100 /(StringToDoubleConverter(selectedValueComboBox)*100 +100);
-        onlyVat = priceBrutto - priceNetto;
+        onlyVat = priceBrutto - priceNetto ;
 
-        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
+        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2),round(invoiceField.getAmount(),2));
         totalPrice();
     }
 
@@ -406,6 +408,7 @@ public class VatRRInvoiceController implements Initializable {
             if(!validateAllField())
                 return;
         }
+
 
         Seller seller = sellerService.find(1);
 
@@ -527,6 +530,7 @@ public class VatRRInvoiceController implements Initializable {
             transactionService.save(transaction);
 
             //product
+
             if (productService.checkIfExist(row.getNameProduct().getSelectionModel().getSelectedItem())) {
                 product = productService.findByName(row.getNameProduct().getSelectionModel().getSelectedItem());
             } else {
@@ -568,13 +572,13 @@ public class VatRRInvoiceController implements Initializable {
         Company companySeller = companyService.findBySeller(seller);
         Settings settings = settingsService.find(1);
         String path = settings.getPath();
-        //VatRRInvoicePDF pdfCreator = new VatRRInvoicePDF(invoice ,date,companySeller,customer,productTable, paidType,identityCard,promotionFoundCB,invoiceNumberTF.getText(), path);
-        StatementPDF statementPDF = new StatementPDF(customer,veterinaryInspectorateCB,issueDate,productTable,path);
-        //StatementAndRodoPDF s = new StatementAndRodoPDF(customer,veterinaryInspectorateCB,issueDate,productTable,path);
+        VatRRInvoicePDF pdfCreator = new VatRRInvoicePDF(invoice ,date,companySeller,customer,productTable, paidType,identityCard,promotionFoundCB,invoiceNumberTF.getText(), path);
+        //StatementPDF statementPDF = new StatementPDF(customer,veterinaryInspectorateCB,issueDate,productTable,path);
+        StatementAndRodoPDF statementAndRodoPDF = new StatementAndRodoPDF(customer,veterinaryInspectorateCB,issueDate,productTable,path);
         SellAgreement sellAgreement = new SellAgreement(customer,issueDate,productTable,path);
     }
     public void setAccountNumber(){
-        String accountNum = accountNumberTF.getText();
+        String accountNum = accountNumberTF.getText().replaceAll(" ","");
         String numberAccount = "";
         int counter2 = 0;
         for (int i = 0; i < accountNum.length(); i++) {
@@ -640,8 +644,9 @@ public class VatRRInvoiceController implements Initializable {
             priceNetto = invoiceField.getPriceNetto() * invoiceField.getAmount();
             onlyVat = priceNetto * StringToDoubleConverter(selectedValueComboBox);
             priceBrutto = priceNetto + onlyVat ;
-            fillPriceFields(round(priceNetto,2), round(onlyVat,2), round(priceBrutto,2));
+            fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2),round(invoiceField.getAmount(),2));
             totalPrice();
+            productTable.requestFocus();
         }catch(NullPointerException ex){
 
         }
@@ -655,62 +660,23 @@ public class VatRRInvoiceController implements Initializable {
             }
         }
     }
-    private void productNameComboBoxClick(MouseEvent event)  {
-        taxComboBox.setOnMouseClicked(this::clickTaxComboBoxAction);
-        taxComboBox.setOnAction(this::taxComboBoxAction);
-        productNameComboBox.setOnMouseClicked(this::clickNameProductComboBox);
-        unitMeasureComboBox.setOnMouseClicked(this::clickUnitMeasureComboBox);
-        unitMeasureComboBox.setOnAction(this::unitMeasureCBACtion);
-        productNameComboBox.setOnMouseClicked(this::productNameComboBoxClick);
-    }
-
     @FXML
     private void clickNameProductComboBox(MouseEvent event) {
         for (int i = 0; i < nameProductComboBoxObjectList.size(); i++) {
             if (event.getSource().equals(nameProductComboBoxObjectList.get(i))) {
                 productTable.getSelectionModel().select(i);
-                productTable.getFocusModel().focus(0);
+
             }
         }
     }
     @FXML
     private void clickUnitMeasureComboBox(MouseEvent event) {
-
         for (int i = 0; i < unitMeasureComboBoxObjectList.size(); i++) {
             if (event.getSource().equals(unitMeasureComboBoxObjectList.get(i))) {
                 productTable.getSelectionModel().select(i);
-                productTable.getFocusModel().focus(0);
+
             }
         }
-        invoiceField = productTable.getSelectionModel().getSelectedItem();
-        store = storeService.findByName(invoiceField.getNameProduct().getSelectionModel().getSelectedItem());
-        if(store!=null) {
-            if (store.getUnitMeasure().equals("tona") ||
-                    store.getUnitMeasure().equals("kg.")) {
-                if(unitMeasureComboBox.getItems().size()==3)
-                unitMeasureComboBox.getItems().remove(2);
-            } else if (store.getUnitMeasure().equals("szt.")) {
-                if(unitMeasureComboBox.getItems().size()==1) {
-                    unitMeasureComboBox.getItems().remove(0);
-                    unitMeasureComboBox.getItems().remove(1);
-                }
-            }
-        }else{
-            unitMeasureComboBox.setItems(fillUnitMeasureComboBox());
-        }
-    }
-    @FXML
-    private void unitMeasureCBACtion(ActionEvent event)  {
-        //String selectedUnitMeasureCB;
-        invoiceField = productTable.getSelectionModel().getSelectedItem();
-        selectedValueComboBox = taxComboBox.getSelectionModel().getSelectedItem();
-
-        priceNetto = invoiceField.getPriceNetto() * invoiceField.getAmount();
-        onlyVat = priceNetto * StringToDoubleConverter(selectedValueComboBox);
-        priceBrutto = priceNetto + onlyVat ;
-        fillPriceFields(round(priceNetto,2),round(onlyVat,2),round(priceBrutto,2));
-
-        totalPrice();
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -725,9 +691,9 @@ public class VatRRInvoiceController implements Initializable {
         generateInvoiceNumber();
         setValueForCombobox();
         productTable.setItems(getFirstRow());
-        List<Store> allProductList = (List<Store>) storeService.findAll();
-        if(allProductList.size() >0)
-            productNameComboBox.setValue(fillProductNameComboBox().get(0));
+//        List<Store> allProductList = (List<Store>) storeService.findAll();
+//        if(allProductList.size() >0)
+//            productNameComboBox.setValue(fillProductNameComboBox().get(0));
 
         productNameComboBox.setEditable(true);
         productNameComboBox.setMinWidth(300);
@@ -762,8 +728,6 @@ public class VatRRInvoiceController implements Initializable {
         taxComboBox.setOnAction(this::taxComboBoxAction);
         productNameComboBox.setOnMouseClicked(this::clickNameProductComboBox);
         unitMeasureComboBox.setOnMouseClicked(this::clickUnitMeasureComboBox);
-        unitMeasureComboBox.setOnAction(this::unitMeasureCBACtion);
-        productNameComboBox.setOnMouseClicked(this::productNameComboBoxClick);
     }
     private void addComboBoxObjectToList(){
         taxComboBoxObjectList.add(taxComboBox);
@@ -872,15 +836,15 @@ public class VatRRInvoiceController implements Initializable {
 
         return valueToDouble;
     }
-    public void fillPriceFields(double priceNetto, double onlyVat,double priceBrutto){
+    public void fillPriceFields(double priceNetto, double onlyVat,double priceBrutto, double amount){
         if(invoiceField.getAmount()<2){
             invoiceField.setPriceNetto(priceNetto);
             priceNettoColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn(new DoubleStringConverter()));
         }
 
-        invoiceField.setProductValue(priceNetto);
-        invoiceField.setPriceVat(onlyVat);
-        invoiceField.setPriceBrutto(priceBrutto);
+        invoiceField.setProductValue(round(priceNetto * amount,2));
+        invoiceField.setPriceVat(round(onlyVat * amount,2));
+        invoiceField.setPriceBrutto(round(priceBrutto * amount,2));
 
         productValueColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn(new DoubleStringConverter()));
         priceVatColumn.setCellFactory(AcceptOnExitTableCell.forTableColumn(new DoubleStringConverter()));
@@ -973,10 +937,18 @@ public class VatRRInvoiceController implements Initializable {
         invoiceNumberTF.setText(invoiceNumberDB);
     }
     public boolean validateAllField(){
+        boolean productNameEmpty = false;
+        for (InvoiceField row : productTable.getItems()) {
+            if(row.getNameProduct().getSelectionModel().getSelectedItem() == null && row.getNameProduct().getEditor().getText() == null){
+                productNameEmpty = true;
+                break;
+            }
+        }
         if(customerNameTF.getText().equals("") || addressTF.getText().equals("") ||
                 streetTF.getText().equals("") || peselTF.getText().equals("") || postalCodeTF.getText().equals("") || invoiceNumberTF.getText().equals("")
                 || issueDate.getEditor().getText().equals("")|| sellDate.getEditor().getText().equals("")|| paymentDate.getEditor().getText().equals("")
-                || seriaAndNumberIdCard.getText().equals("") || releaseDateTF.getEditor().getText().equals("") || releaseByTF.getText().equals("")) {
+                || seriaAndNumberIdCard.getText().equals("") || releaseDateTF.getEditor().getText().equals("") || releaseByTF.getText().equals("")
+        || productNameEmpty) {
             message("Nie wszystkie pola są wypełnione", Alert.AlertType.NONE, "Informacja");
             return false;
         }
@@ -1028,6 +1000,7 @@ public class VatRRInvoiceController implements Initializable {
             seriaAndNumberIdCard.setText(identityCard.getSeriaAndNumber());
             releaseByTF.setText(identityCard.getOrganization());
             releaseDateTF.getEditor().setText(identityCard.getReleaseDate());
+            accountNumberTF.setText(transaction.getCustomer().getAccountNumber());
             productTable.getItems().clear();
             //create row in table
 
@@ -1077,8 +1050,7 @@ public class VatRRInvoiceController implements Initializable {
                 taxComboBox.setOnAction(this::taxComboBoxAction);
                 productNameComboBox.setOnMouseClicked(this::clickNameProductComboBox);
                 unitMeasureComboBox.setOnMouseClicked(this::clickUnitMeasureComboBox);
-                unitMeasureComboBox.setOnAction(this::unitMeasureCBACtion);
-                productNameComboBox.setValue(allProductListObservableTmp.get(productIndex));
+                productNameComboBox.getEditor().setText(allProductListObservableTmp.get(productIndex));
                 productNameComboBox.setMinWidth(300);
                 productNameComboBox.setEditable(true);
                 taxComboBox.setValue(fillTaxComboBox().get(taxIndex));

@@ -2,8 +2,10 @@ package com.kmichali.controller;
 
 import com.kmichali.config.StageManager;
 import com.kmichali.model.Seller;
+import com.kmichali.model.Settings;
 import com.kmichali.model.Store;
 import com.kmichali.serviceImpl.SellerServiceImpl;
+import com.kmichali.serviceImpl.SettingsServiceImpl;
 import com.kmichali.serviceImpl.StoreServiceImpl;
 import com.kmichali.view.FxmlView;
 import javafx.event.ActionEvent;
@@ -15,7 +17,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 @Controller
 public class MainAppController {
@@ -28,15 +29,17 @@ public class MainAppController {
     StoreServiceImpl storeService;
     @Autowired
     SellerServiceImpl sellerService;
+    @Autowired
+    SettingsServiceImpl settingsService;
     Seller seller;
     Store store;
 
     @FXML
     void invoiceVatAction(ActionEvent event) throws UnsupportedEncodingException {
-
-        seller = sellerService.find(1);
-        if(seller == null){
-            message("Przed rozpoczęciem dodaj swoje dane w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
+        Seller seller = sellerService.find(1);
+        Settings settings = settingsService.find(1L);
+        if(seller == null || settings == null){
+            message("Przed rozpoczęciem dodaj swoje dane i ścieżke do zapisu faktur w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
         }else{
             stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
         }
@@ -44,10 +47,10 @@ public class MainAppController {
 
     @FXML
     void invoiceVatRrAction(ActionEvent event) throws UnsupportedEncodingException {
-
-        seller = sellerService.find(1);
-        if(seller == null){
-            message("Przed rozpoczęciem dodaj swoje dane w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
+        Seller seller = sellerService.find(1);
+        Settings settings = settingsService.find(1L);
+        if(seller == null || settings == null){
+            message("Przed rozpoczęciem dodaj swoje dane i ścieżke do zapisu faktur w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
         }else{
             stageManager.switchScene(FxmlView.INVOICERRSTAGE);
         }

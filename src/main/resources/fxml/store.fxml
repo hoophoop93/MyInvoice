@@ -9,14 +9,19 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="1029.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.StoreController">
    <bottom>
-      <TableView fx:id="storeProductsTable" prefHeight="447.0" prefWidth="1029.0" BorderPane.alignment="CENTER" />
+      <TableView fx:id="storeProductsTable" prefHeight="447.0" prefWidth="1029.0" BorderPane.alignment="CENTER">
+         <effect>
+            <InnerShadow color="#323232" />
+         </effect></TableView>
    </bottom>
    <center>
       <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
@@ -30,10 +35,13 @@
                <HBox.margin>
                   <Insets left="5.0" top="10.0" />
                </HBox.margin>
+               <effect>
+                  <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
+               </effect>
             </ComboBox>
-            <VBox alignment="TOP_RIGHT" prefHeight="101.0" prefWidth="72.0">
+            <VBox alignment="CENTER_RIGHT" prefHeight="101.0" prefWidth="72.0">
                <children>
-                  <Line endX="-97.19230651855469" endY="238.87867736816406" startX="-97.8995361328125" startY="162.58578491210938">
+                  <Line endX="-97.19230651855469" endY="238.87867736816406" startX="-97.8995361328125" startY="162.58578491210938" strokeWidth="2.0">
                      <VBox.margin>
                         <Insets top="5.0" />
                      </VBox.margin>
@@ -55,6 +63,9 @@
                                  <HBox.margin>
                                     <Insets left="5.0" top="8.0" />
                                  </HBox.margin>
+                                 <effect>
+                                    <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
+                                 </effect>
                               </TextField>
                            </children>
                         </HBox>
@@ -69,6 +80,9 @@
                                  <HBox.margin>
                                     <Insets left="5.0" top="8.0" />
                                  </HBox.margin>
+                                 <effect>
+                                    <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
+                                 </effect>
                               </TextField>
                            </children>
                         </HBox>
@@ -96,6 +110,9 @@
                            <VBox.margin>
                               <Insets top="12.0" />
                            </VBox.margin>
+                           <effect>
+                              <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
+                           </effect>
                         </ComboBox>
                      </children>
                      <HBox.margin>
@@ -110,6 +127,12 @@
                      <HBox.margin>
                         <Insets bottom="5.0" top="5.0" />
                      </HBox.margin>
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <effect>
+                        <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
+                     </effect>
                   </Button>
                </children>
             </HBox>
@@ -127,6 +150,9 @@
                </items>
             </Menu>
          </menus>
+         <effect>
+            <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
+         </effect>
       </MenuBar>
    </top>
 </BorderPane>

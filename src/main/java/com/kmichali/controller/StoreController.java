@@ -1,8 +1,12 @@
 package com.kmichali.controller;
 
 import com.kmichali.config.StageManager;
+import com.kmichali.model.Seller;
+import com.kmichali.model.Settings;
 import com.kmichali.model.Store;
 import com.kmichali.model.ProductRaport;
+import com.kmichali.serviceImpl.SellerServiceImpl;
+import com.kmichali.serviceImpl.SettingsServiceImpl;
 import com.kmichali.serviceImpl.StoreServiceImpl;
 import com.kmichali.serviceImpl.TransactionServiceImpl;
 import com.kmichali.view.FxmlView;
@@ -64,17 +68,33 @@ public class StoreController  implements Initializable {
     StoreServiceImpl storeService;
     @Autowired
     TransactionServiceImpl transactionService;
+    @Autowired
+    SellerServiceImpl sellerService;
+    @Autowired
+    SettingsServiceImpl settingsService;
 
 
 
     @FXML
     void menuInvoiceVatAction(ActionEvent event)throws UnsupportedEncodingException {
-        stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
+        Seller seller = sellerService.find(1);
+        Settings settings = settingsService.find(1L);
+        if(seller == null || settings == null){
+            message("Przed rozpoczęciem dodaj swoje dane i ścieżke do zapisu faktur w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
+        }else{
+            stageManager.switchScene(FxmlView.INVOICEVATSTAGE);
+        }
     }
 
     @FXML
     void menuInvoiceVatRRAction(ActionEvent event)throws UnsupportedEncodingException {
-        stageManager.switchScene(FxmlView.INVOICERRSTAGE);
+        Seller seller = sellerService.find(1);
+        Settings settings = settingsService.find(1L);
+        if(seller == null || settings == null){
+            message("Przed rozpoczęciem dodaj swoje dane i ścieżke do zapisu faktur w ustawieniach!!", Alert.AlertType.NONE,"Informacja");
+        }else{
+            stageManager.switchScene(FxmlView.INVOICERRSTAGE);
+        }
     }
 
     @FXML
@@ -83,20 +103,25 @@ public class StoreController  implements Initializable {
     }
     @FXML
     void addNewProductAction(ActionEvent event) {
-        store = new Store();
-        store.setName(productName.getText());
-        store.setAmount(Double.parseDouble(amount.getText()));
-        store.setUnitMeasure(unitMeasureCB.getSelectionModel().getSelectedItem());
+        if(productName.getText().equals("") || amount.getText().equals("")){
+            message("Pola muszą być wypełnione!", Alert.AlertType.NONE, "Informacja");
+        }
+        {
+            store = new Store();
+            store.setName(productName.getText());
+            store.setAmount(Double.parseDouble(amount.getText()));
+            store.setUnitMeasure(unitMeasureCB.getSelectionModel().getSelectedItem());
 
-        if(!storeService.countProductStore(store.getName())) {
-            storeService.save(store);
-            allProductList.add(store);
-            prepareTableColumn();
-            productName.setText("");
-            amount.setText("");
-            unitMeasureCB.getItems().clear();
-        }else{
-            message("Taki produkt jest już w magazynie!", Alert.AlertType.NONE,"Informacja");
+            if (!storeService.countProductStore(store.getName())) {
+                storeService.save(store);
+                allProductList.add(store);
+                prepareTableColumn();
+                productName.setText("");
+                amount.setText("");
+                unitMeasureCB.getItems().clear();
+            } else {
+                message("Taki produkt jest już w magazynie!", Alert.AlertType.NONE, "Informacja");
+            }
         }
 
     }

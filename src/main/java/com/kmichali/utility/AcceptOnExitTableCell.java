@@ -244,7 +244,7 @@ public class AcceptOnExitTableCell<S, T> extends TableCell<S, T> {
                                 + "StringConverter is null. Be sure to set a StringConverter "
                                 + "in your cell factory.");
             }
-            this.commitEdit(getConverter().fromString(textField.getText()));
+            this.commitEdit(getConverter().fromString(textField.getText().replaceAll(",",".")));
             event.consume();
         });
         textField.setOnKeyPressed(t -> { if (t.getCode() == KeyCode.ESCAPE) escapePressed = true; else escapePressed = false; });
