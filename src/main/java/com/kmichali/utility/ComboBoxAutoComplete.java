@@ -3,8 +3,11 @@ package com.kmichali.utility;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Window;
@@ -23,6 +26,14 @@ public class ComboBoxAutoComplete<T> {
         cmb.setTooltip(new Tooltip());
         cmb.setOnKeyPressed(this::handleOnKeyPressed);
         cmb.setOnHidden(this::handleOnHiding);
+
+        ComboBoxListViewSkin cbSkin = new ComboBoxListViewSkin(this.cmb);
+        this.cmb.setSkin(cbSkin);
+        cbSkin.getPopupContent().addEventFilter(KeyEvent.KEY_PRESSED, (event) -> {
+            if(event.getCode() == KeyCode.SPACE){
+                filter += " ";
+                event.consume();}
+        });
     }
 
     public void handleOnKeyPressed(KeyEvent e) {
@@ -38,6 +49,9 @@ public class ComboBoxAutoComplete<T> {
         }
         if (code == KeyCode.ESCAPE) {
             filter = "";
+        }
+        if(code == KeyCode.SPACE){
+            filter = " ";
         }
         if (filter.length() == 0) {
             filteredList = originalItems;
@@ -62,8 +76,6 @@ public class ComboBoxAutoComplete<T> {
         T s = cmb.getSelectionModel().getSelectedItem();
         cmb.getItems().setAll(originalItems);
         cmb.getSelectionModel().select(s);
-
-
     }
 
 }

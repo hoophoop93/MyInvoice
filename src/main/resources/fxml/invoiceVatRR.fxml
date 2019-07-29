@@ -9,10 +9,12 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -59,18 +61,31 @@
                                     <Insets right="5.0" top="18.0" />
                                  </VBox.margin>
                               </Label>
+                              <VBox prefHeight="200.0" prefWidth="100.0">
+                                 <children>
+                                    <VBox prefHeight="200.0" prefWidth="100.0" />
+                                 </children></VBox>
                            </children>
                         </VBox>
-                        <VBox prefHeight="232.0" prefWidth="184.0">
+                        <VBox prefHeight="206.0" prefWidth="202.0">
                            <children>
-                              <TextField fx:id="invoiceNumberTF" onAction="#onEnter">
-                                 <VBox.margin>
-                                    <Insets top="5.0" />
-                                 </VBox.margin>
-                                 <effect>
-                                    <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
-                                 </effect>
-                              </TextField>
+                              <HBox alignment="CENTER" prefHeight="30.0" prefWidth="202.0">
+                                 <children>
+                                    <TextField fx:id="invoiceNumberTF" onAction="#onEnter" prefHeight="25.0" prefWidth="172.0">
+                                       <effect>
+                                          <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
+                                       </effect>
+                                    </TextField>
+                                    <Button mnemonicParsing="false" onAction="#nextInvoiceNumber" prefHeight="25.0" prefWidth="28.0" text="+">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                              </HBox>
                               <Line endX="100.0" startX="-100.0" strokeLineCap="ROUND" strokeWidth="2.0">
                                  <VBox.margin>
                                     <Insets top="10.0" />
@@ -100,7 +115,7 @@
                                     <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
                                  </effect>
                               </DatePicker>
-                              <TextArea fx:id="releaseByTF" prefHeight="56.0" prefWidth="202.0" wrapText="true">
+                              <TextArea fx:id="releaseByTF" prefHeight="42.0" prefWidth="202.0" wrapText="true">
                                  <VBox.margin>
                                     <Insets top="9.0" />
                                  </VBox.margin>
@@ -133,7 +148,7 @@
                                     </ComboBox>
                                  </children>
                               </HBox>
-                              <HBox prefHeight="42.0" prefWidth="333.0">
+                              <HBox prefHeight="37.0" prefWidth="333.0">
                                  <children>
                                     <Label prefHeight="17.0" prefWidth="100.0" text="Data wystawienia:">
                                        <HBox.margin>
@@ -146,7 +161,7 @@
                                        </effect></DatePicker>
                                  </children>
                               </HBox>
-                              <HBox prefHeight="42.0" prefWidth="333.0">
+                              <HBox prefHeight="37.0" prefWidth="333.0">
                                  <children>
                                     <Label prefWidth="100.0" text="Data sprzedaży:">
                                        <HBox.margin>
@@ -159,14 +174,14 @@
                                        </effect></DatePicker>
                                  </children>
                               </HBox>
-                              <HBox prefHeight="42.0" prefWidth="333.0">
+                              <HBox prefHeight="28.0" prefWidth="333.0">
                                  <children>
                                     <Label prefWidth="100.0" text="Tarmin zapłaty:">
                                        <HBox.margin>
                                           <Insets right="5.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <DatePicker fx:id="paymentDate" prefWidth="200.0">
+                                    <DatePicker fx:id="paymentDate" prefHeight="37.0" prefWidth="200.0">
                                        <effect>
                                           <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
                                        </effect></DatePicker>
@@ -179,7 +194,7 @@
                                           <Insets top="3.0" />
                                        </HBox.margin></Label>
                                  </children></HBox>
-                              <HBox prefHeight="36.0" prefWidth="333.0">
+                              <HBox prefHeight="35.0" prefWidth="333.0">
                                  <children>
                                     <TextField fx:id="accountNumberTF" prefHeight="25.0" prefWidth="309.0">
                                        <effect>
@@ -198,6 +213,30 @@
                         </HBox>
                     </children>
                 </HBox>
+            <HBox prefHeight="40.0" prefWidth="657.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="102.0" text="Zmień numer:" wrapText="true">
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="oldInvoiceNumber" prefHeight="25.0" prefWidth="150.0" promptText="Stary numer">
+                     <HBox.margin>
+                        <Insets bottom="5.0" right="5.0" top="5.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <TextField fx:id="newInvoiceNumber" promptText="Nowy numer">
+                     <HBox.margin>
+                        <Insets top="5.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <Button mnemonicParsing="false" onAction="#changeInvoiceNumber" text="Zmień numer faktury">
+                     <HBox.margin>
+                        <Insets left="10.0" top="5.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
             </children>
         </VBox>
     </center>
@@ -279,7 +318,7 @@
                                     <Font name="System Bold" size="12.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="forPrice" prefHeight="25.0" prefWidth="140.0" text="0.0">
+                              <TextField fx:id="forPrice" prefHeight="25.0" prefWidth="140.0" text="0.00">
                                  <HBox.margin>
                                     <Insets top="2.0" />
                                  </HBox.margin>
@@ -291,7 +330,7 @@
                                     <Insets left="5.0" top="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="sumNetto" prefHeight="25.0" prefWidth="140.0" text="0.0">
+                              <TextField fx:id="sumNetto" prefHeight="25.0" prefWidth="140.0" text="0.00">
                                  <HBox.margin>
                                     <Insets top="2.0" />
                                  </HBox.margin>
@@ -323,7 +362,7 @@
                         <Insets left="5.0" right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <ComboBox fx:id="promotionFoundCB" prefHeight="25.0" prefWidth="240.0">
+                  <ComboBox fx:id="promotionFoundCB" prefHeight="25.0" prefWidth="205.0">
                      <effect>
                         <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
                      </effect></ComboBox>
@@ -332,10 +371,20 @@
                         <Insets left="30.0" right="5.0" />
                      </HBox.margin>
                   </Label>
-                  <ComboBox fx:id="veterinaryInspectorateCB" editable="true" prefHeight="25.0" prefWidth="240.0">
+                  <ComboBox fx:id="veterinaryInspectorateCB" editable="true" prefHeight="25.0" prefWidth="205.0">
                      <effect>
                         <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
                      </effect></ComboBox>
+                  <HBox prefHeight="41.0" prefWidth="77.0" />
+                  <RadioButton fx:id="statementRadioButton" mnemonicParsing="false" selected="true" text="Oświadczenie">
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                     <toggleGroup>
+                        <ToggleGroup fx:id="radioButtonGroup" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="statementAndRodoRadioButton" mnemonicParsing="false" text="Oświadczenie i RODO" toggleGroup="$radioButtonGroup" />
                </children>
             </HBox>
             </children>
@@ -348,12 +397,7 @@
                     <children>
                         <HBox prefHeight="100.0" prefWidth="200.0">
                             <children>
-                                <Label prefHeight="17.0" prefWidth="85.0" text="Klient:">
-                                    <HBox.margin>
-                                        <Insets left="5.0" top="7.0" />
-                                    </HBox.margin>
-                                </Label>
-                                <ComboBox fx:id="selectCustomerCB" onAction="#selectCustomerAction" prefHeight="25.0" prefWidth="255.0">
+                                <ComboBox fx:id="selectCustomerCB" onAction="#selectCustomerAction" prefHeight="25.0" prefWidth="344.0" promptText="Wybierz klienta">
                                     <HBox.margin>
                                         <Insets left="5.0" top="5.0" />
                                     </HBox.margin>
@@ -439,6 +483,17 @@
                            <effect>
                               <InnerShadow blurType="ONE_PASS_BOX" color="#323232" />
                            </effect>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#updateCustomerAction" prefHeight="30.0" prefWidth="118.0" text="Aktualizuj klienta">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                           <effect>
+                              <InnerShadow blurType="ONE_PASS_BOX" color="#323232" />
+                           </effect>
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
                         </Button>
                         <Button mnemonicParsing="false" onAction="#clearData" prefHeight="30.0" prefWidth="105.0" text="Wyczyść dane">
                            <HBox.margin>

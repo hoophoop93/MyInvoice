@@ -9,12 +9,10 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.effect.InnerShadow?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -45,9 +43,18 @@
                                     <Insets top="20.0" />
                                  </VBox.margin>
                               </Line>
+                              <VBox prefHeight="29.0" prefWidth="107.0">
+                                 <children>
+                                    <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="17.0" prefWidth="103.0" text="Kod pocztowy:">
+                                       <VBox.margin>
+                                          <Insets top="10.0" />
+                                       </VBox.margin>
+                                    </Label>
+                                 </children>
+                              </VBox>
                               <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="98.0" text="Poczta:">
                                  <VBox.margin>
-                                    <Insets top="25.0" />
+                                    <Insets top="14.0" />
                                  </VBox.margin>
                               </Label>
                               <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="101.0" text="NIP:">
@@ -59,22 +66,43 @@
                         </VBox>
                         <VBox prefHeight="168.0" prefWidth="205.0">
                            <children>
-                              <TextField fx:id="invoiceNumberTF" onAction="#onEnter">
-                                 <VBox.margin>
-                                    <Insets top="5.0" />
-                                 </VBox.margin>
-                                 <effect>
-                                    <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
-                                 </effect>
-                              </TextField>
+                              <HBox alignment="CENTER" prefHeight="30.0" prefWidth="206.0">
+                                 <children>
+                                    <TextField fx:id="invoiceNumberTF" onAction="#onEnter" prefHeight="25.0" prefWidth="172.0">
+                                       <effect>
+                                          <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
+                                       </effect>
+                                       <HBox.margin>
+                                          <Insets top="5.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                    <Button mnemonicParsing="false" onAction="#nextInvoiceNumer" prefHeight="25.0" prefWidth="35.0" text="+">
+                                       <HBox.margin>
+                                          <Insets left="5.0" top="2.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                 </children>
+                              </HBox>
                               <Line endX="104.0" startX="-100.0" strokeWidth="2.0">
                                  <VBox.margin>
                                     <Insets top="12.0" />
                                  </VBox.margin>
                               </Line>
+                              <VBox prefHeight="34.0" prefWidth="206.0">
+                                 <children>
+                                    <TextField fx:id="postalCodeTF" prefHeight="25.0" prefWidth="255.0">
+                                       <effect>
+                                          <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
+                                       </effect>
+                                       <VBox.margin>
+                                          <Insets top="10.0" />
+                                       </VBox.margin>
+                                    </TextField>
+                                 </children>
+                              </VBox>
                               <TextField fx:id="addressTF">
                                  <VBox.margin>
-                                    <Insets top="23.0" />
+                                    <Insets top="8.0" />
                                  </VBox.margin>
                                  <effect>
                                     <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
@@ -82,7 +110,7 @@
                               </TextField>
                               <TextField fx:id="nipTF">
                                  <VBox.margin>
-                                    <Insets top="5.0" />
+                                    <Insets top="8.0" />
                                  </VBox.margin>
                                  <effect>
                                     <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
@@ -106,7 +134,7 @@
                                               <Insets left="5.0" top="30.0" />
                                           </VBox.margin>
                                       </Label>
-                                      <Label fx:id="transactionDateLabel" text="Data zakupu:">
+                                      <Label fx:id="transactionDateLabel" text="Data sprzedaży:">
                                           <VBox.margin>
                                               <Insets left="5.0" top="15.0" />
                                           </VBox.margin>
@@ -156,44 +184,39 @@
                                     <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
                                  </effect>
                                       </DatePicker>
-                              <HBox prefHeight="100.0" prefWidth="200.0">
-                                 <children>
-                                    <RadioButton fx:id="invoiceTypeBuyRB" mnemonicParsing="false" onAction="#buyRadioButtonAction" selected="true" text="kupno">
-                                       <HBox.margin>
-                                          <Insets top="10.0" />
-                                       </HBox.margin>
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="invoiceType" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton fx:id="invoiceTypeSellRB" mnemonicParsing="false" onAction="#sellRadioButtonAction" text="Sprzedaż" toggleGroup="$invoiceType">
-                                       <HBox.margin>
-                                          <Insets left="10.0" top="10.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                 </children>
-                              </HBox>
+                              <HBox prefHeight="100.0" prefWidth="200.0" />
                                   </children>
                               </VBox>
                             </children>
                         </HBox>
                     </children>
                 </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="657.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#addNewCustomerAction" prefHeight="25.0" prefWidth="97.0" text="Dodaj klienta">
+                  <Label text="Zmień numer faktury:">
+                     <padding>
+                        <Insets left="5.0" />
+                     </padding>
+                  </Label>
+                  <TextField fx:id="oldInvoiceNumber" promptText="Stary numer">
                      <HBox.margin>
-                        <Insets right="15.0" />
+                        <Insets left="5.0" />
                      </HBox.margin>
-                     <effect>
-                        <InnerShadow blurType="ONE_PASS_BOX" color="#323232" />
-                     </effect>
+                  </TextField>
+                  <TextField fx:id="newInvoiceNumber" promptText="Nowy numer">
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <Button mnemonicParsing="false" onAction="#changeInvoiceNumber" text="Zmień numer faktury">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#clearData" text=" Wyczyść dane">
-                     <effect>
-                        <InnerShadow blurType="ONE_PASS_BOX" color="#323232" />
-                     </effect></Button>
                </children>
+               <VBox.margin>
+                  <Insets right="10.0" />
+               </VBox.margin>
             </HBox>
             </children>
         </VBox>
@@ -276,7 +299,7 @@
                                     <Font name="System Bold" size="12.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="forPrice" prefHeight="25.0" prefWidth="140.0" text="0.0">
+                              <TextField fx:id="forPrice" prefHeight="25.0" prefWidth="140.0" text="0.00">
                                  <effect>
                                     <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
                                  </effect></TextField>
@@ -285,7 +308,7 @@
                                     <Insets left="5.0" top="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="sumNetto" prefHeight="25.0" prefWidth="140.0" text="0.0">
+                              <TextField fx:id="sumNetto" prefHeight="25.0" prefWidth="140.0" text="0.00">
                                  <effect>
                                     <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
                                  </effect></TextField>
@@ -294,7 +317,7 @@
                                     <Insets left="5.0" top="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <TextField fx:id="sumVat" prefHeight="25.0" prefWidth="140.0" text="0.0">
+                              <TextField fx:id="sumVat" prefHeight="25.0" prefWidth="140.0" text="0.00">
                                  <effect>
                                     <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
                                  </effect></TextField>
@@ -320,12 +343,7 @@
                     <children>
                         <HBox prefHeight="100.0" prefWidth="200.0">
                             <children>
-                                <Label prefHeight="17.0" prefWidth="85.0" text="Klient:">
-                                    <HBox.margin>
-                                        <Insets left="5.0" top="7.0" />
-                                    </HBox.margin>
-                                </Label>
-                                <ComboBox fx:id="selectCustomerCB" onAction="#selectCustomerAction" prefHeight="25.0" prefWidth="255.0">
+                                <ComboBox fx:id="selectCustomerCB" onAction="#selectCustomerAction" prefHeight="25.0" prefWidth="344.0" promptText="Wybierz klienta">
                                     <HBox.margin>
                                         <Insets left="5.0" top="5.0" />
                                     </HBox.margin>
@@ -373,7 +391,7 @@
                         </TextField>
                      </children>
                   </HBox>
-                  <HBox prefHeight="42.0" prefWidth="372.0">
+                  <HBox prefHeight="37.0" prefWidth="372.0">
                      <children>
                         <Label prefHeight="17.0" prefWidth="85.0" text="Miejscowość/ul:">
                            <HBox.margin>
@@ -390,17 +408,29 @@
                         </TextField>
                      </children>
                   </HBox>
-                  <HBox prefHeight="36.0" prefWidth="372.0">
+                  <HBox alignment="CENTER" prefHeight="52.0" prefWidth="372.0">
                      <children>
-                        <Label prefHeight="17.0" prefWidth="85.0" text="Kod pocztowy:">
+                        <Button mnemonicParsing="false" onAction="#addNewCustomerAction" prefHeight="25.0" prefWidth="97.0" text="Dodaj klienta">
                            <HBox.margin>
-                              <Insets left="5.0" right="5.0" />
+                              <Insets right="15.0" />
                            </HBox.margin>
-                        </Label>
-                        <TextField fx:id="postalCodeTF" prefHeight="25.0" prefWidth="255.0">
                            <effect>
-                              <InnerShadow blurType="ONE_PASS_BOX" color="#7c7c7c" />
-                           </effect></TextField>
+                              <InnerShadow blurType="ONE_PASS_BOX" color="#323232" />
+                           </effect>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#updateCustomerAction" prefHeight="25.0" prefWidth="107.0" text="Aktualizuj klienta">
+                           <effect>
+                              <InnerShadow blurType="ONE_PASS_BOX" color="#323232" />
+                           </effect>
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#clearData" text=" Wyczyść dane">
+                           <effect>
+                              <InnerShadow blurType="ONE_PASS_BOX" color="#323232" />
+                           </effect>
+                        </Button>
                      </children>
                   </HBox>
                </children>

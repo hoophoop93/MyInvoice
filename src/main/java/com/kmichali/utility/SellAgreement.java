@@ -1,34 +1,39 @@
 package com.kmichali.utility;
 
 import com.itextpdf.text.*;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.kmichali.model.Customer;
+import com.kmichali.model.IdentityCard;
 import com.kmichali.model.InvoiceField;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableView;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
 
 public class SellAgreement {
+    private static DecimalFormat df2 = new DecimalFormat("#,##0.00");
     private String PDFPATH;
     Document document;
     public static final String FONT = "/fonts/FreeSans.ttf";
 
 
     public SellAgreement(Customer customer,
-                         DatePicker datePicker, TableView<InvoiceField> productTable, String path
-    ) throws DocumentException, IOException {
+                         DatePicker datePicker, TableView<InvoiceField> productTable, String path, IdentityCard identityCard
+                         ) throws DocumentException, IOException {
 
         PDFPATH = path.replaceAll("\\\\", "/")+"/Zalaczniki/";
         CreateDirectory(PDFPATH);
-        CreateDocument(customer,datePicker,productTable);
+        CreateDocument(customer,datePicker,productTable,identityCard);
         OpenPDF(PDFPATH +"umowa_sprzedazy.pdf");
     }
     public void CreateDirectory(String path){
@@ -41,7 +46,7 @@ public class SellAgreement {
     }
 
     private void CreateDocument(Customer customer,
-                                DatePicker datePicker,TableView<InvoiceField> productTable
+                                DatePicker datePicker,TableView<InvoiceField> productTable,IdentityCard identityCard
     ) throws DocumentException, IOException {
         document = new Document(PageSize.A4, 5, 5, 20, 20);
         try {
@@ -54,7 +59,7 @@ public class SellAgreement {
 
         document.open();
 
-        fillPdfDocument(customer,datePicker,productTable);
+        fillPdfDocument(customer,datePicker,productTable,identityCard);
 
         document.close();
     }
@@ -69,7 +74,7 @@ public class SellAgreement {
     }
 
     private void fillPdfDocument(Customer customer,
-                                 DatePicker datePicker, TableView<InvoiceField> productTable
+                                 DatePicker datePicker, TableView<InvoiceField> productTable,IdentityCard identityCard
     ) throws DocumentException, IOException {
         BaseFont unicodeFont = BaseFont.createFont(FONT,BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.EMBEDDED);
@@ -95,7 +100,7 @@ public class SellAgreement {
                 "FHU UNIWERS Krzsztof Pac, Wrocanka 148 , 38-204 Tarnowiec, NIP 685-123-84-20\nzwany dalej KONTRAKTUJĄCYM\n" +
                 "a "+customer.getName() +" "+customer.getSurname()+", zam. "+customer.getAddress()+", "+customer.getPostalCode()+"" +
             " "+customer.getCity()+" nr. dowodu osobistego "
-                +customer.getIdentityCard().getSeriaAndNumber()+"\nzwanym dalej PRODUCENTEM";
+                +identityCard.getSeriaAndNumber()+"\nzwanym dalej PRODUCENTEM";
 
         cell = new PdfPCell(new Paragraph(statementTextPart1,new Font(bf, 12)));
         cell.setHorizontalAlignment(Element.ALIGN_JUSTIFIED);
@@ -128,15 +133,15 @@ public class SellAgreement {
             if(row.getUnitMeasure().getSelectionModel().getSelectedItem().equals("tona")){
                 amount = row.getAmount();
             }
-            phrase3="   "+counter+") "+row.getNameProduct().getSelectionModel().getSelectedItem()+", w terminie do dnia "+ datePicker.getValue().plusDays(31)+
-                    ", w ilości "+amount +" t i cenie "+row.getPriceNetto() +" zł NETTO + VAT ustalonej przez strony.";
+            phrase3="   "+counter+") "+row.getNameProduct().getEditor().getText()+", w terminie do dnia "+ datePicker.getValue().plusDays(31)+
+                    ", w ilości "+df2.format(amount).replaceAll(",",".") +" t i cenie "+df2.format(row.getPriceNetto()).replaceAll(",",".") +" zł NETTO + VAT ustalonej przez strony.";
             cell = new PdfPCell(new Paragraph(phrase3,new Font(bf, 12)));
             cell.setHorizontalAlignment(Element.ALIGN_JUSTIFIED);
             cell.setBorder(0);
             mainTable.addCell(cell);
             counter++;
         }
-        String phrase4 ="   Produkty będa odpowiadać kryteriom jakościowym: Wilgotność max 14,5%, zanieczyszczenie masymalne ogółem" +
+        String phrase4 ="Produkty będa odpowiadać kryteriom jakościowym: Wilgotność max 14,5%, zanieczyszczenie masymalne ogółem" +
                 " 6%, towar zdrowy jakości handlowej, wolny od żywych szkodników.\n" +
                 "3. Kontraktujący zobowiązuje siędo odbioru produktów i zapłaty ceny zgodnie z warunkami niniejszej umowy." +
                 "   Kontraktujący ni może odmówić przyjęcia świadczenia częsciowego.\n" +

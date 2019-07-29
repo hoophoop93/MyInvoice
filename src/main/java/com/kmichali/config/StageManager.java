@@ -4,7 +4,9 @@ import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 
 import java.io.UnsupportedEncodingException;
@@ -27,13 +29,17 @@ public class StageManager {
         Parent viewRootNodeHierarchy = loadViewNodeHierarchy(view.getFxmlFile());
         show(viewRootNodeHierarchy, view.getTitle());
     }
-
+    public void showNextScene(final FxmlView view) throws UnsupportedEncodingException {
+        Parent viewRootNodeHierarchy = loadViewNodeHierarchy(view.getFxmlFile());
+        showSecondScene(viewRootNodeHierarchy, view.getTitle());
+    }
+    public Parent setParent(final FxmlView view) {
+        Parent viewRootNodeHierarchy = loadViewNodeHierarchy(view.getFxmlFile());
+        return viewRootNodeHierarchy;
+    }
     private void show(final Parent rootnode, String title) {
         Scene scene = prepareScene(rootnode);
-        //scene.getStylesheets().add("/styles/Styles.css");
-
-        //primaryStage.initStyle(StageStyle.TRANSPARENT);
-        primaryStage.getIcons().add(new Image("/images/logo3.png"));
+        primaryStage.getIcons().add(new Image("/images/logo.png"));
         primaryStage.setTitle(title);
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
@@ -47,7 +53,33 @@ public class StageManager {
         }
     }
 
-    private Scene prepareScene(Parent rootnode){
+    private void showSecondScene(final Parent rootnode, String title) {
+        Stage stage = new Stage();
+        Scene scene = prepareScene(rootnode);
+        stage.getIcons().add(new Image("/images/logo.png"));
+        stage.setTitle(title);
+        stage.setScene(scene);
+        stage.initModality(Modality.WINDOW_MODAL);
+        stage.sizeToScene();
+        stage.setResizable(false);
+        stage.setOnCloseRequest(event -> {
+            stage.close();
+            Parent parent  = this.setParent(FxmlView.STORESTAGE);
+            this.refreshScene(parent);
+        });
+        stage.centerOnScreen();
+        try {
+            stage.show();
+        } catch (Exception exception) {
+            logAndExit ("Unable to show scene for title" + title,  exception);
+        }
+    }
+    public void refreshScene(final Parent rootnode) {
+        Scene scene = prepareScene(rootnode);
+        primaryStage.setScene(scene);
+    }
+
+    public Scene prepareScene(Parent rootnode){
         Scene scene = primaryStage.getScene();
 
         if (scene == null) {

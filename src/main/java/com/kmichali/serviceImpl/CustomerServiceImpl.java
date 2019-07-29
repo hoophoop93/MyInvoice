@@ -27,6 +27,32 @@ public class CustomerServiceImpl implements CustomerService {
         this.entityManager = entityManager;
     }
 
+    public Customer findCustomerByNip(String nip) {
+        Customer customer = null;
+        String queryString = "Select o from Customer o, Company c where o.id = c.customer.id and c.nip = :nip";
+
+        Query query = getEntityManager().createQuery(queryString);
+        query.setParameter("nip", nip);
+        try {
+            customer = (Customer) query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+        return customer;
+    }
+    public Customer findCustomerByPesel(String pesel) {
+        Customer customer = null;
+        String queryString = "Select o from Customer o where LOWER(o.pesel) = :pesel";
+
+        Query query = getEntityManager().createQuery(queryString);
+        query.setParameter("pesel", pesel.toLowerCase());
+        try {
+            customer = (Customer) query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+        return customer;
+    }
     public Customer findCustomer(String name, String surname, String address) {
         Customer customer = null;
         String queryString = "Select o from Customer o where LOWER(o.name) = :name and LOWER(o.surname) = :surname " +
@@ -44,18 +70,18 @@ public class CustomerServiceImpl implements CustomerService {
         return customer;
     }
     @Override
-    public boolean countCustomerBySurname(String surname){
-       String queryString="Select count(c.surname) from Customer c where LOWER(c.surname) = :surname";
+    public boolean countCustomerByNip(String nip){
+       String queryString="Select count(c.nip) from Customer o, Company c where o.id = c.customer.id and c.nip = :nip";
        Query query = getEntityManager().createQuery(queryString);
-       query.setParameter("surname",surname.toLowerCase());
+       query.setParameter("nip",nip.toLowerCase());
         long result = (long) query.getSingleResult();
         return result > 0;
     }
     @Override
-    public boolean countCustomerByAddress(String address){
-        String queryString="Select count(c.address) from Customer c where LOWER(c.address) = :address";
+    public boolean countCustomerByPesel(String pesel){
+        String queryString="Select count(c.pesel) from Customer c where LOWER(c.pesel) = :pesel";
         Query query = getEntityManager().createQuery(queryString);
-        query.setParameter("address",address.toLowerCase());
+        query.setParameter("pesel",pesel.toLowerCase());
         long result = (long) query.getSingleResult();
         return result > 0;
     }

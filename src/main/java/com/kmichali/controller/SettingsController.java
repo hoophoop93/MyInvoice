@@ -152,30 +152,54 @@ public class SettingsController implements Initializable {
 //    }
     @FXML
     void updateAction(ActionEvent event) {
-        seller = sellerService.find(1);
-        if(seller ==null)seller = new Seller();
+            if(
+            nameTF.getText().equals("") ||
+            surnameTF.getText().equals("") ||
+            streetTF.getText().equals("") ||
+            postalCodeTF.getText().equals("") ||
+            cityTF.getText().equals("") ||
+            companyNameTA.getText().equals("") ||
+            nipTF.getText().equals("") ||
+            regonTF.getText().equals("") ||
+            phoneNumberTF.getText().equals("") ||
+            accountNumberTF.getText().equals("") ||
+            nameTF.getText().equals("") ||
+            surnameTF.getText().equals("") ||
+            streetTF.getText().equals("") ||
+            postalCodeTF.getText().equals("") ||
+            cityTF.getText().equals("") ||
+            companyNameTA.getText().equals("") ||
+            nipTF.getText().equals("") ||
+            regonTF.getText().equals("") ||
+            phoneNumberTF.getText().equals("") ||
+            accountNumberTF.getText().equals("")){
+            message("Nie wszystkie pola są uzupełnione.", Alert.AlertType.NONE,"Informacja");
+                }else {
+                seller = sellerService.find(1);
+                if (seller == null) seller = new Seller();
 
-        seller.setName(nameTF.getText());
-        seller.setSurname(surnameTF.getText());
-        seller.setAddress(streetTF.getText());
-        seller.setPostalCode(postalCodeTF.getText());
-        seller.setCity(cityTF.getText());
-        sellerService.update(seller);
+                seller.setName(nameTF.getText());
+                seller.setSurname(surnameTF.getText());
+                seller.setAddress(streetTF.getText());
+                seller.setPostalCode(postalCodeTF.getText());
+                seller.setCity(cityTF.getText());
+                sellerService.update(seller);
 
-        company = companyService.findBySeller(seller);
-        if(company ==null)company = new Company();
+                company = companyService.findBySeller(seller);
+                if (company == null) company = new Company();
 
-        company.setName(companyNameTA.getText());
-        company.setNip(nipTF.getText());
-        company.setRegon(regonTF.getText());
-        company.setPhoneNumber(phoneNumberTF.getText());
-        company.setAccountNumber(accountNumberTF.getText());
-        company.setSeller(seller);
-        companyService.update(company);
-        if(companyService.countByNip(nipTF.getText())) {
-            accountNumberTF.setText(setAccountNumber(company));
-            message("Twoje dane zostały poprawnie zaaktualizowane.", Alert.AlertType.NONE, "Informacja");
-        }
+                company.setName(companyNameTA.getText());
+                company.setNip(nipTF.getText());
+                company.setRegon(regonTF.getText());
+                company.setPhoneNumber(phoneNumberTF.getText());
+                company.setAccountNumber(accountNumberTF.getText());
+                company.setSeller(seller);
+                companyService.update(company);
+                if (companyService.countByNip(nipTF.getText())) {
+                    accountNumberTF.setText(setAccountNumber(company));
+                    message("Twoje dane zostały poprawnie zaaktualizowane.", Alert.AlertType.NONE, "Informacja");
+                }
+            }
     }
 
     @FXML

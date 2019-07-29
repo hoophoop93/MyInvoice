@@ -17,9 +17,6 @@ public class StoreServiceImpl implements StoreService {
     @Autowired
     StoreRepository storeRepository;
 
-
-    @Autowired
-    CustomerRepostiory customerRepostiory;
     @PersistenceContext
     private EntityManager entityManager;
 

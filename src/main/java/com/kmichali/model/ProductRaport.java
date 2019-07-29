@@ -3,14 +3,28 @@ package com.kmichali.model;
 public class ProductRaport {
 
     double transactionAmount;
+    String invoiceNumber;
     String name;
     String date;
     double wholeAmount;
     String type;
-    private String unitMeasure;
-    double conversionKilograms;
+    double price;
 
+    public double getPrice() {
+        return price;
+    }
 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public String getInvoiceNumber() {
+        return invoiceNumber;
+    }
+
+    public void setInvoiceNumber(String invoiceNumber) {
+        this.invoiceNumber = invoiceNumber;
+    }
 
     public double getTransactionAmount() {
         return transactionAmount;
@@ -50,21 +64,5 @@ public class ProductRaport {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getUnitMeasure() {
-        return unitMeasure;
-    }
-
-    public void setUnitMeasure(String unitMeasure) {
-        this.unitMeasure = unitMeasure;
-    }
-
-    public double getConversionKilograms() {
-        return conversionKilograms;
-    }
-
-    public void setConversionKilograms(double conversionKilograms) {
-        this.conversionKilograms = conversionKilograms;
     }
 }

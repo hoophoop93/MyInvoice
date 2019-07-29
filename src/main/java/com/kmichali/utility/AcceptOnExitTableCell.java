@@ -14,9 +14,11 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
 
+import java.text.DecimalFormat;
+
 public class AcceptOnExitTableCell<S, T> extends TableCell<S, T> {
 
-
+    private static DecimalFormat df2 = new DecimalFormat("#,##0.00");
     /***************************************************************************
      *                                                                         *
      * Static cell factories                                                   *
@@ -232,7 +234,6 @@ public class AcceptOnExitTableCell<S, T> extends TableCell<S, T> {
      **************************************************************************/
 
     private TextField getTextField() {
-
         final TextField textField = new TextField(getItemText());
 
         // Use onAction here rather than onKeyReleased (with check for Enter),
@@ -275,7 +276,18 @@ public class AcceptOnExitTableCell<S, T> extends TableCell<S, T> {
                 setText(null);
                 setGraphic(textField);
             } else {
-                setText(getItemText());
+
+                double price;
+                String newPrice="";
+                if(getItemText().length()>1) {
+                    price = Double.parseDouble(getItemText());
+                    newPrice = df2.format(price);
+                    newPrice = newPrice.replaceAll(",", ".");
+                }else{
+                    newPrice = getItemText();
+                }
+                //newPrice = Double.toString(price);
+                setText(newPrice);
                 setGraphic(null);
             }
         }

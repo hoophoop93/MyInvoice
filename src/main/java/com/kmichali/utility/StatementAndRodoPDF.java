@@ -1,16 +1,19 @@
 package com.kmichali.utility;
 
 import com.itextpdf.text.*;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.kmichali.model.Customer;
+import com.kmichali.model.IdentityCard;
 import com.kmichali.model.InvoiceField;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableView;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,10 +25,11 @@ public class StatementAndRodoPDF {
 
 
     public StatementAndRodoPDF(Customer customer, ComboBox veterynaryInspectoreCB,
-                               DatePicker datePicker, TableView<InvoiceField> productTable,String path) throws DocumentException, IOException {
+                               DatePicker datePicker, TableView<InvoiceField> productTable, String path, IdentityCard identityCard)
+            throws DocumentException, IOException {
         PDFPATH = path.replaceAll("\\\\", "/")+"/Zalaczniki/";
         CreateDirectory(PDFPATH);
-        CreateDocument(customer,veterynaryInspectoreCB,datePicker,productTable);
+        CreateDocument(customer,veterynaryInspectoreCB,datePicker,productTable,identityCard);
         OpenPDF(PDFPATH +"oswiadczenie_RODO.pdf");
     }
     public void CreateDirectory(String path){
@@ -38,7 +42,8 @@ public class StatementAndRodoPDF {
     }
 
     private void CreateDocument(Customer customer, ComboBox veterynaryInspectoreCB,
-                                DatePicker datePicker,TableView<InvoiceField> productTable) throws DocumentException, IOException {
+                                DatePicker datePicker,TableView<InvoiceField> productTable,IdentityCard identityCard
+    ) throws DocumentException, IOException {
         document = new Document(PageSize.A4, 7, 7, 20, 20);
         try {
             PdfWriter.getInstance(document, new FileOutputStream(PDFPATH + "oswiadczenie_RODO.pdf"));
@@ -50,7 +55,7 @@ public class StatementAndRodoPDF {
 
         document.open();
 
-        fillPdfDocument(customer,veterynaryInspectoreCB,datePicker,productTable);
+        fillPdfDocument(customer,veterynaryInspectoreCB,datePicker,productTable,identityCard);
 
         document.close();
     }
@@ -65,7 +70,8 @@ public class StatementAndRodoPDF {
     }
 
     private void fillPdfDocument( Customer customer, ComboBox veterynaryInspectoreCB,
-                                   DatePicker datePicker,TableView<InvoiceField> productTable) throws DocumentException, IOException {
+                                   DatePicker datePicker,TableView<InvoiceField> productTable,IdentityCard identityCard
+    ) throws DocumentException, IOException {
 
         BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1250, BaseFont.EMBEDDED);
 
@@ -129,7 +135,7 @@ public class StatementAndRodoPDF {
 
         String statementTextPart2="";
         for (InvoiceField row: productTable.getItems()) {
-             statementTextPart2 = "Oświadczam jednocześnie, że dostarczony przeze mnie w dniu " + datePicker.getValue() + " towar " + row.getNameProduct().getSelectionModel().getSelectedItem() + " został wyprodukowany, przetoworzony i dystrybuowany zgodnie" +
+             statementTextPart2 = "Oświadczam jednocześnie, że dostarczony przeze mnie w dniu " + datePicker.getValue() + " towar " + row.getNameProduct().getEditor().getText() + " został wyprodukowany, przetoworzony i dystrybuowany zgodnie" +
                     "z prawem UE, ustawodastwem krajowym oraz zasadami dobrej praktyki w zakresie ochrony przed ryzykiem biologicznego, chemicznego i fizycznego zanieczyszczenia paszy.";
         }
         cell = new PdfPCell(new Paragraph(statementTextPart2,new Font(bf, 12)));
@@ -155,7 +161,7 @@ public class StatementAndRodoPDF {
         cell.setBorder(0);
         signTable.addCell(cell);
 
-        cell = new PdfPCell(new Paragraph("   "+customer.getIdentityCard().getSeriaAndNumber(),new Font(bf, 12)));
+        cell = new PdfPCell(new Paragraph("   "+identityCard.getSeriaAndNumber(),new Font(bf, 12)));
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
         cell.setVerticalAlignment(Element.ALIGN_BOTTOM);
         cell.setBorder(0);

@@ -9,56 +9,60 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.kmichali.model.*;
+import com.kmichali.model.Date;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import pl.allegro.finance.tradukisto.MoneyConverters;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.text.DecimalFormat;
+import java.time.Year;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 
 
 public class VatInvoicePDF {
 
+    private static DecimalFormat df2 = new DecimalFormat("#,##0.00");
     private String PDFPATH;
     public  String IMG1 = "/images/grain.png";
     Document document;
     String invoiceNum;
 
     public VatInvoicePDF(Invoice invoice, Date date, Company companySeller,Company companyCustomer,
-                         TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType,String invoiceNumber, String path) throws DocumentException, IOException {
+                         TableView<InvoiceField> productTable, ComboBox paidType,String invoiceNumber, String path) throws DocumentException, IOException {
         PDFPATH = path.replaceAll("\\\\", "/")+"/VAT/";
         CreateDirectory(PDFPATH,invoiceNumber);
-        CreateDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,invoiceType,invoiceNumber);
+        CreateDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,invoiceNumber);
         OpenPDF(PDFPATH+invoiceNum+".pdf");
     }
     public void CreateDirectory(String path, String invoiceNumber){
-        String yearWithInvoiceNumber,month;
-        if(invoiceNumber.length() == 10)yearWithInvoiceNumber = invoiceNumber.substring(6,invoiceNumber.length());
-        else yearWithInvoiceNumber = invoiceNumber.substring(5,invoiceNumber.length());
+        String yearWithInvoiceNumber;
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        yearWithInvoiceNumber = Integer.toString(year);
+//        if(invoiceNumber.length() >= 10)yearWithInvoiceNumber = invoiceNumber.substring(6,10);
+//        else yearWithInvoiceNumber = invoiceNumber.substring(5,9);
         File file = new File(path+yearWithInvoiceNumber);
         if(!file.exists()){
             if(file.mkdirs()){
                 System.out.println("Directory was created");
             }
         }
-        if(invoiceNumber.length() == 10) invoiceNumber = invoiceNumber.substring(3,5);
-        else invoiceNumber = invoiceNumber.substring(2, 4);
-        String tmpInvoiceNumber = invoiceNumber.substring(0,1);
-        if(tmpInvoiceNumber.equals("0")){
-            invoiceNumber = invoiceNumber.substring(1,2);
-        }
-        else {
-            invoiceNumber = invoiceNumber.substring(0,2);
-        }
-        month = invoiceNumber;
-        int monthValue = Integer.parseInt(month);
-        Month monthEnum = Month.values()[monthValue-1];
+//        if(invoiceNumber.length() >= 10) invoiceNumber = invoiceNumber.substring(3,5);
+//        else invoiceNumber = invoiceNumber.substring(2, 4);
+//        String tmpInvoiceNumber = invoiceNumber.substring(0,1);
+//        if(tmpInvoiceNumber.equals("0")){
+//            invoiceNumber = invoiceNumber.substring(1,2);
+//        }
+//        else {
+//            invoiceNumber = invoiceNumber.substring(0,2);
+//        }
+        int month = Calendar.getInstance().get(Calendar.MONTH);
+        Month monthEnum = Month.values()[month];
 
         File file2 = new File(PDFPATH+yearWithInvoiceNumber+"/"+monthEnum);
         if(!file2.exists()){
@@ -69,7 +73,7 @@ public class VatInvoicePDF {
         PDFPATH += yearWithInvoiceNumber+"/"+monthEnum+"/";
     }
     private void CreateDocument(Invoice invoice, Date date, Company companySeller,Company companyCustomer,
-                                TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType,String invoiceNumber) throws DocumentException, IOException {
+                                TableView<InvoiceField> productTable, ComboBox paidType,String invoiceNumber) throws DocumentException, IOException {
 
         invoiceNum = invoiceNumber.replaceAll("/","-");
         document = new Document(PageSize.A4,5,5,20,20);
@@ -83,7 +87,7 @@ public class VatInvoicePDF {
 
         document.open();
 
-        fillPdfDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType,invoiceType);
+        fillPdfDocument(invoice ,date,companySeller,companyCustomer,productTable,paidType);
 
         document.close();
     }
@@ -98,7 +102,7 @@ public class VatInvoicePDF {
     }
 
     private void fillPdfDocument(Invoice invoice, Date date, Company companySeller, Company companyCustomer,
-                                 TableView<InvoiceField> productTable, ComboBox paidType,int invoiceType) throws DocumentException, IOException {
+                                 TableView<InvoiceField> productTable, ComboBox paidType) throws DocumentException, IOException {
 
         List<String> taxList = new ArrayList<>();
         HashSet<String> taxListWithoutDuplicated = new HashSet(); //list no duplicated
@@ -131,7 +135,7 @@ public class VatInvoicePDF {
         cellDate.setBorder(0);
         dateTable.addCell(cellDate);
 
-        cellDate = new PdfPCell(new Paragraph("Jedlicze",new Font(bf, 11)));
+        cellDate = new PdfPCell(new Paragraph("Wrocanka",new Font(bf, 11)));
         cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
         cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
         cellDate.setBorder(0);
@@ -150,11 +154,9 @@ public class VatInvoicePDF {
         cellDate.setBorder(0);
         dateTable.addCell(cellDate);
 
-        if(invoiceType==1){
-            cellDate = new PdfPCell(new Paragraph("Data zakupu",new Font(bf, 11, Font.BOLD)));
-        }else{
-            cellDate = new PdfPCell(new Paragraph("Data sprzedaży",new Font(bf, 11, Font.BOLD)));
-        }
+
+        cellDate = new PdfPCell(new Paragraph("Data sprzedaży",new Font(bf, 11, Font.BOLD)));
+
         cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
         cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -191,8 +193,8 @@ public class VatInvoicePDF {
         PdfPTable nameSellerTable = new PdfPTable(1); //3 columns
         nameSellerTable.setWidthPercentage(98);   //Width 100%;
         PdfPCell cellNameSeller;
-        if(invoiceType==1) cellNameSeller = new PdfPCell(new Paragraph("Nabywca",new Font(bf, 13, Font.BOLD)));
-            else cellNameSeller = new PdfPCell(new Paragraph("Sprzedawca",new Font(bf, 13, Font.BOLD)));
+
+        cellNameSeller = new PdfPCell(new Paragraph("Sprzedawca",new Font(bf, 13, Font.BOLD)));
         cellNameSeller.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cellNameSeller.setHorizontalAlignment(Element.ALIGN_LEFT);
         cellNameSeller.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -212,7 +214,7 @@ public class VatInvoicePDF {
             paragraph4.add(Chunk.NEWLINE);
             paragraph4.add(companySeller.getSeller().getAddress());
             paragraph4.add(Chunk.NEWLINE);
-            paragraph4.add(companySeller.getSeller().getCity()+" "+companySeller.getSeller().getPostalCode());
+            paragraph4.add(companySeller.getSeller().getPostalCode()+" "+companySeller.getSeller().getCity()+", Tel. "+companySeller.getPhoneNumber());
             paragraph4.add(Chunk.NEWLINE);
             paragraph4.add("NIP: " + companySeller.getNip() +"   "+ "REGON " +companySeller.getRegon());
         }
@@ -236,8 +238,7 @@ public class VatInvoicePDF {
         nameCustomerTable.setWidthPercentage(98);   //Width 100%;
 
         PdfPCell nameCustomerCell;
-        if(invoiceType==1) nameCustomerCell = new PdfPCell(new Paragraph("Sprzedawca",new Font(bf, 13, Font.BOLD)));
-        else nameCustomerCell = new PdfPCell(new Paragraph("Nabywca",new Font(bf, 13, Font.BOLD)));
+        nameCustomerCell = new PdfPCell(new Paragraph("Nabywca",new Font(bf, 13, Font.BOLD)));
         nameCustomerCell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         nameCustomerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
         nameCustomerCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -252,18 +253,28 @@ public class VatInvoicePDF {
         paragraph5.setLeading(2f);
         paragraph5.setFont(new Font(bf,11));
         if(companyCustomer != null) {
-            paragraph5.add(companyCustomer.getName());
-            paragraph5.add(Chunk.NEWLINE);
-            paragraph5.add(companyCustomer.getCustomer().getName() + " " + companyCustomer.getCustomer().getSurname());
-            paragraph5.add(Chunk.NEWLINE);
+            if(!companyCustomer.getName().equals("")) {
+                paragraph5.add(companyCustomer.getName());
+                paragraph5.add(Chunk.NEWLINE);
+            }
+            if(companyCustomer.getCustomer().getName()!=null) {
+                paragraph5.add(companyCustomer.getCustomer().getName() + " " + companyCustomer.getCustomer().getSurname());
+                paragraph5.add(Chunk.NEWLINE);
+            }
             paragraph5.add(companyCustomer.getCustomer().getAddress());
             paragraph5.add(Chunk.NEWLINE);
-            paragraph5.add(companyCustomer.getCustomer().getCity()+" "+companyCustomer.getCustomer().getPostalCode());
+            paragraph5.add(companyCustomer.getCustomer().getPostalCode()+" "+companyCustomer.getCustomer().getCity());
             paragraph5.add(Chunk.NEWLINE);
             paragraph5.add("NIP: " + companyCustomer.getNip());
 
-            for(int i=0; i<2; i++) {
-                paragraph5.add(Chunk.NEWLINE);
+            if(companyCustomer.getCustomer().getName() != null && !companyCustomer.getName().equals("")) {
+                for (int i = 0; i < 2; i++) {
+                    paragraph5.add(Chunk.NEWLINE);
+                }
+            }else{
+                for (int i = 0; i < 3; i++) {
+                    paragraph5.add(Chunk.NEWLINE);
+                }
             }
 
             nameCustomerCell = new PdfPCell(paragraph5);
@@ -355,23 +366,23 @@ public class VatInvoicePDF {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(row.getNameProduct().getSelectionModel().getSelectedItem(),new Font(bf, 10)));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell= new PdfPCell(new Paragraph(row.getNameProduct().getEditor().getText(),new Font(bf, 10)));
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
             cell= new PdfPCell(new Paragraph(String.valueOf(row.getUnitMeasure().getSelectionModel().getSelectedItem()),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(String.valueOf(row.getAmount()),new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(df2.format(row.getAmount()).replaceAll(",",".")),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(String.valueOf(row.getPriceNetto())+" zł",new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(df2.format(row.getPriceNetto()).replaceAll(",",".")),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(String.valueOf(row.getProductValue())+" zł",new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(df2.format(row.getProductValue()).replaceAll(",",".")),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
@@ -379,11 +390,11 @@ public class VatInvoicePDF {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(String.valueOf(row.getPriceVat())+" zł",new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(df2.format(row.getPriceVat()).replaceAll(",",".")),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(String.valueOf(row.getPriceBrutto())+" zł",new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(df2.format(row.getPriceBrutto()).replaceAll(",",".")),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
@@ -419,7 +430,7 @@ public class VatInvoicePDF {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-        cell = new PdfPCell(new Paragraph(String.valueOf(totalProductValue)+" zł", new Font(bf, 10)));
+        cell = new PdfPCell(new Paragraph(String.valueOf(df2.format(totalProductValue)).replaceAll(",",".")+" zł", new Font(bf, 10)));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
@@ -431,12 +442,12 @@ public class VatInvoicePDF {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-        cell = new PdfPCell(new Paragraph(String.valueOf(totalVat)+" zł", new Font(bf, 10)));
+        cell = new PdfPCell(new Paragraph(String.valueOf(df2.format(totalVat)).replaceAll(",",".")+" zł", new Font(bf, 10)));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-        cell = new PdfPCell(new Paragraph(String.valueOf(totalBrutto)+" zł",  new Font(bf, 10, Font.BOLD)));
+        cell = new PdfPCell(new Paragraph(String.valueOf(df2.format(totalBrutto)).replaceAll(",",".")+" zł",  new Font(bf, 10, Font.BOLD)));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
@@ -549,7 +560,8 @@ public class VatInvoicePDF {
 
             }
 
-            cell2 = new PdfPCell(new Paragraph(totalProductValueSameTaxList.get(k) + " zł", new Font(bf, 10)));
+            cell2 = new PdfPCell(new Paragraph(df2.format(totalProductValueSameTaxList.get(k)).
+                    replaceAll(",",".") + " zł", new Font(bf, 10)));
             cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
             summaryTable.addCell(cell2);
@@ -559,12 +571,13 @@ public class VatInvoicePDF {
             cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
             summaryTable.addCell(cell2);
 
-            cell2 = new PdfPCell(new Paragraph(totalVatSameTaxList.get(k) + " zł", new Font(bf, 10)));
+            cell2 = new PdfPCell(new Paragraph(df2.format(totalVatSameTaxList.get(k)).
+                    replaceAll(",",".") + " zł", new Font(bf, 10)));
             cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
             summaryTable.addCell(cell2);
 
-            cell2 = new PdfPCell(new Paragraph(totalBruttoSameTaxList.get(k) + " zł", new Font(bf, 10)));
+            cell2 = new PdfPCell(new Paragraph(df2.format(totalBruttoSameTaxList.get(k)).replaceAll(",",".") + " zł", new Font(bf, 10)));
             cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
             summaryTable.addCell(cell2);
@@ -589,7 +602,7 @@ public class VatInvoicePDF {
             }
         }
 
-        cell2 = new PdfPCell(new Paragraph(String.valueOf(totalBrutto)+" zł", new Font(bf, 11)));
+        cell2 = new PdfPCell(new Paragraph(String.valueOf(df2.format(totalBrutto)).replaceAll(",",".")+" zł", new Font(bf, 11)));
         cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
         summaryTable.addCell(cell2);
@@ -643,7 +656,6 @@ public class VatInvoicePDF {
         paymentTable.addCell(paymentCell);
 
 
-
         paymentCell = new PdfPCell(new Paragraph("Numer konta:",new Font(bf, 12)));
         paymentCell.setHorizontalAlignment(Element.ALIGN_LEFT);
         paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -694,7 +706,7 @@ public class VatInvoicePDF {
         finalPriceCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         finalPriceTable.addCell(finalPriceCell);
 
-        finalPriceCell = new PdfPCell(new Paragraph(String.valueOf(totalBrutto)+" zł",new Font(bf, 14, Font.BOLD)));
+        finalPriceCell = new PdfPCell(new Paragraph(String.valueOf(df2.format(totalBrutto)).replaceAll(",",".")+" zł",new Font(bf, 14, Font.BOLD)));
         finalPriceCell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         finalPriceCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         finalPriceCell.setVerticalAlignment(Element.ALIGN_MIDDLE);

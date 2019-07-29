@@ -16,10 +16,8 @@ public class Date {
     private String sellDate;
     @Column(name = "payment_date")
     private String paymentDate;
-    @Column(name = "paid_date")
-    private String paidDate;
 
-    @OneToOne(mappedBy = "date",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "date")
     private Invoice invoice;
 
     public Invoice getInvoice() {
@@ -61,13 +59,6 @@ public class Date {
     public void setPaymentDate(String paymentDate) {
         this.paymentDate = paymentDate;
     }
-
-    public String getPaidDate() {
-        return paidDate;
-    }
-
-    public void setPaidDate(String paidDate) {
-        this.paidDate = paidDate;
-    }
+    
 }
 

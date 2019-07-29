@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.List;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
@@ -42,12 +43,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public void delete(Invoice entity) {
-
+        invoiceRepository.delete(entity);
     }
 
     @Override
     public void delete(long id) {
-
+        invoiceRepository.delete(id);
     }
 
     @Override
@@ -93,11 +94,15 @@ public class InvoiceServiceImpl implements InvoiceService {
         Query query = getEntityManager().createQuery(queryString);
         query.setParameter("invoiceNumber",invoiceNumber);
         query.setParameter("invoiceType",invoiceType);
-       try {
-           invoice = (Invoice) query.getSingleResult();
-       }catch (NullPointerException e){
-           
-       }
+//       try {
+//           invoice = (Invoice) query.getSingleResult();
+//       }catch (NullPointerException e){
+//
+//       }
+        List results = query.getResultList();
+        if (!results.isEmpty())
+            invoice = (Invoice) results.get(0);
+
         
         return invoice;
     }

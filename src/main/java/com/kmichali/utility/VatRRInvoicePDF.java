@@ -1,6 +1,8 @@
 package com.kmichali.utility;
 
 import com.itextpdf.text.*;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -10,19 +12,23 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableView;
 import pl.allegro.finance.tradukisto.MoneyConverters;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
 public class VatRRInvoicePDF {
 
+    private static DecimalFormat df2 = new DecimalFormat("#,##0.00");
     private String PDFPATH;
     public static final String IMG1 = "/images/grain.png";
     Document document;
@@ -30,34 +36,42 @@ public class VatRRInvoicePDF {
 
     public VatRRInvoicePDF(Invoice invoice, Date date, Company companySeller, Customer customer,
                          TableView<InvoiceField> productTable, ComboBox paidType,IdentityCard identityCard,
-                           ComboBox promotionFoundComboBox,String invoiceNumber, String path) throws DocumentException, IOException {
+                           ComboBox promotionFoundComboBox,String invoiceNumber, String path,String paymentDateToString
+    ) throws DocumentException, IOException {
         PDFPATH = path.replaceAll("\\\\", "/")+"/VatRR/";
         CreateDirectory(PDFPATH,invoiceNumber);
-        CreateDocument(invoice ,date,companySeller,customer,productTable,paidType,identityCard,promotionFoundComboBox,invoiceNumber);
+        invoiceNum = invoiceNumber.replaceAll("/","-");
+        File file = new File(PDFPATH+invoiceNum+".pdf");
+        if(file.exists()){
+            file.delete();
+        }
+        CreateDocument(invoice ,date,companySeller,
+                customer,productTable,paidType,identityCard,promotionFoundComboBox,invoiceNumber,paymentDateToString);
         OpenPDF(PDFPATH+invoiceNum+".pdf");
     }
     public void CreateDirectory(String path, String invoiceNumber){
-        String yearWithInvoiceNumber,month;
-        if(invoiceNumber.length() == 10)yearWithInvoiceNumber = invoiceNumber.substring(6,invoiceNumber.length());
-        else yearWithInvoiceNumber = invoiceNumber.substring(5,invoiceNumber.length());
+        String yearWithInvoiceNumber;
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        yearWithInvoiceNumber = Integer.toString(year);
+//        if(invoiceNumber.length() >= 10)yearWithInvoiceNumber = invoiceNumber.substring(6,10);
+//        else yearWithInvoiceNumber = invoiceNumber.substring(5,9);
         File file = new File(path+yearWithInvoiceNumber);
         if(!file.exists()){
             if(file.mkdirs()){
                 System.out.println("Directory was created");
             }
         }
-        if(invoiceNumber.length() == 10) invoiceNumber = invoiceNumber.substring(3,5);
-        else invoiceNumber = invoiceNumber.substring(2, 4);
-        String tmpInvoiceNumber = invoiceNumber.substring(0,1);
-        if(tmpInvoiceNumber.equals("0")){
-            invoiceNumber = invoiceNumber.substring(1,2);
-        }
-        else {
-            invoiceNumber = invoiceNumber.substring(0,2);
-        }
-        month = invoiceNumber;
-        int monthValue = Integer.parseInt(month);
-        Month monthEnum = Month.values()[monthValue-1];
+//        if(invoiceNumber.length() >= 10) invoiceNumber = invoiceNumber.substring(3,5);
+//        else invoiceNumber = invoiceNumber.substring(2, 4);
+//        String tmpInvoiceNumber = invoiceNumber.substring(0,1);
+//        if(tmpInvoiceNumber.equals("0")){
+//            invoiceNumber = invoiceNumber.substring(1,2);
+//        }
+//        else {
+//            invoiceNumber = invoiceNumber.substring(0,2);
+//        }
+        int month = Calendar.getInstance().get(Calendar.MONTH);
+        Month monthEnum = Month.values()[month];
 
         File file2 = new File(PDFPATH+yearWithInvoiceNumber+"/"+monthEnum);
         if(!file2.exists()){
@@ -69,7 +83,7 @@ public class VatRRInvoicePDF {
     }
     private void CreateDocument(Invoice invoice, Date date, Company companySeller,Customer customer,
                                 TableView<InvoiceField> productTable, ComboBox paidType, IdentityCard identityCard,
-                                ComboBox promotionFoundComboBox, String invoiceNumber) throws DocumentException, IOException {
+                                ComboBox promotionFoundComboBox, String invoiceNumber,String paymentDateToString) throws DocumentException, IOException {
 
         invoiceNum = invoiceNumber.replaceAll("/","-");
         document = new Document(PageSize.A4,5,5,20,20);
@@ -83,7 +97,8 @@ public class VatRRInvoicePDF {
 
         document.open();
 
-        fillPdfDocument(invoice ,date,companySeller,customer,productTable,paidType,identityCard,promotionFoundComboBox);
+        fillPdfDocument(invoice ,date,companySeller,customer,productTable,paidType,identityCard,
+                promotionFoundComboBox,paymentDateToString);
 
         document.close();
     }
@@ -98,7 +113,9 @@ public class VatRRInvoicePDF {
     }
 
     private void fillPdfDocument(Invoice invoice, Date date, Company companySeller, Customer customer,
-                                 TableView<InvoiceField> productTable, ComboBox paidType, IdentityCard identityCard,ComboBox promotionFoundComboBox) throws DocumentException, IOException {
+                                 TableView<InvoiceField> productTable, ComboBox paidType,
+                                 IdentityCard identityCard,ComboBox promotionFoundComboBox,String paymentDateToString
+    ) throws DocumentException, IOException {
         double promotionFoundAmount=0;
         List<String> taxList = new ArrayList<>();
         HashSet<String> taxListWithoutDuplicated = new HashSet(); //list no duplicated
@@ -121,6 +138,19 @@ public class VatRRInvoicePDF {
         dateTable.setWidthPercentage(100);   //Width 100%;
 
         PdfPCell cellDate;
+
+        cellDate = new PdfPCell(new Paragraph("Miejsce wystawienia",new Font(bf, 11, Font.BOLD)));
+        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
+
+        cellDate = new PdfPCell(new Paragraph("Wrocanka",new Font(bf, 11)));
+        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cellDate.setBorder(0);
+        dateTable.addCell(cellDate);
 
         cellDate = new PdfPCell(new Paragraph("Data wystawienia",new Font(bf, 11, Font.BOLD)));
         cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
@@ -147,32 +177,29 @@ public class VatRRInvoicePDF {
         cellDate.setBorder(0);
         dateTable.addCell(cellDate);
 
+//        cellDate = new PdfPCell(new Paragraph("Sposób zapłaty:",new Font(bf, 11, Font.BOLD)));
+//        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
+//        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+//        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+//        cellDate.setBorder(0);
+//        dateTable.addCell(cellDate);
+//
+//        cellDate = new PdfPCell(new Paragraph(paidType.getSelectionModel().getSelectedItem().toString(),new Font(bf, 11)));
+//        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+//        cellDate.setBorder(0);
+//        dateTable.addCell(cellDate);
 
+//        cellDate = new PdfPCell(new Paragraph("Termin zapłaty:",new Font(bf, 11, Font.BOLD)));
+//        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
+//        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+//        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
+//        cellDate.setBorder(0);
+//        dateTable.addCell(cellDate);
 
-
-        cellDate = new PdfPCell(new Paragraph("Sposób zapłaty:",new Font(bf, 11, Font.BOLD)));
-        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
-        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        cellDate.setBorder(0);
-        dateTable.addCell(cellDate);
-
-        cellDate = new PdfPCell(new Paragraph(paidType.getSelectionModel().getSelectedItem().toString(),new Font(bf, 11)));
-        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        cellDate.setBorder(0);
-        dateTable.addCell(cellDate);
-
-        cellDate = new PdfPCell(new Paragraph("Termin zapłaty:",new Font(bf, 11, Font.BOLD)));
-        cellDate.setBackgroundColor(BaseColor.LIGHT_GRAY );
-        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        cellDate.setVerticalAlignment(Element.ALIGN_MIDDLE);
-        cellDate.setBorder(0);
-        dateTable.addCell(cellDate);
-
-        cellDate = new PdfPCell(new Paragraph(date.getPaymentDate(),new Font(bf, 11)));
-        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
-        cellDate.setBorder(0);
-        dateTable.addCell(cellDate);
+//        cellDate = new PdfPCell(new Paragraph(date.getPaymentDate(),new Font(bf, 11)));
+//        cellDate.setHorizontalAlignment(Element.ALIGN_RIGHT);
+//        cellDate.setBorder(0);
+//        dateTable.addCell(cellDate);
 
         PdfPCell dateCell = new PdfPCell(dateTable);
         dateCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -199,7 +226,7 @@ public class VatRRInvoicePDF {
         PdfPTable nameSellerTable = new PdfPTable(1); //3 columns
         nameSellerTable.setWidthPercentage(98);   //Width 100%;
         PdfPCell cellNameSeller;
-        cellNameSeller = new PdfPCell(new Paragraph("Sprzedawca",new Font(bf, 13, Font.BOLD)));
+        cellNameSeller = new PdfPCell(new Paragraph("Nabywca",new Font(bf, 13, Font.BOLD)));
         cellNameSeller.setBackgroundColor(BaseColor.LIGHT_GRAY );
         cellNameSeller.setHorizontalAlignment(Element.ALIGN_LEFT);
         cellNameSeller.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -219,7 +246,7 @@ public class VatRRInvoicePDF {
             paragraph4.add(Chunk.NEWLINE);
             paragraph4.add(companySeller.getSeller().getAddress());
             paragraph4.add(Chunk.NEWLINE);
-            paragraph4.add(companySeller.getSeller().getCity()+" "+companySeller.getSeller().getPostalCode());
+            paragraph4.add(companySeller.getSeller().getPostalCode()+" "+companySeller.getSeller().getCity()+", Tel. "+companySeller.getPhoneNumber());
             paragraph4.add(Chunk.NEWLINE);
             paragraph4.add("NIP: " + companySeller.getNip() +"   "+ "REGON " +companySeller.getRegon());
         }
@@ -243,7 +270,7 @@ public class VatRRInvoicePDF {
         nameCustomerTable.setWidthPercentage(98);   //Width 100%;
 
         PdfPCell nameCustomerCell;
-        nameCustomerCell = new PdfPCell(new Paragraph("Nabywca",new Font(bf, 13, Font.BOLD)));
+        nameCustomerCell = new PdfPCell(new Paragraph("Sprzedawca",new Font(bf, 13, Font.BOLD)));
         nameCustomerCell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         nameCustomerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
         nameCustomerCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -260,7 +287,7 @@ public class VatRRInvoicePDF {
         if(customer != null) {
             paragraph5.add(customer.getName() + " " + customer.getSurname());
             paragraph5.add(Chunk.NEWLINE);
-            paragraph5.add(customer.getAddress()+", "+customer.getCity()+" "+customer.getPostalCode());
+            paragraph5.add(customer.getAddress()+", "+customer.getPostalCode()+" "+customer.getCity());
             paragraph5.add(Chunk.NEWLINE);
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat outputFormat   = new SimpleDateFormat("dd/MM/yyyy");
@@ -369,23 +396,23 @@ public class VatRRInvoicePDF {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(row.getNameProduct().getSelectionModel().getSelectedItem(),new Font(bf, 10)));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell= new PdfPCell(new Paragraph(row.getNameProduct().getEditor().getText(),new Font(bf, 10)));
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
             cell= new PdfPCell(new Paragraph(String.valueOf(row.getUnitMeasure().getSelectionModel().getSelectedItem()),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(String.valueOf(row.getAmount()),new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(df2.format(row.getAmount())).replaceAll(",","."),new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(String.valueOf(row.getPriceNetto())+" zł",new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(df2.format(row.getPriceNetto()).replaceAll(",","."))+" zł",new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(String.valueOf(row.getProductValue())+" zł",new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(df2.format(row.getProductValue()).replaceAll(",","."))+" zł",new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
@@ -393,11 +420,11 @@ public class VatRRInvoicePDF {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(String.valueOf(row.getPriceVat())+" zł",new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(df2.format(row.getPriceVat()).replaceAll(",","."))+" zł",new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
-            cell= new PdfPCell(new Paragraph(String.valueOf(row.getPriceBrutto())+" zł",new Font(bf, 10)));
+            cell= new PdfPCell(new Paragraph(String.valueOf(df2.format(row.getPriceBrutto()).replaceAll(",","."))+" zł",new Font(bf, 10)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             invoiceTable.addCell(cell);
@@ -433,7 +460,8 @@ public class VatRRInvoicePDF {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-        cell = new PdfPCell(new Paragraph(String.valueOf(totalProductValue)+" zł", new Font(bf, 10)));
+        cell = new PdfPCell(new Paragraph(String.valueOf(df2.format(totalProductValue)).
+                replaceAll(",",".")+" zł", new Font(bf, 10)));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
@@ -445,12 +473,14 @@ public class VatRRInvoicePDF {
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-        cell = new PdfPCell(new Paragraph(String.valueOf(totalVat)+" zł", new Font(bf, 10)));
+        cell = new PdfPCell(new Paragraph(String.valueOf(df2.format(totalVat)).
+                replaceAll(",",".")+" zł", new Font(bf, 10)));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
 
-        cell = new PdfPCell(new Paragraph(String.valueOf(totalBrutto)+" zł",  new Font(bf, 10, Font.BOLD)));
+        cell = new PdfPCell(new Paragraph(String.valueOf(df2.format(totalBrutto)).
+                replaceAll(",",".")+" zł",  new Font(bf, 10, Font.BOLD)));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         invoiceTable.addCell(cell);
@@ -563,7 +593,8 @@ public class VatRRInvoicePDF {
 
             }
 
-            cell2 = new PdfPCell(new Paragraph(totalProductValueSameTaxList.get(k) + " zł", new Font(bf, 10)));
+            cell2 = new PdfPCell(new Paragraph(df2.format(totalProductValueSameTaxList.get(k)).
+                    replaceAll(",",".") + " zł", new Font(bf, 10)));
             cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
             summaryTable.addCell(cell2);
@@ -573,12 +604,12 @@ public class VatRRInvoicePDF {
             cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
             summaryTable.addCell(cell2);
 
-            cell2 = new PdfPCell(new Paragraph(totalVatSameTaxList.get(k) + " zł", new Font(bf, 10)));
+            cell2 = new PdfPCell(new Paragraph(df2.format(totalVatSameTaxList.get(k)).replaceAll(",",".") + " zł", new Font(bf, 10)));
             cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
             summaryTable.addCell(cell2);
 
-            cell2 = new PdfPCell(new Paragraph(totalBruttoSameTaxList.get(k) + " zł", new Font(bf, 10)));
+            cell2 = new PdfPCell(new Paragraph(df2.format(totalBruttoSameTaxList.get(k)).replaceAll(",",".") + " zł", new Font(bf, 10)));
             cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
             summaryTable.addCell(cell2);
@@ -603,7 +634,7 @@ public class VatRRInvoicePDF {
             }
         }
 
-        cell2 = new PdfPCell(new Paragraph(String.valueOf(totalBrutto)+" zł", new Font(bf, 11)));
+        cell2 = new PdfPCell(new Paragraph(String.valueOf(df2.format(totalBrutto)).replaceAll(",",".")+" zł", new Font(bf, 11)));
         cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell2.setVerticalAlignment(Element.ALIGN_MIDDLE);
         summaryTable.addCell(cell2);
@@ -617,15 +648,11 @@ public class VatRRInvoicePDF {
         PdfPTable paymentTable = new PdfPTable(2); //3 columns
         paymentTable.setWidthPercentage(100);   //Width 100%;
         //Set column widths
-        float[] columnWidths4 = {80,20};
+        float[] columnWidths4 = {60,40};
         paymentTable.setWidths(columnWidths4);
         PdfPCell paymentCell;
-        double promotionAmount;
-        promotionAmount = totalBrutto;
-        promotionAmount = Math.ceil(promotionAmount / 1000) * 1000;
-        promotionFoundAmount = promotionAmount * 0.001;
-        paymentCell = new PdfPCell(new Paragraph("Kwota potrącona na fundusz promocji "+
-                promotionFoundComboBox.getSelectionModel().getSelectedItem().toString(),new Font(bf, 10)));
+
+        paymentCell = new PdfPCell(new Paragraph("Sposób zapłaty:",new Font(bf, 12)));
         paymentCell.setUseVariableBorders(true);
         paymentCell.setBorderColorRight(BaseColor.WHITE);
         paymentCell.setBorderColorLeft(BaseColor.WHITE);
@@ -634,7 +661,7 @@ public class VatRRInvoicePDF {
         paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         paymentTable.addCell(paymentCell);
 
-        paymentCell = new PdfPCell(new Paragraph(String.valueOf(promotionFoundAmount)+" zł",new Font(bf, 10)));
+        paymentCell = new PdfPCell(new Paragraph(paidType.getSelectionModel().getSelectedItem().toString(),new Font(bf, 12)));
         paymentCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         paymentCell.setUseVariableBorders(true);
@@ -642,6 +669,48 @@ public class VatRRInvoicePDF {
         paymentCell.setBorderColorLeft(BaseColor.WHITE);
         paymentCell.setBorderColorBottom(BaseColor.WHITE);
         paymentTable.addCell(paymentCell);
+
+        paymentCell = new PdfPCell(new Paragraph("Termin zapłaty:",new Font(bf, 12)));
+        paymentCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        paymentCell.setUseVariableBorders(true);
+        paymentCell.setBorderColorRight(BaseColor.WHITE);
+        paymentCell.setBorderColorLeft(BaseColor.WHITE);
+        paymentCell.setBorderColorBottom(BaseColor.WHITE);
+        paymentTable.addCell(paymentCell);
+
+        paymentCell = new PdfPCell(new Paragraph(paymentDateToString ,new Font(bf, 12)));
+        paymentCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        paymentCell.setUseVariableBorders(true);
+        paymentCell.setBorderColorRight(BaseColor.WHITE);
+        paymentCell.setBorderColorLeft(BaseColor.WHITE);
+        paymentCell.setBorderColorBottom(BaseColor.WHITE);
+        paymentTable.addCell(paymentCell);
+        paymentCell = new PdfPCell(new Paragraph("Numer konta:",new Font(bf, 12)));
+        paymentCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        paymentCell.setUseVariableBorders(true);
+        paymentCell.setBorderColorRight(BaseColor.WHITE);
+        paymentCell.setBorderColorLeft(BaseColor.WHITE);
+        paymentCell.setBorderColorBottom(BaseColor.WHITE);
+        paymentCell.setColspan(2);
+        paymentTable.addCell(paymentCell);
+
+        paymentCell = new PdfPCell(new Paragraph(setAccountNumber(customer.getAccountNumber()),new Font(bf, 12)));
+        paymentCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        paymentCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        paymentCell.setUseVariableBorders(true);
+        paymentCell.setBorderColorRight(BaseColor.WHITE);
+        paymentCell.setBorderColorLeft(BaseColor.WHITE);
+        paymentCell.setBorderColorBottom(BaseColor.WHITE);
+        paymentCell.setColspan(2);
+        paymentTable.addCell(paymentCell);
+        double promotionAmount;
+        promotionAmount = totalBrutto;
+        promotionAmount = Math.ceil(promotionAmount / 1000) * 1000;
+        promotionFoundAmount = promotionAmount * 0.001;
+
 
         PdfPCell mainCell1 = new PdfPCell();
         mainCell1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -659,9 +728,33 @@ public class VatRRInvoicePDF {
         PdfPTable finalPriceTable = new PdfPTable(2); //3 columns
         finalPriceTable.setWidthPercentage(100);   //Width 100%;
         //Set column widths
-        float[] columnWidths5 = {60,40};
+        float[] columnWidths5 = {80,20};
         finalPriceTable.setWidths(columnWidths5);
         PdfPCell finalPriceCell;
+        finalPriceCell = new PdfPCell(new Paragraph("Kwota potrącona na fundusz promocji "+
+                promotionFoundComboBox.getSelectionModel().getSelectedItem().toString(),new Font(bf, 10)));
+        finalPriceCell.setUseVariableBorders(true);
+        finalPriceCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        finalPriceCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        finalPriceCell.setBorder(0);
+        finalPriceTable.addCell(finalPriceCell);
+
+        finalPriceCell = new PdfPCell(new Paragraph(String.valueOf(df2.format(promotionFoundAmount)).
+                replaceAll(",",".")+" zł",new Font(bf, 10)));
+        finalPriceCell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        finalPriceCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        finalPriceCell.setUseVariableBorders(true);
+        finalPriceCell.setBorder(0);
+        finalPriceTable.addCell(finalPriceCell);
+
+        for(int i=0; i<2;i++) {
+            finalPriceCell = new PdfPCell(new Paragraph(" "));
+            finalPriceCell.setBorder(0);
+            finalPriceCell.setFixedHeight(5);
+            finalPriceTable.addCell(finalPriceCell);
+        }
+        float[] columnWidths10 = {60,40};
+        finalPriceTable.setWidths(columnWidths10);
         finalPriceCell = new PdfPCell(new Paragraph("Razem do zapłaty:",new Font(bf, 14, Font.BOLD)));
         finalPriceCell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         finalPriceCell.setUseVariableBorders(true);
@@ -672,7 +765,11 @@ public class VatRRInvoicePDF {
         finalPriceCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
         finalPriceTable.addCell(finalPriceCell);
 
-        finalPriceCell = new PdfPCell(new Paragraph(String.valueOf(totalBrutto-promotionFoundAmount)+" zł",new Font(bf, 14, Font.BOLD)));
+        double forPrice =totalBrutto-promotionFoundAmount;
+        forPrice = round(forPrice,2);
+
+        finalPriceCell = new PdfPCell(new Paragraph(String.valueOf(df2.format(forPrice)).
+                replaceAll(",",".")+" zł",new Font(bf, 14, Font.BOLD)));
         finalPriceCell.setBackgroundColor(BaseColor.LIGHT_GRAY );
         finalPriceCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         finalPriceCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -683,7 +780,9 @@ public class VatRRInvoicePDF {
         finalPriceTable.addCell(finalPriceCell);
 
         MoneyConverters converter = MoneyConverters.POLISH_BANKING_MONEY_VALUE;
-        String moneyAsWords  = converter.asWords(new BigDecimal(Double.toString(totalBrutto - promotionFoundAmount)));
+        double calcucatePrice = totalBrutto - promotionFoundAmount;
+        calcucatePrice = round(calcucatePrice,2);
+        String moneyAsWords  = converter.asWords(new BigDecimal(Double.toString(calcucatePrice)));
 
         finalPriceCell = new PdfPCell(new Paragraph("Słownie: "+moneyAsWords,new Font(bf, 9)));
         finalPriceCell.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -801,5 +900,22 @@ public class VatRRInvoicePDF {
         cell.setMinimumHeight(60);
         cell.setBorder(0);
         return cell;
+    }
+    public String setAccountNumber(String string ){
+        String accountNum = string;
+        String numberAccount = "";
+        int counter2 = 0;
+        for (int i = 0; i < accountNum.length(); i++) {
+
+            numberAccount += accountNum.charAt(i);
+
+            if (i == 1) numberAccount += " ";
+            if (i > 1) counter2++;
+            if (counter2 == 4) {
+                numberAccount += " ";
+                counter2 = 0;
+            }
+        }
+        return numberAccount;
     }
 }

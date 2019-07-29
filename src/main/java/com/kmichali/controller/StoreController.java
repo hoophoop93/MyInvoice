@@ -5,30 +5,41 @@ import com.kmichali.model.Seller;
 import com.kmichali.model.Settings;
 import com.kmichali.model.Store;
 import com.kmichali.model.ProductRaport;
-import com.kmichali.serviceImpl.SellerServiceImpl;
-import com.kmichali.serviceImpl.SettingsServiceImpl;
-import com.kmichali.serviceImpl.StoreServiceImpl;
-import com.kmichali.serviceImpl.TransactionServiceImpl;
+import com.kmichali.serviceImpl.*;
 import com.kmichali.view.FxmlView;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Controller
 public class StoreController  implements Initializable {
+
+
+    private static DecimalFormat df2 = new DecimalFormat("#,##0.00");
 
     @Lazy
     @Autowired
@@ -50,11 +61,15 @@ public class StoreController  implements Initializable {
     @FXML
     TableColumn<ProductRaport, String> nameCustomer;
     @FXML
+    TableColumn<ProductRaport, String> invoiceNumber;
+    @FXML
     TableColumn<ProductRaport, Double> amountTransaction;
     @FXML
     TableColumn<ProductRaport, String> sellDate;
     @FXML
     TableColumn<ProductRaport, Double> wholeAmount;
+    @FXML
+    TableColumn<ProductRaport, Double> priceNetto;
     @FXML
     TableColumn<ProductRaport, String> type;
     @FXML
@@ -72,6 +87,8 @@ public class StoreController  implements Initializable {
     SellerServiceImpl sellerService;
     @Autowired
     SettingsServiceImpl settingsService;
+    @Autowired
+    EmptyTransactionImpl emptyTransaction;
 
 
 
@@ -105,20 +122,22 @@ public class StoreController  implements Initializable {
     void addNewProductAction(ActionEvent event) {
         if(productName.getText().equals("") || amount.getText().equals("")){
             message("Pola muszą być wypełnione!", Alert.AlertType.NONE, "Informacja");
-        }
-        {
+        }else {
             store = new Store();
             store.setName(productName.getText());
-            store.setAmount(Double.parseDouble(amount.getText()));
+            store.setAmount(Double.parseDouble(amount.getText().replace(",",".")));
             store.setUnitMeasure(unitMeasureCB.getSelectionModel().getSelectedItem());
 
             if (!storeService.countProductStore(store.getName())) {
                 storeService.save(store);
                 allProductList.add(store);
+                productCB.setItems(fillProductCB());
+                productCB.setValue(allProductListObservable.get(0));
                 prepareTableColumn();
                 productName.setText("");
                 amount.setText("");
-                unitMeasureCB.getItems().clear();
+                unitMeasureCB.setItems(fillUnitMeasureComboBox());
+                unitMeasureCB.setValue(fillUnitMeasureComboBox().get(0));
             } else {
                 message("Taki produkt jest już w magazynie!", Alert.AlertType.NONE, "Informacja");
             }
@@ -131,10 +150,35 @@ public class StoreController  implements Initializable {
         unitMeasureCB.setItems(fillUnitMeasureComboBox());
         unitMeasureCB.setValue(fillUnitMeasureComboBox().get(0));
         productCB.setValue(allProductListObservable.get(0));
+        productCB.setPlaceholder(new Label("Tabela jest pusta."));
         prepareTableColumn();
 
     }
+    public void updateCellFactory2() {
+        amountColumn.setCellFactory(column -> {
+            return new TableCell<Store, Double>() {
+                @Override
+                protected void updateItem(Double item, boolean empty) {
+                    super.updateItem(item, empty); //This is mandatory
 
+                    if (item == null || empty) { //If the cell is empty
+                        setText(null);
+                        setStyle("");
+                    } else { //If the cell is not empty
+                        setText(String.valueOf(item));
+                        Store store = getTableView().getItems().get(getIndex());
+                        if (store.getAmount() <= 0) {
+                            setTextFill(Color.RED); //The text in red
+                            setStyle("-fx-font-weight:bold");
+                        } else {
+                            setTextFill(Color.GREEN); //The text in green
+                            setStyle("-fx-font-weight:bold");
+                        }
+                    }
+                }
+            };
+        });
+    }
     private void prepareTableColumn(){
         storeProductsTable.getColumns().clear();
         nameColumn  = new TableColumn<Store, String>("Nazwa produktu");
@@ -147,14 +191,15 @@ public class StoreController  implements Initializable {
         unitMeasure.setMinWidth(150);
 
         storeProductsTable.getColumns().addAll(nameColumn,amountColumn,unitMeasure);
+        storeProductsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         nameColumn.setCellValueFactory(  new PropertyValueFactory<>("name"));
         amountColumn.setCellValueFactory(  new PropertyValueFactory<>("amount"));
         unitMeasure.setCellValueFactory(  new PropertyValueFactory<>("unitMeasure"));
-
+        storeProductsTable.setPlaceholder(new Label("Tabela jest pusta."));
         storeProductsTable.setItems(getNameAndAmount());
-
-
+        updateCellFactory2();
     }
+
     private ObservableList<Store> getNameAndAmount(){
         ObservableList<Store> allProductListObservable = FXCollections.observableArrayList();
         for (Store s: allProductList ) {
@@ -185,39 +230,72 @@ public class StoreController  implements Initializable {
     @FXML
     void productComboBoxAction(ActionEvent event) {
         ObservableList<ProductRaport> allProductList = FXCollections.observableArrayList();;
-        List<ProductRaport> testList = transactionService.findTransactionByProduct(productCB.getSelectionModel().getSelectedItem());
+        List<ProductRaport> transactionList = transactionService.findTransactionByProduct(productCB.getSelectionModel().getSelectedItem());
+        List<ProductRaport> emptyTransactionList = emptyTransaction.findEmptyTransactionByProduct(productCB.getSelectionModel().getSelectedItem());
+        List<ProductRaport> allTransactionList = new ArrayList<ProductRaport>();
+        allTransactionList.addAll(transactionList);
+        allTransactionList.addAll(emptyTransactionList);
 
-        if (productCB.getSelectionModel().getSelectedItem().equals("Wszystko")) {
-            prepareTableColumn();
-        }else {
-            if (!productCB.getSelectionModel().getSelectedItem().equals("Wszystko")) {
-           store = storeService.findByName(productCB.getSelectionModel().getSelectedItem());
-         }
-            nameCustomer = new TableColumn<ProductRaport, String>("Klient");
-            nameCustomer.setMinWidth(200);
-            amountTransaction = new TableColumn<ProductRaport, Double>("Ilość - transakcja"+" ("+store.getUnitMeasure()+")");
-            amountTransaction.setMinWidth(200);
-            wholeAmount = new TableColumn<ProductRaport, Double>("Ilość w magazynie"+" ("+store.getUnitMeasure()+")");
-            wholeAmount.setMinWidth(200);
-            sellDate = new TableColumn<ProductRaport, String>("Data transakcji");
-            sellDate.setMinWidth(200);
-            type = new TableColumn<ProductRaport, String>("Typ transakcji");
-            type.setMinWidth(200);
+        //productCB.setValue(allProductListObservable.get(0));
+        if(productCB.getSelectionModel().getSelectedItem() != null) {
+            if (productCB.getSelectionModel().getSelectedItem().equals("Wszystko")) {
+                prepareTableColumn();
+            } else {
+                if (!productCB.getSelectionModel().getSelectedItem().equals("Wszystko")) {
+                    store = storeService.findByName(productCB.getSelectionModel().getSelectedItem());
+                }
+                invoiceNumber = new TableColumn<ProductRaport, String>("Faktura");
+                nameCustomer = new TableColumn<ProductRaport, String>("Klient");
+                nameCustomer.setMinWidth(200);
+                amountTransaction = new TableColumn<ProductRaport, Double>("Ilość - transakcja" + " (" + store.getUnitMeasure() + ")");
+                // amountTransaction.setMinWidth(200);
+                wholeAmount = new TableColumn<ProductRaport, Double>("Ilość w magazynie" + " (" + store.getUnitMeasure() + ")");
+                // wholeAmount.setMinWidth(200);
 
-            storeProductsTable.getColumns().clear();
-            storeProductsTable.getColumns().addAll(nameCustomer, amountTransaction, type, wholeAmount, sellDate);
-            nameCustomer.setCellValueFactory(new PropertyValueFactory<>("name"));
-            amountTransaction.setCellValueFactory(new PropertyValueFactory<>("transactionAmount"));
-            type.setCellValueFactory(new PropertyValueFactory<>("type"));
-            sellDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-            wholeAmount.setCellValueFactory(new PropertyValueFactory<>("wholeAmount"));
+                priceNetto = new TableColumn<ProductRaport, Double>("Cena netto");
+                // wholeAmount.setMinWidth(200);
+                sellDate = new TableColumn<ProductRaport, String>("Data transakcji");
+                // sellDate.setMinWidth(200);
+                type = new TableColumn<ProductRaport, String>("Typ transakcji");
+                // type.setMinWidth(200);
 
-            for (ProductRaport productRaport : testList) {
-                allProductList.add(productRaport);
+                storeProductsTable.getColumns().clear();
+                storeProductsTable.getColumns().addAll(invoiceNumber, nameCustomer, amountTransaction,
+                        type, wholeAmount,priceNetto, sellDate);
+                storeProductsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+                storeProductsTable.setPlaceholder(new Label("Tabela jest pusta."));
+                invoiceNumber.setCellValueFactory(new PropertyValueFactory<>("invoiceNumber"));
+                nameCustomer.setCellValueFactory(new PropertyValueFactory<>("name"));
+                amountTransaction.setCellValueFactory(new PropertyValueFactory<>("transactionAmount"));
+                type.setCellValueFactory(new PropertyValueFactory<>("type"));
+                sellDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+                wholeAmount.setCellValueFactory(new PropertyValueFactory<>("wholeAmount"));
+                priceNetto.setCellValueFactory(new PropertyValueFactory<>("price"));
+
+                for (ProductRaport productRaport : allTransactionList) {
+                    allProductList.add(productRaport);
+                }
+                storeProductsTable.setItems(allProductList);
+                storeProductsTable.getSortOrder().add(sellDate);
+                sellDate.setComparator(sellDate.getComparator().reversed());
+                updateCellFactory();
             }
-            storeProductsTable.setItems(allProductList);
         }
-        updateCellFactory();
+    }
+    @FXML
+    void newProductAction(ActionEvent event){
+        Platform.runLater(new Runnable(){
+            @Override
+            public void run() {
+
+                try {
+                    stageManager.showNextScene(FxmlView.NEWPRODUCTDIALOG);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
 
     }
     private  ObservableList<String> fillUnitMeasureComboBox(){

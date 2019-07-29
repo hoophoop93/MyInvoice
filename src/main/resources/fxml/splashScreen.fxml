@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.effect.Blend?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="339.0" prefWidth="608.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.MainAppController">
+   <center>
+      <Pane prefHeight="270.0" prefWidth="524.0" BorderPane.alignment="CENTER">
+         <children>
+            <Pane prefHeight="339.0" prefWidth="608.0" style="-fx-background-color: transparent;">
+               <children>
+                  <Line endX="462.0" layoutX="104.0" layoutY="250.0" startX="-100.0" stroke="#1e1e1e" strokeWidth="5.0" />
+                  <Line endX="190.0" layoutX="12.0" layoutY="155.0" rotate="-90.3" startX="-101.0" strokeWidth="5.0" />
+                  <Label layoutX="144.0" layoutY="46.0" prefHeight="17.0" prefWidth="294.0" text="UNIWERS">
+                     <font>
+                        <Font name="System Bold" size="50.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="153.0" layoutY="110.0" text="Wersja 1.1">
+                     <font>
+                        <Font name="System Bold Italic" size="15.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="257.0" layoutY="272.0">
+                     <font>
+                        <Font name="Cambria" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="progress" layoutX="369.0" layoutY="225.0" prefHeight="20.0" prefWidth="115.0" text="Ładowanie...">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <ProgressBar fx:id="progressBar" layoutX="363.0" layoutY="193.0" prefWidth="200.0">
+                     <effect>
+                        <Blend />
+                     </effect></ProgressBar>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+   </center>
+</BorderPane>

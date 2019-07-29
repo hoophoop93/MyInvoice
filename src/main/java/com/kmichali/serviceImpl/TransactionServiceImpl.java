@@ -68,8 +68,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     public List<ProductRaport> findTransactionByProduct(String name) {
         List<ProductRaport> transactionList = entityManager.createQuery("Select " +
-                "t.unitMeasure as unitMeasure, t.amount as transactionAmount,t.customer.name || ' ' ||  t.customer.surname as name " +
-                ",d.issueDate as date, t.storeAmount as wholeAmount, t.type as type " +
+                "i.invoiceNumber as invoiceNumber, ROUND(t.amount,2) as transactionAmount,t.customer.name || ' ' ||  t.customer.surname as name " +
+                ",d.issueDate as date, ROUND(t.storeAmount,2) as wholeAmount, t.type as type, t.priceNetto as price  " +
                 "from Transaction t, Store s,Invoice i, Date d where t.store.id = s.id and " +
                 "t.invoice.id = i.id and d.id = i.date.id and  s.name= :name ORDER BY d.sellDate desc").setParameter("name",name).
                 unwrap( org.hibernate.query.Query.class )

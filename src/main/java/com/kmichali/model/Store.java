@@ -47,7 +47,7 @@ public class Store {
     }
 
     public double getAmount() {
-        return amount;
+        return round(amount,2);
     }
 
     public void setAmount(double amount) {
@@ -60,5 +60,13 @@ public class Store {
 
     public void setUnitMeasure(String unitMeasure) {
         this.unitMeasure = unitMeasure;
+    }
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 }

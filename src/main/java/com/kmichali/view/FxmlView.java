@@ -47,6 +47,16 @@ public enum FxmlView {
             return "/fxml/store.fxml";
         }
     },
+    NEWPRODUCTDIALOG {
+        @Override
+        public String getTitle() {
+            return getStringFromResourceBundle("addProductStore.title");
+        }
+        @Override
+        public String getFxmlFile() {
+            return "/fxml/addProductStore.fxml";
+        }
+    },
     SETTINGSSTAGE {
         @Override
         public String getTitle() {

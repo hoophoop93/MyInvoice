@@ -23,7 +23,7 @@ public class IdentityCardImpl implements IdentityCardService {
 
     @Override
     public IdentityCard update(IdentityCard entity) {
-        return null;
+        return identityCardRepository.save(entity);
     }
 
     @Override

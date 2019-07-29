@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="318.0" prefWidth="293.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kmichali.controller.NewProductController">
+   <center>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="303.0" prefWidth="293.0">
+               <children>
+                  <HBox prefHeight="303.0" prefWidth="315.0">
+                     <children>
+                        <VBox prefHeight="281.0" prefWidth="293.0">
+                           <children>
+                              <HBox prefHeight="40.0" prefWidth="293.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="85.0" text="Produkt:">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <ComboBox fx:id="productComboBox" onAction="#productComboBoxAction" prefHeight="25.0" prefWidth="175.0">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </ComboBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox prefHeight="40.0" prefWidth="293.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="85.0" text="Nowy produkt:">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField fx:id="productName" prefHeight="25.0" prefWidth="175.0">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="42.0" prefWidth="293.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="85.0" text="Faktura:">
+                                       <HBox.margin>
+                                          <Insets left="5.0" top="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField fx:id="invoiceNumber" prefHeight="25.0" prefWidth="175.0">
+                                       <HBox.margin>
+                                          <Insets left="5.0" top="5.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="40.0" prefWidth="584.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="85.0" text="Imie i nazwisko:">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField fx:id="customerName" prefHeight="25.0" prefWidth="175.0">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="40.0" prefWidth="200.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="85.0" text="Ilość :">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField fx:id="amount" prefHeight="25.0" prefWidth="175.0">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </TextField>
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="40.0" prefWidth="293.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="85.0" text="Cena netto:">
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField fx:id="priceNettoTF" prefWidth="175.0" />
+                                 </children>
+                              </HBox>
+                              <HBox prefHeight="40.0" prefWidth="584.0">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="85.0" text="Data transakcji:">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <DatePicker fx:id="transactionDate" prefHeight="25.0" prefWidth="175.0">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </DatePicker>
+                                 </children></HBox>
+                              <HBox alignment="CENTER" prefHeight="61.0" prefWidth="293.0">
+                                 <children>
+                                    <Button fx:id="addToStore" alignment="CENTER" mnemonicParsing="false" onAction="#addToStoreAction" text="Dodaj do magazynu" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+   </center>
+</BorderPane>

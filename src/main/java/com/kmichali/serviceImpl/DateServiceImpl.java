@@ -1,6 +1,7 @@
 package com.kmichali.serviceImpl;
 
 import com.kmichali.model.Date;
+import com.kmichali.model.Invoice;
 import com.kmichali.repository.DateRepository;
 import com.kmichali.service.DateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,7 @@ public class DateServiceImpl implements DateService {
     DateRepository dateRepository;
 
     @Override
-    public Date save(Date entity) {
-        entity.setIssueDate(entity.getIssueDate());
-        entity.setPaidDate(entity.getPaidDate());
-        entity.setPaymentDate(entity.getPaymentDate());
+    public Date save(Date entity){
 
         return dateRepository.save(entity);
     }
@@ -31,7 +29,7 @@ public class DateServiceImpl implements DateService {
 
     @Override
     public void delete(Date entity) {
-
+        dateRepository.delete(entity);
     }
 
     @Override
@@ -49,4 +47,8 @@ public class DateServiceImpl implements DateService {
         return null;
     }
 
+    @Override
+    public Date findByInvoice(Invoice invoice) {
+        return dateRepository.findByInvoice(invoice);
+    }
 }
